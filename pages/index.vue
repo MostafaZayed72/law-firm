@@ -1,7 +1,6 @@
 <template>
-    <div >
-      <button @click="toggleDrawer">Toggle Drawer</button>
-      <h1>Welcome to Nuxt 3 with Vuetify and TailwindCSS</h1>
+    <div class="flex flex-col justify-center items-center h-screen">
+      <h1 class="font-bold text-3xl">أهلاً ومرحباً بك في مكتب البلوشي والمراشدة للمحاماة والإستشارات القانونية</h1>
     </div>
   </template>
   

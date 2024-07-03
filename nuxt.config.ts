@@ -1,6 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss','vuetify-nuxt-module'],
+  modules: [
+    '@nuxtjs/tailwindcss',
+    'vuetify-nuxt-module',
+    '@nuxtjs/color-mode',
+    "@nuxt/icon"
+  ],
   compatibilityDate: '2024-07-03'
 })
