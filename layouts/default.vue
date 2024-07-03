@@ -30,7 +30,7 @@
         </v-list>
       </v-navigation-drawer>
       <v-navigation-drawer
-      v-if="$colorMode.preference === 'dark'"
+      v-else
         location="right"
         permanent
         class="bg-blue-darken-4"
