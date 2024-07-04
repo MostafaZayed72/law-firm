@@ -1,6 +1,6 @@
 <template>
-    <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;">
-      <v-card class="pa-5 w-100" style="direction: rtl; text-align: right;">
+    <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;"  v-if="showTable">
+      <v-card class="pa-5 w-100 rounded-lg" style="direction: rtl; text-align: right;" :class="cardClass">
         <v-card-title>
           <span class="text-h5">إنشاء حساب جديد</span>
         </v-card-title>
@@ -53,6 +53,20 @@
     console.log('البريد الإلكتروني أو رقم الهاتف:', emailOrPhone.value)
     console.log('كلمة المرور:', password.value)
   }
+
+  const showTable = ref(false);
+  const colorMode = useColorMode();
+
+onMounted(() => {
+  setTimeout(() => {
+    showTable.value = true;
+  }); // Delay in milliseconds
+});
+const cardClass = computed(() => {
+    return colorMode.preference === 'dark' ? 'bg-grey-darken-3' : 'bg-white';
+  });
+
+
   </script>
   
   <style scoped>

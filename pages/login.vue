@@ -49,7 +49,7 @@
 onMounted(() => {
   setTimeout(() => {
     showTable.value = true;
-  }, 1); // Delay in milliseconds
+  }); // Delay in milliseconds
 });
 const cardClass = computed(() => {
     return colorMode.preference === 'dark' ? 'bg-grey-darken-3' : 'bg-white';
