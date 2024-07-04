@@ -5,7 +5,7 @@
      
         location="right"
         permanent
-        :class="$colorMode.preference === 'dark'? 'bg-blue-darken-3':'bg-blue-darken-1'"
+        
         
       >
         <template v-slot:prepend>
