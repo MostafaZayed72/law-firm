@@ -1,11 +1,11 @@
 <template>
-    <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;">
-      <v-card class="pa-5 w-100" style="direction: rtl; text-align: right;">
-        <v-card-title>
+    <v-container class="d-flex flex-column align-center justify-center fill-height w-100"  style="direction: rtl;" v-if="showTable">
+      <v-card class="pa-5 w-100 rounded-lg" :class="cardClass" style="direction: rtl; text-align: right;">
+        <v-card-title >
           <span class="text-h5">الملف الشخصي</span>
         </v-card-title>
-        <v-card-text>
-          <v-list>
+        <v-card-text :class="cardClass">
+          <v-list :class="cardClass">
             <v-list-item>
               <v-list-item-icon>
                 <v-icon>mdi-account-circle</v-icon>
@@ -41,10 +41,24 @@
   
   <script setup>
   import { ref } from 'vue'
-  
+  const colorMode = useColorMode();
+
+  const cardClass = computed(() => {
+    return colorMode.preference === 'dark' ? 'bg-grey-darken-3' : 'bg-white';
+  });
+
   const username = ref('اسم المستخدم الخاص بك')
   const mobile = ref('رقم الموبايل الخاص بك')
   const email = ref('example@example.com')
+
+  const showTable = ref(false);
+
+  onMounted(() => {
+    setTimeout(() => {
+      showTable.value = true;
+    }, 1); // Delay in milliseconds
+  });
+
   </script>
   
   <style scoped>

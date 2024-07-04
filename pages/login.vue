@@ -1,10 +1,10 @@
 <template>
-    <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;">
-      <v-card class="pa-5 w-100" style="direction: rtl; text-align: right;">
-        <v-card-title>
+    <v-container class="d-flex flex-column align-center justify-center fill-height w-100"   style="direction: rtl;" v-if="showTable">
+      <v-card class="pa-5 w-100 rounded-lg" :class="cardClass" style="direction: rtl; text-align: right;" >
+        <v-card-title >
           <span class="text-h5">تسجيل الدخول</span>
         </v-card-title>
-        <v-card-text>
+        <v-card-text >
           <v-form style="direction: rtl;">
             <v-text-field
               v-model="username"
@@ -42,6 +42,19 @@
     console.log('اسم المستخدم:', username.value)
     console.log('كلمة المرور:', password.value)
   }
+
+  const showTable = ref(false);
+  const colorMode = useColorMode();
+
+onMounted(() => {
+  setTimeout(() => {
+    showTable.value = true;
+  }, 1); // Delay in milliseconds
+});
+const cardClass = computed(() => {
+    return colorMode.preference === 'dark' ? 'bg-grey-darken-3' : 'bg-white';
+  });
+
   </script>
   
   <style scoped>
