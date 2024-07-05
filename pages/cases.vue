@@ -82,7 +82,7 @@
     </v-dialog>
 
     <v-data-table
-    :class="cardClass"
+      :class="cardClass"
       v-model:search="search"
       :headers="headers"
       :items="desserts"
@@ -119,66 +119,67 @@
 
     <!-- Edit case dialog -->
     <v-dialog v-model="editDialog" max-width="800px">
-  <v-card>
-    <v-card-title>تعديل القضية</v-card-title>
-    <v-card-text>
-      <v-container>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="editedCase.name" label="عنوان القضية"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="editedCase.calories" label="رقم القضية"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="editedCase.fat" label="المُدعي"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="editedCase.fatt" label="المُدعي عليه"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="editedCase.carbs" label="نوع القضية"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="editedCase.protein" label="درجة القضية"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="editedCase.iron" label="قيمة الدعوة"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="editedCase['1']" label="تاريخ التسجيل"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="editedCase['2']" label="تاريخ الجلسة القادمة"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="editedCase['4']" label="القرار"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="editedCase['5']" label="حالة القضية"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="editedCase['6']" label="نوع الإعلان"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="editedCase['7']" label="رابط الدعوة"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="editedCase['8']" label="رول القضية"></v-text-field>
-          </v-col>
-          <!-- Additional input fields for editing -->
-        </v-row>
-      </v-container>
-    </v-card-text>
-    <v-card-actions>
-      <v-spacer></v-spacer>
-      <v-btn color="blue darken-1" text @click="editDialog = false">إلغاء</v-btn>
-      <v-btn color="blue darken-1" text @click="saveEditedCase">حفظ</v-btn>
-    </v-card-actions>
-  </v-card>
-</v-dialog>
+      <v-card>
+        <v-card-title>تعديل القضية</v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase.name" label="عنوان القضية"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase.calories" label="رقم القضية"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase.fat" label="المُدعي"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase.fatt" label="المُدعي عليه"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase.carbs" label="نوع القضية"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase.protein" label="درجة القضية"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase.iron" label="قيمة الدعوة"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase['1']" label="تاريخ التسجيل"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase['2']" label="تاريخ الجلسة القادمة"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase['4']" label="القرار"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase['5']" label="حالة القضية"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase['6']" label="نوع الإعلان"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase['7']" label="رابط الدعوة"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase['8']" label="رول القضية"></v-text-field>
+              </v-col>
+              <!-- Additional input fields for editing -->
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="editDialog = false">إلغاء</v-btn>
+          <v-btn color="blue darken-1" text @click="saveEditedCase">حفظ</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
+
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 
@@ -189,8 +190,8 @@ const addNewCaseDialog = ref(false); // Control add new case dialog visibility
 const deleteDialog = ref(false); // Control delete confirmation dialog visibility
 const editDialog = ref(false); // Control edit dialog visibility
 
-let selectedCase = null;
-let editedCase = null;
+const selectedCase = ref(null); // Ref for selected case
+const editedCase = ref(null); // Ref for edited case
 
 const headers = [
   { align: 'start', key: 'name', sortable: false, title: 'عنوان القضية' },
@@ -262,12 +263,12 @@ const formatDate = (dateStr) => {
 };
 
 const confirmDelete = (item) => {
-  selectedCase = item;
+  selectedCase.value = item;
   deleteDialog.value = true;
 };
 
 const deleteCase = () => {
-  const index = desserts.value.indexOf(selectedCase);
+  const index = desserts.value.indexOf(selectedCase.value);
   if (index !== -1) {
     desserts.value.splice(index, 1);
   }
@@ -275,15 +276,15 @@ const deleteCase = () => {
 };
 
 const editCase = (item) => {
-  selectedCase = item;
-  editedCase = { ...item }; // Make a copy of the selected case for editing
+  selectedCase.value = item;
+  editedCase.value = { ...item }; // Make a copy of the selected case for editing
   editDialog.value = true;
 };
 
 const saveEditedCase = () => {
-  const index = desserts.value.findIndex(item => item === selectedCase);
+  const index = desserts.value.findIndex(item => item === selectedCase.value);
   if (index !== -1) {
-    desserts.value[index] = { ...editedCase };
+    desserts.value[index] = { ...editedCase.value };
   }
   editDialog.value = false; // Close the edit dialog
 };
