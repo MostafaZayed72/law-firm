@@ -18,7 +18,7 @@
     </template>
 
     <!-- Add new case button -->
-    <v-btn class="mr-4" @click="addNewCaseDialog = true" color="primary">إضافة قضية جديدة</v-btn>
+    <v-btn class="mr-4 mb-4" @click="addNewCaseDialog = true" color="primary">إضافة قضية جديدة</v-btn>
 
     <!-- Add new case dialog -->
     <v-dialog v-model="addNewCaseDialog" max-width="800px">
@@ -74,113 +74,109 @@
           </v-container>
         </v-card-text>
         <v-card-actions>
+          <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="addNewCaseDialog = false">إلغاء</v-btn>
-          <v-btn color="blue darken-1" @click="addNewCase">تأكيد</v-btn>
+          <v-btn color="blue darken-1" text @click="addNewCase">تأكيد</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <!-- Delete and Edit buttons -->
     <v-data-table
-      :class="cardClass"
+    :class="cardClass"
+      v-model:search="search"
       :headers="headers"
       :items="desserts"
-      :search="search"
-      :custom-filter="customFilter"
+      class="elevation-1 mx-4"
+      :footer-props="{ itemsPerPageText: 'عدد العناصر في الصفحة:' }"
+      :no-data-text="'لا توجد بيانات'"
     >
-      <!-- Delete button -->
-      <template #item.9="{ item }">
-        <v-btn color="red darken-1" @click="confirmDelete(item)">حذف</v-btn>
+      <template v-slot:[`item.9`]="{ item }">
+        <v-btn small icon @click="confirmDelete(item)">
+          <v-icon>mdi-delete</v-icon>
+        </v-btn>
       </template>
-
-      <!-- Edit button -->
-      <template #item.10="{ item }">
-        <v-btn color="orange darken-1" @click="editCase(item)">تعديل</v-btn>
-      </template>
-
-      <!-- Display date in ISO format -->
-      <template #item.1="{ item }">
-        {{ formatDate(item['1']) }}
-      </template>
-      <template #item.2="{ item }">
-        {{ formatDate(item['2']) }}
+      <template v-slot:[`item.10`]="{ item }">
+        <v-btn small icon @click="editCase(item)">
+          <v-icon>mdi-pencil</v-icon>
+        </v-btn>
       </template>
     </v-data-table>
 
     <!-- Delete confirmation dialog -->
-    <v-dialog v-model="deleteDialog" max-width="400px">
+    <v-dialog v-model="deleteDialog" max-width="500px">
       <v-card>
         <v-card-title>تأكيد الحذف</v-card-title>
         <v-card-text>
-          <div>هل أنت متأكد أنك تريد حذف القضية رقم {{ selectedCase.calories }}؟</div>
+          <p>هل أنت متأكد من رغبتك في حذف هذه القضية؟</p>
         </v-card-text>
         <v-card-actions>
+          <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="deleteDialog = false">إلغاء</v-btn>
-          <v-btn color="blue darken-1" @click="deleteCase">تأكيد الحذف</v-btn>
+          <v-btn color="blue darken-1" text @click="deleteCase">تأكيد</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <!-- Edit case dialog -->
     <v-dialog v-model="editDialog" max-width="800px">
-      <v-card>
-        <v-card-title>تعديل القضية</v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.name" label="عنوان القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.calories" label="رقم القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.fat" label="المُدعي"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.fatt" label="المُدعي عليه"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.carbs" label="نوع القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.protein" label="درجة القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.iron" label="قيمة الدعوة"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['1']" label="تاريخ التسجيل"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['2']" label="تاريخ الجلسة القادمة"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['4']" label="القرار"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['5']" label="حالة القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['6']" label="نوع الإعلان"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['7']" label="رابط الدعوة"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['8']" label="رول القضية"></v-text-field>
-              </v-col>
-              <!-- Additional input fields -->
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="blue darken-1" text @click="editDialog = false">إلغاء</v-btn>
-          <v-btn color="blue darken-1" @click="saveEditedCase">حفظ</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
+  <v-card>
+    <v-card-title>تعديل القضية</v-card-title>
+    <v-card-text>
+      <v-container>
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="editedCase.name" label="عنوان القضية"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="editedCase.calories" label="رقم القضية"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="editedCase.fat" label="المُدعي"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="editedCase.fatt" label="المُدعي عليه"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="editedCase.carbs" label="نوع القضية"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="editedCase.protein" label="درجة القضية"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="editedCase.iron" label="قيمة الدعوة"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="editedCase['1']" label="تاريخ التسجيل"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="editedCase['2']" label="تاريخ الجلسة القادمة"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="editedCase['4']" label="القرار"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="editedCase['5']" label="حالة القضية"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="editedCase['6']" label="نوع الإعلان"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="editedCase['7']" label="رابط الدعوة"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="editedCase['8']" label="رول القضية"></v-text-field>
+          </v-col>
+          <!-- Additional input fields for editing -->
+        </v-row>
+      </v-container>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn color="blue darken-1" text @click="editDialog = false">إلغاء</v-btn>
+      <v-btn color="blue darken-1" text @click="saveEditedCase">حفظ</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
   </v-card>
 </template>
 <script setup>
@@ -285,22 +281,14 @@ const editCase = (item) => {
 };
 
 const saveEditedCase = () => {
-  // Implement save edited case logic here
-  // For example:
-  const index = desserts.value.findIndex((item) => item.calories === editedCase.calories);
+  const index = desserts.value.findIndex(item => item === selectedCase);
   if (index !== -1) {
-    desserts.value[index] = editedCase;
+    desserts.value[index] = { ...editedCase };
   }
   editDialog.value = false; // Close the edit dialog
 };
 
-const addNewCase = () => {
-  // Implement add new case logic here
-  desserts.value.push({ ...newCase });
-  addNewCaseDialog.value = false; // Close the add new case dialog
-};
-
-const newCase = {
+const newCase = ref({
   name: '',
   calories: '',
   fat: '',
@@ -318,6 +306,34 @@ const newCase = {
   // Additional input fields
   extraField1: '',
   extraField2: ''
+});
+
+const addNewCase = () => {
+  // Implement add new case logic here
+  const caseToAdd = { ...newCase.value };
+  desserts.value.push(caseToAdd);
+
+  // Clear the form fields
+  newCase.value = {
+    name: '',
+    calories: '',
+    fat: '',
+    fatt: '',
+    carbs: '',
+    protein: '',
+    iron: '',
+    1: '',
+    2: '',
+    4: '',
+    5: '',
+    6: '',
+    7: '',
+    8: '',
+    extraField1: '',
+    extraField2: ''
+  };
+
+  addNewCaseDialog.value = false; // Close the add new case dialog
 };
 
 // Watch for changes in desserts
