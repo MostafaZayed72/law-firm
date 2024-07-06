@@ -92,31 +92,38 @@
     </v-dialog>
 
     <v-data-table
-      :class="cardClass"
-      v-model:search="search"
-      :headers="headers"
-      :items="desserts"
-      class="elevation-1 mx-4"
-      :footer-props="{ itemsPerPageText: 'عدد العناصر في الصفحة:' }"
-      :no-data-text="'لا توجد بيانات'"
-    >
-      <template v-slot:[`item.9`]="{ item }">
-        <v-btn small icon @click="confirmDelete(item)">
-          <v-icon>mdi-delete</v-icon>
-        </v-btn>
-      </template>
-      <template v-slot:[`item.10`]="{ item }">
-        <v-btn small icon @click="editCase(item)">
-          <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-      </template>
-      <template v-slot:[`item.id`]="{ item }">
-        <nuxt-link :to="`/case/${item.id}`">{{ item.id }}</nuxt-link>
-      </template>
-      <template v-slot:[`item.name`]="{ item }">
-        <nuxt-link :to="`/case/${item.id}`">{{ item.name }}</nuxt-link>
-      </template>
-    </v-data-table>
+  :class="cardClass"
+  v-model:search="search"
+  :headers="headers"
+  :items="desserts"
+  class="elevation-1 mx-4"
+  :footer-props="{ itemsPerPageText: 'عدد العناصر في الصفحة:' }"
+  :no-data-text="'لا توجد بيانات'"
+>
+  <template v-slot:item.1="{ item }">
+    <div style="white-space: nowrap;">{{ item['1'] }}</div>
+  </template>
+  <template v-slot:item.2="{ item }">
+    <div style="white-space: nowrap;">{{ item['2'] }}</div>
+  </template>
+  <template v-slot:[`item.9`]="{ item }">
+    <v-btn small icon @click="confirmDelete(item)">
+      <v-icon>mdi-delete</v-icon>
+    </v-btn>
+  </template>
+  <template v-slot:[`item.10`]="{ item }">
+    <v-btn small icon @click="editCase(item)">
+      <v-icon>mdi-pencil</v-icon>
+    </v-btn>
+  </template>
+  <template v-slot:[`item.id`]="{ item }">
+    <nuxt-link :to="`/case/${item.id}`">{{ item.id }}</nuxt-link>
+  </template>
+  <template v-slot:[`item.name`]="{ item }">
+    <nuxt-link :to="`/case/${item.id}`">{{ item.name }}</nuxt-link>
+  </template>
+</v-data-table>
+
 
     <!-- Delete confirmation dialog -->
     <v-dialog v-model="deleteDialog" max-width="500px">
