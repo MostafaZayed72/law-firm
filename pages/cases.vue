@@ -27,11 +27,12 @@
         <v-card-text>
           <v-container>
             <v-row>
+              <!-- Existing input fields -->
               <v-col cols="12" md="6">
                 <v-text-field v-model="newCase.name" label="عنوان القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.calories" label="رقم القضية"></v-text-field>
+                <v-text-field v-model="newCase.id" label="رقم القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field v-model="newCase.fat" label="المُدعي"></v-text-field>
@@ -69,7 +70,16 @@
               <v-col cols="12" md="6">
                 <v-text-field v-model="newCase['8']" label="رول القضية"></v-text-field>
               </v-col>
-              <!-- Additional input fields -->
+              <!-- New input fields -->
+              <v-col cols="12" md="6">
+                <v-text-field v-model="newCase.court" label="المحكمة المختصة"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="newCase.consultant" label="اسم المستشار"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="newCase.notes" label="ملاحظات"></v-text-field>
+              </v-col>
             </v-row>
           </v-container>
         </v-card-text>
@@ -100,6 +110,12 @@
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
       </template>
+      <template v-slot:[`item.id`]="{ item }">
+        <nuxt-link :to="`/case/${item.id}`">{{ item.id }}</nuxt-link>
+      </template>
+      <template v-slot:[`item.name`]="{ item }">
+        <nuxt-link :to="`/case/${item.id}`">{{ item.name }}</nuxt-link>
+      </template>
     </v-data-table>
 
     <!-- Delete confirmation dialog -->
@@ -124,11 +140,12 @@
         <v-card-text>
           <v-container>
             <v-row>
+              <!-- Existing input fields -->
               <v-col cols="12" md="6">
                 <v-text-field v-model="editedCase.name" label="عنوان القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.calories" label="رقم القضية"></v-text-field>
+                <v-text-field v-model="editedCase.id" label="رقم القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field v-model="editedCase.fat" label="المُدعي"></v-text-field>
@@ -166,7 +183,16 @@
               <v-col cols="12" md="6">
                 <v-text-field v-model="editedCase['8']" label="رول القضية"></v-text-field>
               </v-col>
-              <!-- Additional input fields for editing -->
+              <!-- New input fields for editing -->
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase.court" label="المحكمة المختصة"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase.consultant" label="اسم المستشار"></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="editedCase.notes" label="ملاحظات"></v-text-field>
+              </v-col>
             </v-row>
           </v-container>
         </v-card-text>
@@ -195,7 +221,7 @@ const editedCase = ref(null); // Ref for edited case
 
 const headers = [
   { align: 'start', key: 'name', sortable: false, title: 'عنوان القضية' },
-  { key: 'calories', title: 'رقم القضية' },
+  { key: 'id', title: 'رقم القضية' },
   { key: 'fat', title: 'المُدعي' },
   { key: 'fatt', title: 'المُدعي عليه' },
   { key: 'carbs', title: 'نوع القضية' },
@@ -208,6 +234,9 @@ const headers = [
   { key: '6', title: 'نوع الإعلان' },
   { key: '7', title: 'رابط الدعوة' },
   { key: '8', title: 'رول القضية' },
+  { key: 'court', title: 'المحكمة المختصة' },   
+  { key: 'consultant', title: 'اسم المستشار' }, 
+  { key: 'notes', title: 'ملاحظات' },           
   { key: '9', title: 'حذف القضية' },
   { key: '10', title: 'تعديل القضية' },
 ];
@@ -215,7 +244,7 @@ const headers = [
 const desserts = ref([
   {
     name: 'قتل',
-    calories: 159,
+    id: 159,
     fat: 'ياسر',
     fatt: 'محمد / احمد /محمود',
     carbs: 'جنائي',
@@ -228,11 +257,14 @@ const desserts = ref([
     6: 'إعلات إلكتروني',
     7: 'www.googlemeet.com',
     8: '12',
-    9: 'حذف'
+    9: 'حذف',
+    court: 'محكمة الجنايات',  
+    consultant: 'المستشار أحمد',
+    notes: 'لا توجد ملاحظات'  
   },
   {
     name: 'سرقة',
-    calories: 122,
+    id: 122,
     fat: 'محمد',
     fatt: 'محمد/صالح',
     carbs: 'جنائي',
@@ -245,7 +277,10 @@ const desserts = ref([
     6: 'إعلات إلكتروني',
     7: 'www.googlemeet.com',
     8: '12',
-    9: 'حذف'
+    9: 'حذف',
+    court: 'محكمة الجنايات',   
+    consultant: 'المستشار خالد', 
+    notes: 'تم تأجيل الجلسة'   
   },
 ]);
 
@@ -291,7 +326,7 @@ const saveEditedCase = () => {
 
 const newCase = ref({
   name: '',
-  calories: '',
+  id: '',
   fat: '',
   fatt: '',
   carbs: '',
@@ -304,6 +339,9 @@ const newCase = ref({
   6: '',
   7: '',
   8: '',
+  court: '',       
+  consultant: '',  
+  notes: '',       
   // Additional input fields
   extraField1: '',
   extraField2: ''
@@ -317,7 +355,7 @@ const addNewCase = () => {
   // Clear the form fields
   newCase.value = {
     name: '',
-    calories: '',
+    id: '',
     fat: '',
     fatt: '',
     carbs: '',
@@ -330,6 +368,9 @@ const addNewCase = () => {
     6: '',
     7: '',
     8: '',
+    court: '',       
+    consultant: '',  
+    notes: '',       
     extraField1: '',
     extraField2: ''
   };
