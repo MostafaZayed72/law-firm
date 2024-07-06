@@ -50,10 +50,10 @@
                 <v-text-field v-model="newCase.iron" label="قيمة الدعوة"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['1']" label="تاريخ التسجيل"></v-text-field>
+                <v-text-field type="date" v-model="newCase['1']" label="تاريخ التسجيل"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['2']" label="تاريخ الجلسة القادمة"></v-text-field>
+                <v-text-field type="date" v-model="newCase['2']" label="تاريخ الجلسة القادمة"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field v-model="newCase['4']" label="القرار"></v-text-field>
@@ -163,10 +163,10 @@
                 <v-text-field v-model="editedCase.iron" label="قيمة الدعوة"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['1']" label="تاريخ التسجيل"></v-text-field>
+                <v-text-field type="date" v-model="editedCase['1']" label="تاريخ التسجيل"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['2']" label="تاريخ الجلسة القادمة"></v-text-field>
+                <v-text-field type="date" v-model="editedCase['2']" label="تاريخ الجلسة القادمة"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field v-model="editedCase['4']" label="القرار"></v-text-field>
