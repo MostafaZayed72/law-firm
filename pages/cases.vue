@@ -21,15 +21,15 @@
     <v-btn class="mr-4 mb-4" @click="addNewCaseDialog = true" color="primary">إضافة قضية جديدة</v-btn>
 
     <!-- Add new case dialog -->
-    <v-dialog v-model="addNewCaseDialog" max-width="800px">
+    <v-dialog v-model="addNewCaseDialog" max-width="800px" style="direction: rtl;">
       <v-card>
         <v-card-title>إضافة قضية جديدة</v-card-title>
         <v-card-text>
           <v-container>
-            <v-row>
+            <v-row style="direction: rtl;">
               <!-- Existing input fields -->
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.name" label="عنوان القضية"></v-text-field>
+              <v-col cols="12" md="6" style="direction: rtl;">
+                <v-text-field style="direction: rtl;" v-model="newCase.name" label="عنوان القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field v-model="newCase.id" label="رقم القضية"></v-text-field>
@@ -139,7 +139,7 @@
         <v-card-title>تعديل القضية</v-card-title>
         <v-card-text>
           <v-container>
-            <v-row>
+            <v-row style="direction: rtl;">
               <!-- Existing input fields -->
               <v-col cols="12" md="6">
                 <v-text-field v-model="editedCase.name" label="عنوان القضية"></v-text-field>
