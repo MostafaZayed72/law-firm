@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@nuxt/icon": "^1.0.0",
+    "@react-pdf/styled-components": "^1.4.0",
     "axios": "^1.7.2",
     "express": "^4.19.2",
     "jspdf": "^2.5.1",

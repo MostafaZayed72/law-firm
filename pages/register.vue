@@ -7,33 +7,33 @@
       <v-card-text>
         <v-form style="direction: rtl;">
           <v-text-field
-          class="text-blue-500"
+          class="text-blue-700"
             v-model="username"
-            label="اسم المستخدم"
+            label="username"
             prepend-icon="mdi-account"
             type="text"
             required
           ></v-text-field>
           <v-text-field
-          class="text-blue-500"
+          class="text-blue-700"
             v-model="email"
-            label="البريد الإلكتروني"
+            label="email"
             prepend-icon="mdi-email"
             type="text"
             required
           ></v-text-field>
           <v-text-field
-          class="text-blue-500"
+          class="text-blue-700"
             v-model="password"
-            label="كلمة المرور"
+            label="password"
             prepend-icon="mdi-lock"
             type="password"
             required
           ></v-text-field>
           <v-text-field
-          class="text-blue-500"
+          class="text-blue-700"
             v-model="confirmPassword"
-            label="تأكيد كلمة المرور"
+            label="confirm password"
             prepend-icon="mdi-lock"
             type="password"
             required

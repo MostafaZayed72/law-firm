@@ -7,15 +7,17 @@
       <v-card-text>
         <v-form style="direction: rtl;">
           <v-text-field
+          class="text-blue-700"
             v-model="username"
-            label="اسم المستخدم"
+            label="username"
             prepend-icon="mdi-account"
             type="text"
             required
           ></v-text-field>
           <v-text-field
+          class="text-blue-700"
             v-model="password"
-            label="كلمة المرور"
+            label="password"
             prepend-icon="mdi-lock"
             type="password"
             required
@@ -45,9 +47,10 @@ const login = async () => {
       password: password.value
     })
     // تحديث حالة تسجيل الدخول في localStorage
+    const token = response.data.jwt
+    localStorage.setItem('jwt', token)
     localStorage.setItem('logedIn', 'true')
-    navigateTo('/cases')
-    // يمكن توجيه المستخدم إلى الصفحة الرئيسية أو عرض رسالة نجاح هنا
+window.location.href = '/cases';    
   } catch (error) {
     console.error('خطأ في تسجيل الدخول:', error.response.data)
     alert('حدث خطأ أثناء تسجيل الدخول، يرجى المحاولة مرة أخرى.')
@@ -60,7 +63,7 @@ const colorMode = useColorMode()
 onMounted(() => {
   setTimeout(() => {
     showTable.value = true
-  }, 500) // Delay in milliseconds
+  }) // Delay in milliseconds
 })
 
 const cardClass = computed(() => {

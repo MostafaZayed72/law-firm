@@ -19,6 +19,7 @@
 
     <!-- Add new case button -->
     <v-btn class="mr-4 mb-4" @click="addNewCaseDialog = true" color="primary">إضافة قضية جديدة</v-btn>
+    <v-btn class="mr-4 mb-4" @click="exportToExcel" color="success">تصدير إلى Excel</v-btn>
 
     <!-- Add new case dialog -->
     <v-dialog v-model="addNewCaseDialog" max-width="800px" style="direction: rtl;">
@@ -27,7 +28,6 @@
         <v-card-text>
           <v-container>
             <v-row style="direction: rtl;">
-              <!-- Existing input fields -->
               <v-col cols="12" md="6" style="direction: rtl;">
                 <v-text-field style="direction: rtl;" v-model="newCase.name" label="عنوان القضية"></v-text-field>
               </v-col>
@@ -92,38 +92,37 @@
     </v-dialog>
 
     <v-data-table
-  :class="cardClass"
-  v-model:search="search"
-  :headers="headers"
-  :items="desserts"
-  class="elevation-1 mx-4"
-  :footer-props="{ itemsPerPageText: 'عدد العناصر في الصفحة:' }"
-  :no-data-text="'لا توجد بيانات'"
->
-  <template v-slot:item.1="{ item }">
-    <div style="white-space: nowrap;">{{ item['1'] }}</div>
-  </template>
-  <template v-slot:item.2="{ item }">
-    <div style="white-space: nowrap;">{{ item['2'] }}</div>
-  </template>
-  <template v-slot:[`item.9`]="{ item }">
-    <v-btn small icon @click="confirmDelete(item)">
-      <v-icon>mdi-delete</v-icon>
-    </v-btn>
-  </template>
-  <template v-slot:[`item.10`]="{ item }">
-    <v-btn small icon @click="editCase(item)">
-      <v-icon>mdi-pencil</v-icon>
-    </v-btn>
-  </template>
-  <template v-slot:[`item.id`]="{ item }">
-    <nuxt-link :to="`/case/${item.id}`">{{ item.id }}</nuxt-link>
-  </template>
-  <template v-slot:[`item.name`]="{ item }">
-    <nuxt-link :to="`/case/${item.id}`">{{ item.name }}</nuxt-link>
-  </template>
-</v-data-table>
-
+      :class="cardClass"
+      v-model:search="search"
+      :headers="headers"
+      :items="desserts"
+      class="elevation-1 mx-4"
+      :footer-props="{ itemsPerPageText: 'عدد العناصر في الصفحة:' }"
+      :no-data-text="'لا توجد بيانات'"
+    >
+      <template v-slot:item.1="{ item }">
+        <div style="white-space: nowrap;">{{ item['1'] }}</div>
+      </template>
+      <template v-slot:item.2="{ item }">
+        <div style="white-space: nowrap;">{{ item['2'] }}</div>
+      </template>
+      <template v-slot:[`item.9`]="{ item }">
+        <v-btn small icon @click="confirmDelete(item)">
+          <v-icon>mdi-delete</v-icon>
+        </v-btn>
+      </template>
+      <template v-slot:[`item.10`]="{ item }">
+        <v-btn small icon @click="editCase(item)">
+          <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+      </template>
+      <template v-slot:[`item.id`]="{ item }">
+        <nuxt-link :to="`/case/${item.id}`">{{ item.id }}</nuxt-link>
+      </template>
+      <template v-slot:[`item.name`]="{ item }">
+        <nuxt-link :to="`/case/${item.id}`">{{ item.name }}</nuxt-link>
+      </template>
+    </v-data-table>
 
     <!-- Delete confirmation dialog -->
     <v-dialog v-model="deleteDialog" max-width="500px">
@@ -190,7 +189,7 @@
               <v-col cols="12" md="6">
                 <v-text-field v-model="editedCase['8']" label="رول القضية"></v-text-field>
               </v-col>
-              <!-- New input fields for editing -->
+              <!-- New input fields -->
               <v-col cols="12" md="6">
                 <v-text-field v-model="editedCase.court" label="المحكمة المختصة"></v-text-field>
               </v-col>
@@ -215,16 +214,18 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
 
 const colorMode = useColorMode();
 const search = ref('');
 const showTable = ref(false);
-const addNewCaseDialog = ref(false); // Control add new case dialog visibility
-const deleteDialog = ref(false); // Control delete confirmation dialog visibility
-const editDialog = ref(false); // Control edit dialog visibility
+const addNewCaseDialog = ref(false);
+const deleteDialog = ref(false);
+const editDialog = ref(false);
 
-const selectedCase = ref(null); // Ref for selected case
-const editedCase = ref(null); // Ref for edited case
+const selectedCase = ref(null);
+const editedCase = ref(null);
 
 const headers = [
   { align: 'start', key: 'name', sortable: false, title: 'عنوان القضية' },
@@ -249,59 +250,35 @@ const headers = [
 ];
 
 const desserts = ref([
-  {
-    name: 'قتل',
-    id: 159,
-    fat: 'ياسر',
-    fatt: 'محمد / احمد /محمود',
-    carbs: 'جنائي',
-    protein: 4.0,
-    iron: 100,
-    1: '21/7/2024',
-    2: '28/8/2024',
-    4: 'تأجيل',
-    5: 'مفتوحة',
-    6: 'إعلات إلكتروني',
-    7: 'www.googlemeet.com',
-    8: '12',
-    9: 'حذف',
-    court: 'محكمة الجنايات',  
-    consultant: 'المستشار أحمد',
-    notes: 'لا توجد ملاحظات'  
-  },
-  {
-    name: 'سرقة',
-    id: 122,
-    fat: 'محمد',
-    fatt: 'محمد/صالح',
-    carbs: 'جنائي',
-    protein: 4.0,
-    iron: 100,
-    1: '22/8/2024',
-    2: '-',
-    4: '',
-    5: 'مفتوحة',
-    6: 'إعلات إلكتروني',
-    7: 'www.googlemeet.com',
-    8: '12',
-    9: 'حذف',
-    court: 'محكمة الجنايات',   
-    consultant: 'المستشار خالد', 
-    notes: 'تم تأجيل الجلسة'   
-  },
+  { name: 'عنوان القضية 1', id: 1, fat: 'المُدعي 1', fatt: 'المُدعي عليه 1', carbs: 'نوع القضية 1', protein: 'درجة القضية 1', iron: 'قيمة الدعوة 1', '1': '01/01/2023', '2': '01/02/2023', '4': 'القرار 1', '5': 'حالة القضية 1', '6': 'نوع الإعلان 1', '7': 'رابط الدعوة 1', '8': 'رول القضية 1', court: 'المحكمة المختصة 1', consultant: 'اسم المستشار 1', notes: 'ملاحظات 1' },
+  { name: 'عنوان القضية 2', id: 2, fat: 'المُدعي 2', fatt: 'المُدعي عليه 2', carbs: 'نوع القضية 2', protein: 'درجة القضية 2', iron: 'قيمة الدعوة 2', '1': '02/01/2023', '2': '02/02/2023', '4': 'القرار 2', '5': 'حالة القضية 2', '6': 'نوع الإعلان 2', '7': 'رابط الدعوة 2', '8': 'رول القضية 2', court: 'المحكمة المختصة 2', consultant: 'اسم المستشار 2', notes: 'ملاحظات 2' },
+  // Add more cases as needed
 ]);
 
 const cardClass = computed(() => {
   return colorMode.preference === 'dark' ? 'bg-grey-darken-3' : 'bg-white';
 });
 
-const formatDate = (dateStr) => {
-  const parts = dateStr.split('/');
-  if (parts.length === 3) {
-    const [day, month, year] = parts;
-    return `${year}-${month}-${day}`; // Return ISO format for correct sorting
-  }
-  return '';
+// Export data to Excel
+const exportToExcel = () => {
+  const worksheet = XLSX.utils.json_to_sheet(desserts.value);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Cases');
+  XLSX.writeFile(workbook, 'cases.xlsx');
+};
+
+// Export data to PDF
+const exportToPDF = () => {
+  const doc = new jsPDF();
+  const tableColumn = headers.map(header => header.title);
+  const tableRows = desserts.value.map(dessert => headers.map(header => dessert[header.key]));
+
+  autoTable(doc, {
+    head: [tableColumn],
+    body: tableRows,
+  });
+
+  doc.save('cases.pdf');
 };
 
 const confirmDelete = (item) => {
@@ -314,12 +291,12 @@ const deleteCase = () => {
   if (index !== -1) {
     desserts.value.splice(index, 1);
   }
-  deleteDialog.value = false; // Close the delete confirmation dialog
+  deleteDialog.value = false;
 };
 
 const editCase = (item) => {
   selectedCase.value = item;
-  editedCase.value = { ...item }; // Make a copy of the selected case for editing
+  editedCase.value = { ...item };
   editDialog.value = true;
 };
 
@@ -328,7 +305,7 @@ const saveEditedCase = () => {
   if (index !== -1) {
     desserts.value[index] = { ...editedCase.value };
   }
-  editDialog.value = false; // Close the edit dialog
+  editDialog.value = false;
 };
 
 const newCase = ref({
@@ -339,27 +316,22 @@ const newCase = ref({
   carbs: '',
   protein: '',
   iron: '',
-  1: '',
-  2: '',
-  4: '',
-  5: '',
-  6: '',
-  7: '',
-  8: '',
-  court: '',       
-  consultant: '',  
-  notes: '',       
-  // Additional input fields
-  extraField1: '',
-  extraField2: ''
+  '1': '',
+  '2': '',
+  '4': '',
+  '5': '',
+  '6': '',
+  '7': '',
+  '8': '',
+  court: '',
+  consultant: '',
+  notes: '',
 });
 
 const addNewCase = () => {
-  // Implement add new case logic here
   const caseToAdd = { ...newCase.value };
   desserts.value.push(caseToAdd);
 
-  // Clear the form fields
   newCase.value = {
     name: '',
     id: '',
@@ -368,24 +340,21 @@ const addNewCase = () => {
     carbs: '',
     protein: '',
     iron: '',
-    1: '',
-    2: '',
-    4: '',
-    5: '',
-    6: '',
-    7: '',
-    8: '',
-    court: '',       
-    consultant: '',  
-    notes: '',       
-    extraField1: '',
-    extraField2: ''
+    '1': '',
+    '2': '',
+    '4': '',
+    '5': '',
+    '6': '',
+    '7': '',
+    '8': '',
+    court: '',
+    consultant: '',
+    notes: '',
   };
 
-  addNewCaseDialog.value = false; // Close the add new case dialog
+  addNewCaseDialog.value = false;
 };
 
-// Watch for changes in desserts
 watch(desserts, () => {
   console.log('Desserts updated:', desserts.value);
 });
@@ -393,6 +362,10 @@ watch(desserts, () => {
 onMounted(() => {
   setTimeout(() => {
     showTable.value = true;
-  }); // Delay in milliseconds
+  });
+});
+
+definePageMeta({
+  middleware: 'auth'
 });
 </script>

@@ -15,15 +15,7 @@
                 <v-list-item-subtitle>{{ username }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item>
-              <v-list-item-icon>
-                <v-icon>mdi-phone</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title class="title">رقم الموبايل:</v-list-item-title>
-                <v-list-item-subtitle>{{ mobile }}</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
+            
             <v-list-item>
               <v-list-item-icon>
                 <v-icon>mdi-email</v-icon>
@@ -34,6 +26,8 @@
               </v-list-item-content>
             </v-list-item>
           </v-list>
+    <v-btn class="mr-4 my-4"  color="primary">تغيير كلمة المرور</v-btn>
+
         </v-card-text>
       </v-card>
     </v-container>
@@ -56,7 +50,7 @@
   onMounted(() => {
     setTimeout(() => {
       showTable.value = true;
-    }, 1); // Delay in milliseconds
+    }); // Delay in milliseconds
   });
 
   </script>
