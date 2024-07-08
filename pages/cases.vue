@@ -316,50 +316,6 @@ const editCase = (item) => {
   editDialog.value = true;
 };
 
-const saveEditedCase = async () => {
-  try {
-    const jwt = localStorage.getItem('jwt'); // Get JWT from localStorage
-
-    const editedData = {
-      data: {
-        case_number: editedCase.value.id,
-        case_title: editedCase.value.name,
-        defendant: editedCase.value.fatt,
-        claimant: editedCase.value.fat,
-        case_degree: editedCase.value.protein,
-        case_type: editedCase.value.carbs,
-        registration_date: editedCase.value['1'],
-        next_court_session: editedCase.value['2'],
-        case_price: parseFloat(editedCase.value.iron) || 0,
-        case_decision: editedCase.value['4'],
-        announcement_type: editedCase.value['6'],
-        case_roll: editedCase.value['8'],
-        case_url: editedCase.value['7'],
-        advisor_name: editedCase.value.consultant,
-        court: editedCase.value.court,
-        note: editedCase.value.notes,
-        case_status: 'opened',
-        locale: 'ar',
-      },
-    };
-
-    const response = await axios.put(`https://backend.lawyerstor.com/api/cases/${selectedCase.value.id}`, editedData, {
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
-    });
-
-    // Update desserts array with editedCase
-    const index = desserts.value.findIndex(item => item === selectedCase.value);
-    if (index !== -1) {
-      desserts.value[index] = { ...editedCase.value };
-    }
-
-    editDialog.value = false;
-  } catch (error) {
-    console.error('خطأ في تعديل القضية:', error.response.data);
-  }
-};
 
 const newCase = ref({
   name: '',
@@ -458,7 +414,7 @@ const fetchCases = async () => {
     // Assuming response.data.data contains an array of cases
     desserts.value = response.data.data.map(item => ({
       name: item.attributes.case_title,
-      id: item.id,
+      id: item.attributes.case_number,
       fat: item.attributes.claimant,
       fatt: item.attributes.defendant,
       carbs: item.attributes.case_type,
