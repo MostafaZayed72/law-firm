@@ -15,17 +15,15 @@
         </template>
 
         <v-list density="compact" nav>
-          <NuxtLink to="/"><v-list-item prepend-icon="mdi-home-city" title="الرئيسية" value="home"></v-list-item>
-          </NuxtLink>
-          <NuxtLink to="/profile"><v-list-item prepend-icon="mdi-account" title="حسابي" value="account"></v-list-item>
-          </NuxtLink>
-          <NuxtLink to="/cases"><v-list-item prepend-icon="mdi-gavel" title="جميع القضايا" value="users"></v-list-item>
-          </NuxtLink>
-          <NuxtLink to="/login"><v-list-item prepend-icon="mdi-account-circle" title="تسجيل الدخول" value="login"></v-list-item></NuxtLink>
+          <NuxtLink to="/"><v-list-item prepend-icon="mdi-home-city" title="الرئيسية" value="home"></v-list-item></NuxtLink>
+          <NuxtLink to="/profile"><v-list-item prepend-icon="mdi-account" title="حسابي" value="account"></v-list-item></NuxtLink>
+          <NuxtLink to="/cases"><v-list-item prepend-icon="mdi-gavel" title="جميع القضايا" value="users"></v-list-item></NuxtLink>
+          <NuxtLink v-if="!logedIn" to="/login"><v-list-item prepend-icon="mdi-account-circle" title="تسجيل الدخول" value="login"></v-list-item></NuxtLink>
+          <NuxtLink v-if="logedIn" @click.prevent="logout"><v-list-item prepend-icon="mdi-account-circle" title="تسجيل الخروج" value="logOut"></v-list-item></NuxtLink>
         </v-list>
       </v-navigation-drawer>
 
-      <v-main class="h-screen  mt-10 relative">
+      <v-main class="h-screen mt-10 relative">
         <v-btn icon class="absolute top-0 right-0" @click="toggleDrawer">
           <v-icon>mdi-menu</v-icon>
         </v-btn>
@@ -38,11 +36,24 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const show = ref(true);
+const logedIn = ref();
 
 const toggleDrawer = () => {
   show.value = !show.value;
+};
+
+// قراءة حالة تسجيل الدخول من localStorage عند تحميل الصفحة
+onMounted(() => {
+  logedIn.value = localStorage.getItem('logedIn');
+});
+
+// دالة لتسجيل الخروج
+const logout = () => {
+  localStorage.setItem('logedIn', 'false');
+  logedIn.value = false;
+  // يمكن توجيه المستخدم إلى صفحة تسجيل الدخول هنا
 };
 </script>
