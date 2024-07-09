@@ -623,6 +623,7 @@ watch(desserts, () => {
   console.log("Desserts updated:", desserts.value);
 });
 
+
 onMounted(() => {
   setTimeout(() => {
     showTable.value = true;

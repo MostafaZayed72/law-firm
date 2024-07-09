@@ -13,6 +13,10 @@
   
   
   const { toggleDrawer } = useLayout()
+  definePageMeta({
+    layout:"custome"
+})
+
   </script>
   <style >
   .delayed{

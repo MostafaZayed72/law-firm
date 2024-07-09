@@ -40,6 +40,7 @@ import axios from 'axios'
 const username = ref('')
 const password = ref('')
 
+
 const login = async () => {
   try {
     const response = await axios.post('https://backend.lawyerstor.com/api/auth/local', {
@@ -50,11 +51,13 @@ const login = async () => {
     const token = response.data.jwt
     localStorage.setItem('jwt', token)
     localStorage.setItem('logedIn', 'true')
-window.location.href = '/cases';    
+    
+navigateTo('/cases') ;  
   } catch (error) {
     console.error('خطأ في تسجيل الدخول:', error.response.data)
     alert('حدث خطأ أثناء تسجيل الدخول، يرجى المحاولة مرة أخرى.')
   }
+  
 }
 
 const showTable = ref(false)
@@ -68,6 +71,11 @@ onMounted(() => {
 
 const cardClass = computed(() => {
   return colorMode.preference === 'dark' ? 'bg-grey-darken-3' : 'bg-white'
+})
+
+
+definePageMeta({
+    layout:"custome"
 })
 </script>
 
