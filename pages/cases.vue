@@ -76,14 +76,14 @@
               <v-col cols="12" md="6">
                 <v-text-field
                   v-model="newCase.iron"
-                  label="قيمة الدعوة"
+                  label="قيمة الدعوى"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
                   type="date"
                   v-model="newCase['1']"
-                  label="تاريخ التسجيل"
+                  label="تاريخ الجلسة السابقة"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -114,7 +114,7 @@
               <v-col cols="12" md="6">
                 <v-text-field
                   v-model="newCase['7']"
-                  label="رابط الدعوة"
+                  label="رابط الدعوى"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -252,14 +252,14 @@
               <v-col cols="12" md="6">
                 <v-text-field
                   v-model="editedCase.iron"
-                  label="قيمة الدعوة"
+                  label="قيمة الدعوى"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
                   type="date"
                   v-model="editedCase['1']"
-                  label="تاريخ التسجيل"
+                  label="تاريخ الجلسة السابقة"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -290,7 +290,7 @@
               <v-col cols="12" md="6">
                 <v-text-field
                   v-model="editedCase['7']"
-                  label="رابط الدعوة"
+                  label="رابط الدعوى"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -350,19 +350,20 @@ const selectedCase = ref(null);
 const editedCase = ref(null);
 
 const headers = [
+{ key: "id", title: "id" },
   { align: "start", key: "name", sortable: false, title: "عنوان القضية" },
   { key: "case_number", title: "رقم القضية" },
   { key: "fat", title: "المُدعي" },
   { key: "fatt", title: "المُدعي عليه" },
   { key: "carbs", title: "نوع القضية" },
   { key: "protein", title: "درجة القضية" },
-  { key: "iron", title: "قيمة الدعوة" },
-  { key: "1", title: "تاريخ التسجيل" },
+  { key: "iron", title: "قيمة الدعوى" },
+  { key: "1", title: "تاريخ الجلسة السابقة" },
   { key: "2", title: "تاريخ الجلسة القادمة" },
   { key: "4", title: "القرار" },
   { key: "5", title: "حالة القضية" },
   { key: "6", title: "نوع الإعلان" },
-  { key: "7", title: "رابط الدعوة" },
+  { key: "7", title: "رابط الدعوى" },
   { key: "8", title: "رول القضية" },
   { key: "court", title: "المحكمة المختصة" },
   { key: "consultant", title: "اسم المستشار" },
@@ -469,7 +470,7 @@ const addNewCase = async () => {
       case_type: newCase.value.carbs,
       registration_date: newCase.value["1"],
       next_court_session: newCase.value["2"],
-      case_price: parseFloat(newCase.value.iron) || 0, // تحويل قيمة الدعوة إلى عدد
+      case_price: parseFloat(newCase.value.iron) || 0, // تحويل قيمة الدعوى إلى عدد
       case_decision: newCase.value["4"],
       announcement_type: newCase.value["6"],
       case_roll: newCase.value["8"],
