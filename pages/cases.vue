@@ -25,6 +25,53 @@
       >تصدير إلى Excel</v-btn
     >
 
+
+    <!-- Filter by date button -->
+    <v-btn class="mr-4 mb-4" @click="filterDialog = true" color="info"
+      >فلترة حسب التاريخ</v-btn
+    >
+
+    <!-- Filter by date dialog -->
+    <v-dialog v-model="filterDialog" max-width="600px" style="direction: rtl">
+      <v-card>
+        <v-card-title>فلترة القضايا حسب التاريخ</v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" >
+                <v-text-field
+                  v-model="filterStartDate"
+                  type="date"
+                  label="من تاريخ"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" >
+                <v-text-field
+                  v-model="filterEndDate"
+                  type="date"
+                  label="إلى تاريخ"
+                ></v-text-field>
+              </v-col>
+             
+              <v-col cols="12" class="flex justify-center">
+                <v-btn class=" mb-4" color="info" @click="fetchCases">كل القضايا بدون فلتر</v-btn>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="filterDialog = false"
+            >إلغاء</v-btn
+          >
+          <v-btn color="blue darken-1" text @click="filterCasesByDate"
+            >تأكيد</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Rest of the template remains unchanged -->
+
     <!-- Add new case dialog -->
     <v-dialog
       v-model="addNewCaseDialog"
@@ -101,7 +148,7 @@
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="newCase['5']"
+                  v-model="newCase.case_status"
                   label="حالة القضية"
                 ></v-text-field>
               </v-col>
@@ -119,7 +166,7 @@
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="newCase['8']"
+                  v-model="newCase['role']"
                   label="رول القضية"
                 ></v-text-field>
               </v-col>
@@ -175,7 +222,7 @@
           <v-icon>mdi-delete</v-icon>
         </v-btn>
       </template>
-      <template v-slot:[`item.10`]="{ item }">
+      <template v-slot:[`item.edit`]="{ item }">
         <v-btn small icon @click="editCase(item)">
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
@@ -277,7 +324,7 @@
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="editedCase['5']"
+                  v-model="editedCase.case_status"
                   label="حالة القضية"
                 ></v-text-field>
               </v-col>
@@ -295,7 +342,7 @@
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="editedCase['8']"
+                  v-model="editedCase['role']"
                   label="رول القضية"
                 ></v-text-field>
               </v-col>
@@ -337,6 +384,7 @@
 import { ref, computed, onMounted, watch } from "vue";
 import jsPDF from "jspdf";
 import axios from "axios";
+import * as XLSX from 'xlsx';
 
 const case_number = ref();
 const colorMode = useColorMode();
@@ -345,6 +393,9 @@ const showTable = ref(false);
 const addNewCaseDialog = ref(false);
 const deleteDialog = ref(false);
 const editDialog = ref(false);
+const filterDialog = ref(false);
+const filterStartDate = ref("");
+const filterEndDate = ref("");
 
 const selectedCase = ref(null);
 const editedCase = ref(null);
@@ -361,15 +412,15 @@ const headers = [
   { key: "1", title: "تاريخ الجلسة السابقة" },
   { key: "2", title: "تاريخ الجلسة القادمة" },
   { key: "4", title: "القرار" },
-  { key: "5", title: "حالة القضية" },
+  { key: "case_status", title: "حالة القضية" },
   { key: "6", title: "نوع الإعلان" },
   { key: "7", title: "رابط الدعوى" },
-  { key: "8", title: "رول القضية" },
+  { key: "role", title: "رول القضية" },
   { key: "court", title: "المحكمة المختصة" },
   { key: "consultant", title: "اسم المستشار" },
   { key: "notes", title: "ملاحظات" },
   { key: "9", title: "حذف القضية" },
-  { key: "10", title: "تعديل القضية" },
+  { key: "edit", title: "تعديل القضية" },
 ];
 
 const desserts = ref([]);
@@ -451,10 +502,11 @@ const newCase = ref({
   5: "",
   6: "",
   7: "",
-  8: "",
+  role: "",
   court: "",
   consultant: "",
   notes: "",
+  case_status:""
 });
 
 const addNewCase = async () => {
@@ -473,12 +525,12 @@ const addNewCase = async () => {
       case_price: parseFloat(newCase.value.iron) || 0, // تحويل قيمة الدعوى إلى عدد
       case_decision: newCase.value["4"],
       announcement_type: newCase.value["6"],
-      case_roll: newCase.value["8"],
+      case_roll: newCase.value["role"],
       case_url: newCase.value["7"],
       advisor_name: newCase.value.consultant,
       court: newCase.value.court,
       note: newCase.value.notes,
-      case_status: "opened",
+      case_status: newCase.value.case_status,
       locale: "ar", //
     },
   };
@@ -512,7 +564,7 @@ const addNewCase = async () => {
       5: "",
       6: "",
       7: "",
-      8: "",
+      role: "",
       court: "",
       consultant: "",
       notes: "",
@@ -542,12 +594,12 @@ const saveEditedCase = async () => {
       case_price: parseFloat(editedCase.value.iron) || 0,
       case_decision: editedCase.value["4"],
       announcement_type: editedCase.value["6"],
-      case_roll: editedCase.value["8"],
+      case_roll: editedCase.value["role"],
       case_url: editedCase.value["7"],
       advisor_name: editedCase.value.consultant,
       court: editedCase.value.court,
       note: editedCase.value.notes,
-      case_status: "opened",
+      case_status: editedCase.value.case_status,
       locale: "ar",
     },
   };
@@ -605,13 +657,15 @@ const fetchCases = async () => {
       5: item.attributes.case_status,
       6: item.attributes.announcement_type,
       7: item.attributes.case_url,
-      8: item.attributes.case_roll,
+      role: item.attributes.case_roll,
+      case_status: item.attributes.case_status,
       court: item.attributes.court,
       consultant: item.attributes.advisor_name,
       notes: item.attributes.note,
     }));
 
     showTable.value = true; // Show the table once data is fetched
+    filterDialog.value = false
   } catch (error) {
     console.error("Error fetching cases:", error);
   }
@@ -623,6 +677,17 @@ watch(desserts, () => {
   console.log("Desserts updated:", desserts.value);
 });
 
+const filterCasesByDate = () => {
+  const startDate = new Date(filterStartDate.value);
+  const endDate = new Date(filterEndDate.value);
+  if (!isNaN(startDate) && !isNaN(endDate)) {
+    desserts.value = desserts.value.filter((dessert) => {
+      const registrationDate = new Date(dessert["1"]);
+      return registrationDate >= startDate && registrationDate <= endDate;
+    });
+  }
+  filterDialog.value = false;
+};
 
 onMounted(() => {
   setTimeout(() => {

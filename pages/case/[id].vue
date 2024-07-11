@@ -91,9 +91,6 @@ const cardClass = computed(() => {
 })
 
 
-definePageMeta({
-    layout:"custome"
-})
 
 </script>
 
