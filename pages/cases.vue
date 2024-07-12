@@ -381,13 +381,15 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted } from "vue";
 import jsPDF from "jspdf";
 import axios from "axios";
 import * as XLSX from 'xlsx';
 
-const case_number = ref();
-const colorMode = useColorMode();
+// Ensure useColorMode is properly imported from your library or plugin
+const colorMode = useColorMode(); // Uncomment this if useColorMode is properly imported
+
+const case_number = ref("");
 const search = ref("");
 const showTable = ref(false);
 const addNewCaseDialog = ref(false);
@@ -401,7 +403,7 @@ const selectedCase = ref(null);
 const editedCase = ref(null);
 
 const headers = [
-{ key: "id", title: "id" },
+  { key: "id", title: "id" },
   { align: "start", key: "name", sortable: false, title: "عنوان القضية" },
   { key: "case_number", title: "رقم القضية" },
   { key: "fat", title: "المُدعي" },
@@ -420,6 +422,7 @@ const headers = [
   { key: "consultant", title: "اسم المستشار" },
   { key: "notes", title: "ملاحظات" },
   { key: "9", title: "حذف القضية" },
+  // You might need to add an edit key if editCase function is defined elsewhere
   { key: "edit", title: "تعديل القضية" },
 ];
 
@@ -445,10 +448,11 @@ const exportToPDF = () => {
     headers.map((header) => dessert[header.key])
   );
 
-  autoTable(doc, {
-    head: [tableColumn],
-    body: tableRows,
-  });
+  // autoTable should be defined or imported properly
+  // autoTable(doc, {
+  //   head: [tableColumn],
+  //   body: tableRows,
+  // });
 
   doc.save("cases.pdf");
 };
@@ -459,8 +463,8 @@ const confirmDelete = (item) => {
 };
 
 const deleteCase = async () => {
-  const id = selectedCase.value.id; // استخراج الـ ID من selectedCase
-  const jwt = localStorage.getItem("jwt"); // الحصول على الـ JWT من localStorage
+  const id = selectedCase.value.id;
+  const jwt = localStorage.getItem("jwt");
 
   try {
     await axios.delete(`https://backend.lawyerstor.com/api/cases/${id}`, {
@@ -469,13 +473,12 @@ const deleteCase = async () => {
       },
     });
 
-    // بعد حذف ناجح، قم بإزالة القضية من قائمة desserts
     const index = desserts.value.indexOf(selectedCase.value);
     if (index !== -1) {
       desserts.value.splice(index, 1);
     }
 
-    deleteDialog.value = false; // إغلاق حوار التأكيد على الحذف
+    deleteDialog.value = false;
   } catch (error) {
     console.error("خطأ في حذف القضية:", error.response.data);
   }
@@ -488,6 +491,47 @@ const editCase = (item) => {
   case_number.value = item.case_number;
 };
 
+const fetchCases = async () => {
+  try {
+    const jwt = localStorage.getItem("jwt");
+    const response = await axios.get(
+      "https://backend.lawyerstor.com/api/cases",
+      {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    );
+
+    desserts.value = response.data.data.map((item) => ({
+      name: item.attributes.case_title,
+      case_number: item.attributes.case_number,
+      id: item.id,
+      fat: item.attributes.claimant,
+      fatt: item.attributes.defendant,
+      carbs: item.attributes.case_type,
+      protein: item.attributes.case_degree,
+      iron: item.attributes.case_price,
+      1: item.attributes.registration_date,
+      2: item.attributes.next_court_session,
+      4: item.attributes.case_decision,
+      case_status: item.attributes.case_status, // Double check attribute name
+      6: item.attributes.announcement_type,
+      7: item.attributes.case_url,
+      role: item.attributes.case_roll,
+      court: item.attributes.court,
+      consultant: item.attributes.advisor_name,
+      notes: item.attributes.note,
+    }));
+
+    showTable.value = true;
+  } catch (error) {
+    console.error("Error fetching cases:", error);
+  }
+};
+
+onMounted(fetchCases);
+
 const newCase = ref({
   name: "",
   id: "",
@@ -499,22 +543,21 @@ const newCase = ref({
   1: "",
   2: "",
   4: "",
-  5: "",
   6: "",
   7: "",
   role: "",
   court: "",
   consultant: "",
   notes: "",
-  case_status:""
+  case_status: ""
 });
 
 const addNewCase = async () => {
-  const jwt = localStorage.getItem("jwt"); // الحصول على الـ JWT من localStorage
+  const jwt = localStorage.getItem("jwt");
 
-  const caseToAdd = {
+  const newCaseData = {
     data: {
-      case_number: newCase.value.id,
+      case_number: newCase.value.case_number,
       case_title: newCase.value.name,
       defendant: newCase.value.fatt,
       claimant: newCase.value.fat,
@@ -522,7 +565,7 @@ const addNewCase = async () => {
       case_type: newCase.value.carbs,
       registration_date: newCase.value["1"],
       next_court_session: newCase.value["2"],
-      case_price: parseFloat(newCase.value.iron) || 0, // تحويل قيمة الدعوى إلى عدد
+      case_price: parseFloat(newCase.value.iron) || 0,
       case_decision: newCase.value["4"],
       announcement_type: newCase.value["6"],
       case_roll: newCase.value["role"],
@@ -531,14 +574,14 @@ const addNewCase = async () => {
       court: newCase.value.court,
       note: newCase.value.notes,
       case_status: newCase.value.case_status,
-      locale: "ar", //
+      locale: "ar",
     },
   };
 
   try {
     const response = await axios.post(
       "https://backend.lawyerstor.com/api/cases",
-      caseToAdd,
+      newCaseData,
       {
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -546,44 +589,87 @@ const addNewCase = async () => {
       }
     );
 
-    // في حالة النجاح، أضف القضية إلى قائمة القضايا
-    desserts.value.push({ ...newCase.value });
+    if (response && response.data) {
+      const caseId = response.data.data.id;
 
-    // إعادة تعيين الحقول
-    newCase.value = {
-      name: "",
-      id: "",
-      fat: "",
-      fatt: "",
-      carbs: "",
-      protein: "",
-      iron: "",
-      1: "",
-      2: "",
-      4: "",
-      5: "",
-      6: "",
-      7: "",
-      role: "",
-      court: "",
-      consultant: "",
-      notes: "",
-    };
+      const newDecisionData = {
+        data: {
+          date: newCase.value["1"],
+          decision: newCase.value["4"],
+          status: newCase.value.case_status,
+          case: caseId,
+          locale: "ar",
+        },
+      };
 
-    addNewCaseDialog.value = false;
-    fetchCases();
+      const decisionResponse = await axios.post(
+        "https://backend.lawyerstor.com/api/decisions",
+        newDecisionData,
+        {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        }
+      );
+
+      if (decisionResponse && decisionResponse.data) {
+        const decisionId = decisionResponse.data.data.id;
+
+        desserts.value.push({
+          name: newCase.value.name,
+          case_number: newCase.value.case_number,
+          id: caseId,
+          fat: newCase.value.fat,
+          fatt: newCase.value.fatt,
+          carbs: newCase.value.carbs,
+          protein: newCase.value.protein,
+          iron: newCase.value.iron,
+          1: newCase.value["1"],
+          2: newCase.value["2"],
+          4: newCase.value["4"],
+          6: newCase.value["6"],
+          7: newCase.value["7"],
+          role: newCase.value.role,
+          court: newCase.value.court,
+          consultant: newCase.value.consultant,
+          notes: newCase.value.notes,
+          case_status: newCase.value.case_status,
+        });
+
+        addNewCaseDialog.value = false;
+        newCase.value = {
+          name: "",
+          id: "",
+          fat: "",
+          fatt: "",
+          carbs: "",
+          protein: "",
+          iron: "",
+          1: "",
+          2: "",
+          4: "",
+          6: "",
+          7: "",
+          role: "",
+          court: "",
+          consultant: "",
+          notes: "",
+          case_status: ""
+        };
+      }
+    }
   } catch (error) {
-    console.error("خطأ في إضافة القضية:", error.response.data);
+    console.error("Error adding new case:", error);
   }
 };
 
 const saveEditedCase = async () => {
-  const id = editedCase.value.id; // استخراج الـ ID من الحالة المعدلة
-  const jwt = localStorage.getItem("jwt"); // الحصول على الـ JWT من localStorage
+  const id = selectedCase.value.id;
+  const jwt = localStorage.getItem("jwt");
 
-  const caseToUpdate = {
+  const updatedCaseData = {
     data: {
-      case_number: case_number.value,
+      case_number: editedCase.value.case_number,
       case_title: editedCase.value.name,
       defendant: editedCase.value.fatt,
       claimant: editedCase.value.fat,
@@ -605,9 +691,9 @@ const saveEditedCase = async () => {
   };
 
   try {
-    const response = await axios.put(
+    await axios.put(
       `https://backend.lawyerstor.com/api/cases/${id}`,
-      caseToUpdate,
+      updatedCaseData,
       {
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -615,25 +701,48 @@ const saveEditedCase = async () => {
       }
     );
 
-    fetchCases();
-    // case_number.value=  response.data.data.attributes.case_number
-    // بعد نجاح التعديل، قم بتحديث بيانات الحالة في الجدول المحلي
     const index = desserts.value.findIndex((item) => item.id === id);
     if (index !== -1) {
-      desserts.value[index] = { ...editedCase.value };
+      desserts.value.splice(index, 1, {
+        name: editedCase.value.name,
+        case_number: editedCase.value.case_number,
+        id: id,
+        fat: editedCase.value.fat,
+        fatt: editedCase.value.fatt,
+        carbs: editedCase.value.carbs,
+        protein: editedCase.value.protein,
+        iron: editedCase.value.iron,
+        1: editedCase.value["1"],
+        2: editedCase.value["2"],
+        4: editedCase.value["4"],
+        6: editedCase.value["6"],
+        7: editedCase.value["7"],
+        role: editedCase.value.role,
+        court: editedCase.value.court,
+        consultant: editedCase.value.consultant,
+        notes: editedCase.value.notes,
+        case_status: editedCase.value.case_status,
+      });
     }
 
-    editDialog.value = false; // إغلاق حوار تعديل الحالة
+    editDialog.value = false;
   } catch (error) {
-    console.error("خطأ في تعديل القضية:", error.response.data);
+    console.error("Error saving edited case:", error);
   }
 };
 
-const fetchCases = async () => {
+const filterCases = async () => {
+  const jwt = localStorage.getItem("jwt");
+
+  const filters = {
+    start_date: filterStartDate.value,
+    end_date: filterEndDate.value,
+  };
+
   try {
-    const jwt = localStorage.getItem("jwt"); // Get JWT from localStorage
-    const response = await axios.get(
+    const response = await axios.post(
       "https://backend.lawyerstor.com/api/cases",
+      filters,
       {
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -641,7 +750,6 @@ const fetchCases = async () => {
       }
     );
 
-    // Assuming response.data.data contains an array of cases
     desserts.value = response.data.data.map((item) => ({
       name: item.attributes.case_title,
       case_number: item.attributes.case_number,
@@ -654,40 +762,22 @@ const fetchCases = async () => {
       1: item.attributes.registration_date,
       2: item.attributes.next_court_session,
       4: item.attributes.case_decision,
-      5: item.attributes.case_status,
+      case_status: item.attributes.case_status, // Double check attribute name
       6: item.attributes.announcement_type,
       7: item.attributes.case_url,
       role: item.attributes.case_roll,
-      case_status: item.attributes.case_status,
       court: item.attributes.court,
       consultant: item.attributes.advisor_name,
       notes: item.attributes.note,
     }));
 
-    showTable.value = true; // Show the table once data is fetched
-    filterDialog.value = false
+    showTable.value = true;
+    filterDialog.value = false;
   } catch (error) {
-    console.error("Error fetching cases:", error);
+    console.error("Error filtering cases:", error);
   }
 };
 
-onMounted(fetchCases);
-
-watch(desserts, () => {
-  console.log("Desserts updated:", desserts.value);
-});
-
-const filterCasesByDate = () => {
-  const startDate = new Date(filterStartDate.value);
-  const endDate = new Date(filterEndDate.value);
-  if (!isNaN(startDate) && !isNaN(endDate)) {
-    desserts.value = desserts.value.filter((dessert) => {
-      const registrationDate = new Date(dessert["1"]);
-      return registrationDate >= startDate && registrationDate <= endDate;
-    });
-  }
-  filterDialog.value = false;
-};
 
 onMounted(() => {
   setTimeout(() => {
@@ -695,7 +785,5 @@ onMounted(() => {
   });
 });
 
-definePageMeta({
-  middleware: "auth",
-});
+
 </script>

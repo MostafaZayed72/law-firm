@@ -84,7 +84,7 @@ const colorMode = useColorMode()
 onMounted(() => {
   setTimeout(() => {
     showTable.value = true
-  }, 500) // Delay in milliseconds
+  }) // Delay in milliseconds
 })
 
 const cardClass = computed(() => {
