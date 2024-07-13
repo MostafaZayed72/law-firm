@@ -92,7 +92,7 @@
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="newCase.id"
+                  v-model="newCase.case_number"
                   label="رقم القضية"
                 ></v-text-field>
               </v-col>
@@ -223,8 +223,10 @@
         </v-btn>
       </template>
       <template v-slot:[`item.edit`]="{ item }">
+       
         <v-btn small icon @click="editCase(item)">
           <v-icon>mdi-pencil</v-icon>
+         
         </v-btn>
       </template>
       <template v-slot:[`item.id`]="{ item }">
@@ -268,7 +270,7 @@
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="case_number"
+                  v-model="editedCase.case_number"
                   label="رقم القضية"
                 ></v-text-field>
               </v-col>
@@ -316,12 +318,7 @@
                   label="تاريخ الجلسة القادمة"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="editedCase['4']"
-                  label="القرار"
-                ></v-text-field>
-              </v-col>
+             
               <v-col cols="12" md="6">
                 <v-text-field
                   v-model="editedCase.case_status"
@@ -495,7 +492,7 @@ const fetchCases = async () => {
   try {
     const jwt = localStorage.getItem("jwt");
     const response = await axios.get(
-      "https://backend.lawyerstor.com/api/cases",
+      "https://backend.lawyerstor.com/api/cases?populate=*",
       {
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -503,26 +500,31 @@ const fetchCases = async () => {
       }
     );
 
-    desserts.value = response.data.data.map((item) => ({
-      name: item.attributes.case_title,
-      case_number: item.attributes.case_number,
-      id: item.id,
-      fat: item.attributes.claimant,
-      fatt: item.attributes.defendant,
-      carbs: item.attributes.case_type,
-      protein: item.attributes.case_degree,
-      iron: item.attributes.case_price,
-      1: item.attributes.registration_date,
-      2: item.attributes.next_court_session,
-      4: item.attributes.case_decision,
-      case_status: item.attributes.case_status, // Double check attribute name
-      6: item.attributes.announcement_type,
-      7: item.attributes.case_url,
-      role: item.attributes.case_roll,
-      court: item.attributes.court,
-      consultant: item.attributes.advisor_name,
-      notes: item.attributes.note,
-    }));
+    desserts.value = response.data.data.map((item) => {
+      const decisions = item.attributes.decisions.data;
+      const lastDecision = decisions[0]?.attributes.decision; // التأكد من وجود القرارات قبل الوصول للعنصر الأخير
+
+      return {
+        name: item.attributes.case_title,
+        case_number: item.attributes.case_number,
+        id: item.id,
+        fat: item.attributes.claimant,
+        fatt: item.attributes.defendant,
+        carbs: item.attributes.case_type,
+        protein: item.attributes.case_degree,
+        iron: item.attributes.case_price,
+        1: item.attributes.registration_date,
+        2: item.attributes.next_court_session,
+        4: lastDecision, // عرض آخر قرار بدلاً من أول قرار
+        case_status: item.attributes.case_status, // تأكد من اسم الخاصية
+        6: item.attributes.announcement_type,
+        7: item.attributes.case_url,
+        role: item.attributes.case_roll,
+        court: item.attributes.court,
+        consultant: item.attributes.advisor_name,
+        notes: item.attributes.note,
+      };
+    });
 
     showTable.value = true;
   } catch (error) {
@@ -663,9 +665,15 @@ const addNewCase = async () => {
   }
 };
 
-const saveEditedCase = async () => {
-  const id = selectedCase.value.id;
+ const saveEditedCase = async () => {
+  const caseId = selectedCase.value.id; // معرف القضية
   const jwt = localStorage.getItem("jwt");
+
+  // Example safeguard using optional chaining
+  const decisions = editedCase.value.decisions?.data; // Ensure decisions is defined and has a 'data' property
+
+  const lastDecision = decisions?.length > 0 ? decisions[decisions.length - 1]?.attributes.decision : null;
+  const decisionId = lastDecision ? lastDecision.id : null; // استخدام قيمة القرار الأخير
 
   const updatedCaseData = {
     data: {
@@ -690,9 +698,20 @@ const saveEditedCase = async () => {
     },
   };
 
+  const updatedDecisionData = {
+    data: {
+      date: new Date().toISOString(),
+      decision: lastDecision ? lastDecision.decision : null,
+      status: editedCase.value.case_status,
+      case: caseId, // معرف القضية
+      locale: "ar",
+    },
+  };
+
   try {
+    // ريكويست لتحديث القضية
     await axios.put(
-      `https://backend.lawyerstor.com/api/cases/${id}`,
+      `https://backend.lawyerstor.com/api/cases/${caseId}`,
       updatedCaseData,
       {
         headers: {
@@ -701,12 +720,18 @@ const saveEditedCase = async () => {
       }
     );
 
-    const index = desserts.value.findIndex((item) => item.id === id);
+    // ريكويست لتحديث القرار باستخدام decisionId إذا كان متوفرًا
+    
+      
+    
+
+    // تحديث القائمة المحلية للقضايا إذا كانت هناك قيمة desserts مستخدمة
+    const index = desserts.value.findIndex((item) => item.id === caseId);
     if (index !== -1) {
       desserts.value.splice(index, 1, {
         name: editedCase.value.name,
         case_number: editedCase.value.case_number,
-        id: id,
+        id: caseId,
         fat: editedCase.value.fat,
         fatt: editedCase.value.fatt,
         carbs: editedCase.value.carbs,
@@ -725,11 +750,13 @@ const saveEditedCase = async () => {
       });
     }
 
+    // إغلاق نافذة التعديل بعد الانتهاء
     editDialog.value = false;
   } catch (error) {
     console.error("Error saving edited case:", error);
   }
 };
+
 
 const filterCases = async () => {
   const jwt = localStorage.getItem("jwt");
