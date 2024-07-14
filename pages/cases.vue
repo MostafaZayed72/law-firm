@@ -52,7 +52,7 @@
                   label="إلى تاريخ"
                 ></v-text-field>
               </v-col>
-             
+
               <v-col cols="12" class="flex justify-center">
                 <v-btn class=" mb-4" color="info" @click="fetchCases">كل القضايا بدون فلتر</v-btn>
               </v-col>
@@ -512,7 +512,7 @@ const fetchCases = async () => {
         },
       }
     );
-
+    filterDialog.value = false;
     desserts.value = response.data.data.map((item) => {
       const decisions = item.attributes.decisions.data;
       const lastDecision = decisions[0]?.attributes.decision; // التأكد من وجود القرارات قبل الوصول للعنصر الأخير
@@ -847,4 +847,14 @@ onMounted(() => {
   }
 });
 
-</script>
+const filterCasesByDate = () => {
+  const startDate = new Date(filterStartDate.value);
+  const endDate = new Date(filterEndDate.value);
+  if (!isNaN(startDate) && !isNaN(endDate)) {
+    desserts.value = desserts.value.filter((dessert) => {
+      const registrationDate = new Date(dessert["previous_session"]);
+      return registrationDate >= startDate && registrationDate <= endDate;
+    });
+  }
+  filterDialog.value = false;
+};</script>
