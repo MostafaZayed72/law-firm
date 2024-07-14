@@ -382,7 +382,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
-// import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx';
 
 // Ensure useColorMode is properly imported from your library or plugin
 const colorMode = useColorMode(); // Uncomment this if useColorMode is properly imported
