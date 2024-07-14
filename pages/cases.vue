@@ -98,51 +98,51 @@
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="newCase.fat"
+                  v-model="newCase.claimant"
                   label="المُدعي"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="newCase.fatt"
+                  v-model="newCase.Defendant"
                   label="المُدعي عليه"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="newCase.carbs"
+                  v-model="newCase.case_type"
                   label="نوع القضية"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="newCase.protein"
+                  v-model="newCase.case_degree"
                   label="درجة القضية"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="newCase.iron"
+                  v-model="newCase.case_price"
                   label="قيمة الدعوى"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
                   type="date"
-                  v-model="newCase['1']"
+                  v-model="newCase['previous_session']"
                   label="تاريخ الجلسة السابقة"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
                   type="date"
-                  v-model="newCase['2']"
+                  v-model="newCase['next_session']"
                   label="تاريخ الجلسة القادمة"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="newCase['4']"
+                  v-model="newCase['decision']"
                   label="القرار"
                 ></v-text-field>
               </v-col>
@@ -154,13 +154,13 @@
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="newCase['6']"
+                  v-model="newCase['Announcement']"
                   label="نوع الإعلان"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="newCase['7']"
+                  v-model="newCase['invitation_link']"
                   label="رابط الدعوى"
                 ></v-text-field>
               </v-col>
@@ -211,11 +211,11 @@
       :footer-props="{ itemsPerPageText: 'عدد العناصر في الصفحة:' }"
       :no-data-text="'لا توجد بيانات'"
     >
-      <template v-slot:item.1="{ item }">
-        <div style="white-space: nowrap">{{ item["1"] }}</div>
+      <template v-slot:item.previous_session="{ item }">
+        <div style="white-space: nowrap">{{ item["previous_session"] }}</div>
       </template>
-      <template v-slot:item.2="{ item }">
-        <div style="white-space: nowrap">{{ item["2"] }}</div>
+      <template v-slot:item.next_session="{ item }">
+        <div style="white-space: nowrap">{{ item["next_session"] }}</div>
       </template>
       <template v-slot:[`item.delete`]="{ item }" v-if="roleId==13 || roleId==7 || roleId==9 || roleId==10 || roleId==11 ">
         <v-btn small icon @click="confirmDelete(item)">
@@ -278,45 +278,45 @@
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="editedCase.fat"
+                  v-model="editedCase.claimant"
                   label="المُدعي"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="editedCase.fatt"
+                  v-model="editedCase.Defendant"
                   label="المُدعي عليه"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="editedCase.carbs"
+                  v-model="editedCase.case_type"
                   label="نوع القضية"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="editedCase.protein"
+                  v-model="editedCase.case_degree"
                   label="درجة القضية"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="editedCase.iron"
+                  v-model="editedCase.case_price"
                   label="قيمة الدعوى"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
                   type="date"
-                  v-model="editedCase['1']"
+                  v-model="editedCase['previous_session']"
                   label="تاريخ الجلسة السابقة"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
                   type="date"
-                  v-model="editedCase['2']"
+                  v-model="editedCase['next_session']"
                   label="تاريخ الجلسة القادمة"
                 ></v-text-field>
               </v-col>
@@ -329,13 +329,13 @@
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="editedCase['6']"
+                  v-model="editedCase['Announcement']"
                   label="نوع الإعلان"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="editedCase['7']"
+                  v-model="editedCase['invitation_link']"
                   label="رابط الدعوى"
                 ></v-text-field>
               </v-col>
@@ -404,17 +404,17 @@ const headers = [
   { key: "id", title: "id" },
   { align: "start", key: "name", sortable: false, title: "عنوان القضية" },
   { key: "case_number", title: "رقم القضية" },
-  { key: "fat", title: "المُدعي" },
-  { key: "fatt", title: "المُدعي عليه" },
-  { key: "carbs", title: "نوع القضية" },
-  { key: "protein", title: "درجة القضية" },
-  { key: "iron", title: "قيمة الدعوى" },
-  { key: "1", title: "تاريخ الجلسة السابقة" },
-  { key: "2", title: "تاريخ الجلسة القادمة" },
-  { key: "4", title: "القرار" },
+  { key: "claimant", title: "المُدعي" },
+  { key: "Defendant", title: "المُدعي عليه" },
+  { key: "case_type", title: "نوع القضية" },
+  { key: "case_degree", title: "درجة القضية" },
+  { key: "case_price", title: "قيمة الدعوى" },
+  { key: "previous_session", title: "تاريخ الجلسة السابقة" },
+  { key: "next_session", title: "تاريخ الجلسة القادمة" },
+  { key: "decision", title: "القرار" },
   { key: "case_status", title: "حالة القضية" },
-  { key: "6", title: "نوع الإعلان" },
-  { key: "7", title: "رابط الدعوى" },
+  { key: "Announcement", title: "نوع الإعلان" },
+  { key: "invitation_link", title: "رابط الدعوى" },
   { key: "role", title: "رول القضية" },
   { key: "court", title: "المحكمة المختصة" },
   { key: "consultant", title: "اسم المستشار" },
@@ -501,17 +501,17 @@ const fetchCases = async () => {
         name: item.attributes.case_title,
         case_number: item.attributes.case_number,
         id: item.id,
-        fat: item.attributes.claimant,
-        fatt: item.attributes.defendant,
-        carbs: item.attributes.case_type,
-        protein: item.attributes.case_degree,
-        iron: item.attributes.case_price,
-        1: item.attributes.registration_date,
-        2: item.attributes.next_court_session,
-        4: lastDecision, // عرض آخر قرار بدلاً من أول قرار
+        claimant: item.attributes.claimant,
+        Defendant: item.attributes.defendant,
+        case_type: item.attributes.case_type,
+        case_degree: item.attributes.case_degree,
+        case_price: item.attributes.case_price,
+        previous_session: item.attributes.registration_date,
+      next_session: item.attributes.next_court_session,
+      decision: lastDecision, // عرض آخر قرار بدلاً من أول قرار
         case_status: item.attributes.case_status, // تأكد من اسم الخاصية
-        6: item.attributes.announcement_type,
-        7: item.attributes.case_url,
+        Announcement: item.attributes.announcement_type,
+        invitation_link: item.attributes.case_url,
         role: item.attributes.case_roll,
         court: item.attributes.court,
         consultant: item.attributes.advisor_name,
@@ -530,16 +530,16 @@ onMounted(fetchCases);
 const newCase = ref({
   name: "",
   id: "",
-  fat: "",
-  fatt: "",
-  carbs: "",
-  protein: "",
-  iron: "",
-  1: "",
-  2: "",
-  4: "",
-  6: "",
-  7: "",
+  claimant: "",
+  Defendant: "",
+  case_type: "",
+  case_degree: "",
+  case_price: "",
+  previous_session: "",
+  next_session: "",
+  decision: "",
+  Announcement: "",
+  invitation_link: "",
   role: "",
   court: "",
   consultant: "",
@@ -555,15 +555,15 @@ const addNewCase = async () => {
   data: {
     case_number: newCase.value.case_number,
     case_title: newCase.value.name,
-    defendant: newCase.value.fatt,
-    claimant: newCase.value.fat,
-    case_degree: newCase.value.protein,
-    case_type: newCase.value.carbs,
-    case_price: parseFloat(newCase.value.iron) || 0,
-    case_decision: newCase.value["4"],
-    announcement_type: newCase.value["6"],
+    defendant: newCase.value.Defendant,
+    claimant: newCase.value.claimant,
+    case_degree: newCase.value.case_degree,
+    case_type: newCase.value.case_type,
+    case_price: parseFloat(newCase.value.case_price) || 0,
+    case_decision: newCase.value["decision"],
+    announcement_type: newCase.value["Announcement"],
     case_roll: newCase.value["role"],
-    case_url: newCase.value["7"],
+    case_url: newCase.value["invitation_link"],
     advisor_name: newCase.value.consultant,
     court: newCase.value.court,
     note: newCase.value.notes,
@@ -573,12 +573,12 @@ const addNewCase = async () => {
 };
 
 // إضافة حقول التاريخ إذا كانت موجودة
-if (newCase.value["1"]) {
-  newCaseData.data.registration_date = newCase.value["1"];
+if (newCase.value["previous_session"]) {
+  newCaseData.data.registration_date = newCase.value["previous_session"];
 }
 
-if (newCase.value["2"]) {
-  newCaseData.data.next_court_session = newCase.value["2"];
+if (newCase.value["next_session"]) {
+  newCaseData.data.next_court_session = newCase.value["next_session"];
 }
   try {
     const response = await axios.post(
@@ -596,8 +596,8 @@ if (newCase.value["2"]) {
 
       const newDecisionData = {
         data: {
-          date: newCase.value["1"],
-          decision: newCase.value["4"],
+          date: newCase.value["previous_session"],
+          decision: newCase.value["decision"],
           status: newCase.value.case_status,
           case: caseId,
           locale: "ar",
@@ -621,16 +621,16 @@ if (newCase.value["2"]) {
           name: newCase.value.name,
           case_number: newCase.value.case_number,
           id: caseId,
-          fat: newCase.value.fat,
-          fatt: newCase.value.fatt,
-          carbs: newCase.value.carbs,
-          protein: newCase.value.protein,
-          iron: newCase.value.iron,
-          1: newCase.value["1"],
-          2: newCase.value["2"],
-          4: newCase.value["4"],
-          6: newCase.value["6"],
-          7: newCase.value["7"],
+          claimant: newCase.value.claimant,
+          Defendant: newCase.value.Defendant,
+          case_type: newCase.value.case_type,
+          case_degree: newCase.value.case_degree,
+          case_price: newCase.value.case_price,
+          previous_session: newCase.value["previous_session"],
+          next_session: newCase.value["next_session"],
+          decision: newCase.value["decision"],
+          Announcement: newCase.value["Announcement"],
+          invitation_link: newCase.value["invitation_link"],
           role: newCase.value.role,
           court: newCase.value.court,
           consultant: newCase.value.consultant,
@@ -642,16 +642,16 @@ if (newCase.value["2"]) {
         newCase.value = {
           name: "",
           id: "",
-          fat: "",
-          fatt: "",
-          carbs: "",
-          protein: "",
-          iron: "",
-          1: "",
-          2: "",
-          4: "",
-          6: "",
-          7: "",
+          claimant: "",
+          Defendant: "",
+          case_type: "",
+          case_degree: "",
+          case_price: "",
+          previous_session: "",
+         next_session: "",
+         decision: "",
+         Announcement: "",
+          invitation_link: "",
           role: "",
           court: "",
           consultant: "",
@@ -680,15 +680,15 @@ if (newCase.value["2"]) {
   data: {
     case_number: editedCase.value.case_number,
     case_title: editedCase.value.name,
-    defendant: editedCase.value.fatt,
-    claimant: editedCase.value.fat,
-    case_degree: editedCase.value.protein,
-    case_type: editedCase.value.carbs,
-    case_price: parseFloat(editedCase.value.iron) || 0,
-    case_decision: editedCase.value["4"],
-    announcement_type: editedCase.value["6"],
+    defendant: editedCase.value.Defendant,
+    claimant: editedCase.value.claimant,
+    case_degree: editedCase.value.case_degree,
+    case_type: editedCase.value.case_type,
+    case_price: parseFloat(editedCase.value.case_price) || 0,
+    case_decision: editedCase.value["decision"],
+    announcement_type: editedCase.value["Announcement"],
     case_roll: editedCase.value["role"],
-    case_url: editedCase.value["7"],
+    case_url: editedCase.value["invitation_link"],
     advisor_name: editedCase.value.consultant,
     court: editedCase.value.court,
     note: editedCase.value.notes,
@@ -698,12 +698,12 @@ if (newCase.value["2"]) {
 };
 
 // إضافة حقول التاريخ إذا كانت موجودة
-if (editedCase.value["1"]) {
-  updatedCaseData.data.registration_date = editedCase.value["1"];
+if (editedCase.value["next_session"]) {
+  updatedCaseData.data.registration_date = editedCase.value["previous_session"];
 }
 
-if (editedCase.value["2"]) {
-  updatedCaseData.data.next_court_session = editedCase.value["2"];
+if (editedCase.value["next_session"]) {
+  updatedCaseData.data.next_court_session = editedCase.value["pnext_session"];
 }
 
   const updatedDecisionData = {
@@ -740,16 +740,16 @@ if (editedCase.value["2"]) {
         name: editedCase.value.name,
         case_number: editedCase.value.case_number,
         id: caseId,
-        fat: editedCase.value.fat,
-        fatt: editedCase.value.fatt,
-        carbs: editedCase.value.carbs,
-        protein: editedCase.value.protein,
-        iron: editedCase.value.iron,
-        1: editedCase.value["1"],
-        2: editedCase.value["2"],
-        4: editedCase.value["4"],
-        6: editedCase.value["6"],
-        7: editedCase.value["7"],
+        claimant: editedCase.value.claimant,
+        Defendant: editedCase.value.Defendant,
+        case_type: editedCase.value.case_type,
+        case_degree: editedCase.value.case_degree,
+        case_price: editedCase.value.case_price,
+        previous_session: editedCase.value["previous_session"],
+        previous_session: editedCase.value["next_session"],
+        decision: editedCase.value["decision"],
+        Announcement: editedCase.value["Announcement"],
+        invitation_link: editedCase.value["7"],
         role: editedCase.value.role,
         court: editedCase.value.court,
         consultant: editedCase.value.consultant,
@@ -790,17 +790,17 @@ const filterCases = async () => {
       name: item.attributes.case_title,
       case_number: item.attributes.case_number,
       id: item.id,
-      fat: item.attributes.claimant,
-      fatt: item.attributes.defendant,
-      carbs: item.attributes.case_type,
-      protein: item.attributes.case_degree,
-      iron: item.attributes.case_price,
-      1: item.attributes.registration_date,
-      2: item.attributes.next_court_session,
-      4: item.attributes.case_decision,
+      claimant: item.attributes.claimant,
+      Defendant: item.attributes.defendant,
+      case_type: item.attributes.case_type,
+      case_degree: item.attributes.case_degree,
+      case_price: item.attributes.case_price,
+      previous_session: item.attributes.registration_date,
+      next_session: item.attributes.next_court_session,
+      decision: item.attributes.case_decision,
       case_status: item.attributes.case_status, // Double check attribute name
-      6: item.attributes.announcement_type,
-      7: item.attributes.case_url,
+      Announcement: item.attributes.announcement_type,
+      invitation_link: item.attributes.case_url,
       role: item.attributes.case_roll,
       court: item.attributes.court,
       consultant: item.attributes.advisor_name,
