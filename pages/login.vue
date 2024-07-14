@@ -56,7 +56,7 @@ const login = async () => {
     // جلب جميع المستخدمين بعد تسجيل الدخول بنجاح
     const usersResponse = await axios.get(`https://backend.lawyerstor.com/api/users/${userId}?populate=*`, {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g`
       }
     })
     const role = usersResponse.data.role.id

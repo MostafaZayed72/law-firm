@@ -54,7 +54,7 @@ watch(selectedRole, (newVal) => {
       roleNumber.value = 10
       break
     case 'مشاهد فقط':
-      roleNumber.value = 4
+      roleNumber.value = 1
       break
     case 'إضافة فقط':
       roleNumber.value = 8
