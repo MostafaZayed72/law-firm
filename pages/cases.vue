@@ -21,7 +21,7 @@
     <v-btn class="mr-4 mb-4" @click="addNewCaseDialog = true" color="primary" v-if="roleId ==7 || roleId ==13 || roleId ==11 || roleId ==6 || roleId ==8"
       >إضافة قضية جديدة</v-btn
     >
-    <v-btn class="mr-4 mb-4" @click="download()" color="success"
+    <v-btn class="mr-4 mb-4" @click="exportToExcel()" color="success"
       >تصدير إلى Excel</v-btn
     >
 
@@ -431,35 +431,39 @@ const cardClass = computed(() => {
 });
 
 // Export data to Excel
-const exportToExcel = async () => {
-  try {
-    // تحقق من أن مصفوفة المدخلات صالحة
-    if (!Array.isArray(desserts.value)) {
-      throw new Error('قيمة "desserts" يجب أن تكون مصفوفة.');
+const exportToExcel = () => {
+  const wb = XLSX.utils.book_new(); // إنشاء ملف عمل جديد
+  const ws = XLSX.utils.json_to_sheet(desserts.value); // تحويل البيانات إلى ورقة
+
+  // إضافة الورقة إلى ملف العمل
+  XLSX.utils.book_append_sheet(wb, ws, 'قضايا');
+
+  // توليد ملف Excel وبدء التحميل
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+  function s2ab(s) {
+    const buf = new ArrayBuffer(s.length);
+    const view = new Uint8Array(buf);
+    for (let i = 0; i < s.length; i++) {
+      view[i] = s.charCodeAt(i) & 0xFF;
     }
-
-    // إنشاء ورقة Excel من المصفوفة المعطاة
-    const worksheet = XLSX.utils.json_to_sheet(desserts.value);
-
-    // إنشاء كتيب جديد
-    const workbook = XLSX.utils.book_new();
-
-    // إضافة الورقة إلى الكتيب
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Cases");
-
-    // كتابة الكتيب إلى ملف
-    XLSX.writeFile(workbook, "cases.xlsx");
-
-    console.log("تم تصدير البيانات بنجاح إلى ملف cases.xlsx.");
-  } catch (error) {
-    console.error("حدث خطأ أثناء محاولة تصدير البيانات إلى Excel:", error.message);
+    return buf;
   }
+
+  // إنشاء Blob من البيانات الثنائية
+  const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
+
+  // إنشاء عنصر رابط وبدء التحميل
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'cases.xlsx';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
 };
 
-const download = ()=>{
- exportToExcel()
-  
-}
 
   // autoTable should be defined or imported properly
   // autoTable(doc, {
