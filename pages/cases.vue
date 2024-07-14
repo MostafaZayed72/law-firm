@@ -381,7 +381,6 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import jsPDF from "jspdf";
 import axios from "axios";
 import * as XLSX from 'xlsx';
 
