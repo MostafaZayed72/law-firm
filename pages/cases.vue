@@ -431,7 +431,8 @@ const cardClass = computed(() => {
 });
 
 // Export data to Excel
-const exportToExcel = () => {
+const exportToExcel = async () => {
+  const XLSX = await import('xlsx');
   const wb = XLSX.utils.book_new(); // إنشاء ملف عمل جديد
   const ws = XLSX.utils.json_to_sheet(desserts.value); // تحويل البيانات إلى ورقة
 
@@ -463,13 +464,6 @@ const exportToExcel = () => {
   document.body.removeChild(a);
   window.URL.revokeObjectURL(url);
 };
-
-
-  // autoTable should be defined or imported properly
-  // autoTable(doc, {
-  //   head: [tableColumn],
-  //   body: tableRows,
-  // });
 
 const confirmDelete = (item) => {
   selectedCase.value = item;
