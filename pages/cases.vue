@@ -21,10 +21,10 @@
     <v-btn class="mr-4 mb-4" @click="addNewCaseDialog = true" color="primary" v-if="roleId ==7 || roleId ==13 || roleId ==11 || roleId ==6 || roleId ==8"
       >إضافة قضية جديدة</v-btn
     >
-    
-<h1 @click="exportToExcel()"><v-btn class="mr-4 mb-4"  color="success"
+    <v-btn class="mr-4 mb-4" @click="download()" color="success"
       >تصدير إلى Excel</v-btn
-    ></h1>
+    >
+
 
     <!-- Filter by date button -->
     <v-btn class="mr-4 mb-4" @click="filterDialog = true" color="info"
@@ -431,7 +431,7 @@ const cardClass = computed(() => {
 });
 
 // Export data to Excel
-const exportToExcel = () => {
+const exportToExcel = async () => {
   try {
     // تحقق من أن مصفوفة المدخلات صالحة
     if (!Array.isArray(desserts.value)) {
@@ -456,6 +456,10 @@ const exportToExcel = () => {
   }
 };
 
+const download = ()=>{
+ exportToExcel()
+  
+}
 
   // autoTable should be defined or imported properly
   // autoTable(doc, {
