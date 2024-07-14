@@ -21,10 +21,10 @@
     <v-btn class="mr-4 mb-4" @click="addNewCaseDialog = true" color="primary" v-if="roleId ==7 || roleId ==13 || roleId ==11 || roleId ==6 || roleId ==8"
       >إضافة قضية جديدة</v-btn
     >
-    <v-btn class="mr-4 mb-4" @click="exportToExcel()" color="success"
+    
+<h1 @click="exportToExcel()"><v-btn class="mr-4 mb-4"  color="success"
       >تصدير إلى Excel</v-btn
-    >
-
+    ></h1>
 
     <!-- Filter by date button -->
     <v-btn class="mr-4 mb-4" @click="filterDialog = true" color="info"
