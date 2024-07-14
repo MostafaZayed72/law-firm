@@ -432,18 +432,36 @@ const cardClass = computed(() => {
 
 // Export data to Excel
 const exportToExcel = () => {
-  const worksheet = XLSX.utils.json_to_sheet(desserts.value);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Cases");
-  XLSX.writeFile(workbook, "cases.xlsx");
+  try {
+    // تحقق من أن مصفوفة المدخلات صالحة
+    if (!Array.isArray(desserts.value)) {
+      throw new Error('قيمة "desserts" يجب أن تكون مصفوفة.');
+    }
+
+    // إنشاء ورقة Excel من المصفوفة المعطاة
+    const worksheet = XLSX.utils.json_to_sheet(desserts.value);
+
+    // إنشاء كتيب جديد
+    const workbook = XLSX.utils.book_new();
+
+    // إضافة الورقة إلى الكتيب
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Cases");
+
+    // كتابة الكتيب إلى ملف
+    XLSX.writeFile(workbook, "cases.xlsx");
+
+    console.log("تم تصدير البيانات بنجاح إلى ملف cases.xlsx.");
+  } catch (error) {
+    console.error("حدث خطأ أثناء محاولة تصدير البيانات إلى Excel:", error.message);
+  }
 };
 
 
   // autoTable should be defined or imported properly
-  autoTable(doc, {
-    head: [tableColumn],
-    body: tableRows,
-  });
+  // autoTable(doc, {
+  //   head: [tableColumn],
+  //   body: tableRows,
+  // });
 
 const confirmDelete = (item) => {
   selectedCase.value = item;
