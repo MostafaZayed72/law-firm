@@ -84,7 +84,7 @@ const assignRole = async () => {
       },
     })
 
-    const user = userResponse.data.find(u => u.email === userEmail.value)
+    const user = userResponse.data.find(u => u.email.toLowerCase() === userEmail.value.toLowerCase())
     console.log(user)
     if (!user) {
       alert('لم يتم العثور على المستخدم بهذا الإيميل')
