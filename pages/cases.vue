@@ -239,20 +239,22 @@
 
     <!-- Delete confirmation dialog -->
     <v-dialog v-model="deleteDialog" max-width="500px">
-      <v-card>
-        <v-card-title>تأكيد الحذف</v-card-title>
-        <v-card-text>
-          <p>هل أنت متأكد من رغبتك في حذف هذه القضية؟</p>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="deleteDialog = false"
-            >إلغاء</v-btn
-          >
-          <v-btn color="blue darken-1" text @click="deleteCase">تأكيد</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+  <v-card>
+    <v-card-title class="text-right">تأكيد الحذف</v-card-title>
+    <v-card-text class="text-right">
+      <p>هل أنت متأكد من رغبتك في حذف هذه القضية؟</p>
+    </v-card-text>
+    <v-card-actions class="justify-end">
+      <v-spacer></v-spacer>
+      <v-btn color="blue darken-1" text @click="deleteDialog = false">
+        إلغاء
+      </v-btn>
+      <v-btn color="blue darken-1" text @click="deleteCase">
+        تأكيد
+      </v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 
     <!-- Edit case dialog -->
     <v-dialog v-model="editDialog" max-width="800px">
@@ -461,8 +463,8 @@ const confirmDelete = (item) => {
 
 const deleteCase = async () => {
   const id = selectedCase.value.id;
-  // const jwt = localStorage.getItem("jwt");
-  const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
+  const jwt = localStorage.getItem("jwt");
+  // const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
 
   try {
     await axios.delete(`https://backend.lawyerstor.com/api/cases/${id}`, {
@@ -491,8 +493,8 @@ const editCase = (item) => {
 
 const fetchCases = async () => {
   try {
-    // const jwt = localStorage.getItem("jwt");
-    const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
+    const jwt = localStorage.getItem("jwt");
+    // const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
     const response = await axios.get(
       "https://backend.lawyerstor.com/api/cases?populate=*",
       {
@@ -557,32 +559,38 @@ const newCase = ref({
 });
 
 const addNewCase = async () => {
-  // const jwt = localStorage.getItem("jwt");
-  const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
+  const jwt = localStorage.getItem("jwt");
+  // const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
 
   const newCaseData = {
-    data: {
-      case_number: newCase.value.case_number,
-      case_title: newCase.value.name,
-      defendant: newCase.value.fatt,
-      claimant: newCase.value.fat,
-      case_degree: newCase.value.protein,
-      case_type: newCase.value.carbs,
-      registration_date: newCase.value["1"],
-      next_court_session: newCase.value["2"],
-      case_price: parseFloat(newCase.value.iron) || 0,
-      case_decision: newCase.value["4"],
-      announcement_type: newCase.value["6"],
-      case_roll: newCase.value["role"],
-      case_url: newCase.value["7"],
-      advisor_name: newCase.value.consultant,
-      court: newCase.value.court,
-      note: newCase.value.notes,
-      case_status: newCase.value.case_status,
-      locale: "ar",
-    },
-  };
+  data: {
+    case_number: newCase.value.case_number,
+    case_title: newCase.value.name,
+    defendant: newCase.value.fatt,
+    claimant: newCase.value.fat,
+    case_degree: newCase.value.protein,
+    case_type: newCase.value.carbs,
+    case_price: parseFloat(newCase.value.iron) || 0,
+    case_decision: newCase.value["4"],
+    announcement_type: newCase.value["6"],
+    case_roll: newCase.value["role"],
+    case_url: newCase.value["7"],
+    advisor_name: newCase.value.consultant,
+    court: newCase.value.court,
+    note: newCase.value.notes,
+    case_status: newCase.value.case_status,
+    locale: "ar",
+  },
+};
 
+// إضافة حقول التاريخ إذا كانت موجودة
+if (newCase.value["1"]) {
+  newCaseData.data.registration_date = newCase.value["1"];
+}
+
+if (newCase.value["2"]) {
+  newCaseData.data.next_court_session = newCase.value["2"];
+}
   try {
     const response = await axios.post(
       "https://backend.lawyerstor.com/api/cases",
@@ -670,8 +678,8 @@ const addNewCase = async () => {
 
  const saveEditedCase = async () => {
   const caseId = selectedCase.value.id; // معرف القضية
-  // const jwt = localStorage.getItem("jwt");
-  const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
+  const jwt = localStorage.getItem("jwt");
+  // const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
 
   // Example safeguard using optional chaining
   const decisions = editedCase.value.decisions?.data; // Ensure decisions is defined and has a 'data' property
@@ -680,27 +688,34 @@ const addNewCase = async () => {
   const decisionId = lastDecision ? lastDecision.id : null; // استخدام قيمة القرار الأخير
 
   const updatedCaseData = {
-    data: {
-      case_number: editedCase.value.case_number,
-      case_title: editedCase.value.name,
-      defendant: editedCase.value.fatt,
-      claimant: editedCase.value.fat,
-      case_degree: editedCase.value.protein,
-      case_type: editedCase.value.carbs,
-      registration_date: editedCase.value["1"],
-      next_court_session: editedCase.value["2"],
-      case_price: parseFloat(editedCase.value.iron) || 0,
-      case_decision: editedCase.value["4"],
-      announcement_type: editedCase.value["6"],
-      case_roll: editedCase.value["role"],
-      case_url: editedCase.value["7"],
-      advisor_name: editedCase.value.consultant,
-      court: editedCase.value.court,
-      note: editedCase.value.notes,
-      case_status: editedCase.value.case_status,
-      locale: "ar",
-    },
-  };
+  data: {
+    case_number: editedCase.value.case_number,
+    case_title: editedCase.value.name,
+    defendant: editedCase.value.fatt,
+    claimant: editedCase.value.fat,
+    case_degree: editedCase.value.protein,
+    case_type: editedCase.value.carbs,
+    case_price: parseFloat(editedCase.value.iron) || 0,
+    case_decision: editedCase.value["4"],
+    announcement_type: editedCase.value["6"],
+    case_roll: editedCase.value["role"],
+    case_url: editedCase.value["7"],
+    advisor_name: editedCase.value.consultant,
+    court: editedCase.value.court,
+    note: editedCase.value.notes,
+    case_status: editedCase.value.case_status,
+    locale: "ar",
+  },
+};
+
+// إضافة حقول التاريخ إذا كانت موجودة
+if (editedCase.value["1"]) {
+  updatedCaseData.data.registration_date = editedCase.value["1"];
+}
+
+if (editedCase.value["2"]) {
+  updatedCaseData.data.next_court_session = editedCase.value["2"];
+}
 
   const updatedDecisionData = {
     data: {
@@ -763,8 +778,8 @@ const addNewCase = async () => {
 
 
 const filterCases = async () => {
-  // const jwt = localStorage.getItem("jwt");
-  const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
+  const jwt = localStorage.getItem("jwt");
+  // const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
 
   const filters = {
     start_date: filterStartDate.value,
