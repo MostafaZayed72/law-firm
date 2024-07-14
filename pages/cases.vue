@@ -440,10 +440,10 @@ const exportToExcel = () => {
 
 
   // autoTable should be defined or imported properly
-  // autoTable(doc, {
-  //   head: [tableColumn],
-  //   body: tableRows,
-  // });
+  autoTable(doc, {
+    head: [tableColumn],
+    body: tableRows,
+  });
 
 const confirmDelete = (item) => {
   selectedCase.value = item;
