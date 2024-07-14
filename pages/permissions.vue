@@ -1,5 +1,5 @@
 <template>
-  <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;">
+  <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;" v-if="showTable">
     <v-card class="pa-5 w-100 rounded-lg" style="direction: rtl; text-align: right;" :class="cardClass">
       <v-card-title>
         <span class="text-h5">أدخل إيميل المستخدم</span>
@@ -24,11 +24,11 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
-const roles = ref(["تحكم كامل", "إضافة وحذف", "إضافة وتعديل", "تعديل وحذف", "إضافة فقط", "حذف فقط", "تعديل فقط", "مشاهد فقط"])
+const roles = ref(["تحكم كامل","إضافة وحذف وتعديل", "إضافة وحذف", "إضافة وتعديل", "تعديل وحذف", "إضافة فقط", "حذف فقط", "تعديل فقط", "مشاهد فقط"])
 const selectedRole = ref(null)
 const userEmail = ref('')
 const userId = ref(null)
@@ -38,8 +38,11 @@ const roleNumber = ref(null)
 
 watch(selectedRole, (newVal) => {
   switch (newVal) {
-    case 'تحكم كامل':
+    case 'إضافة وحذف وتعديل':
       roleNumber.value = 7
+      break
+    case 'تحكم كامل':
+      roleNumber.value = 13
       break
     case 'إضافة وحذف':
       roleNumber.value = 11
@@ -82,7 +85,7 @@ const assignRole = async () => {
     })
 
     const user = userResponse.data.find(u => u.email === userEmail.value)
-    
+    console.log(user)
     if (!user) {
       alert('لم يتم العثور على المستخدم بهذا الإيميل')
       return
@@ -91,10 +94,17 @@ const assignRole = async () => {
     userId.value = user.id
 
     await axios.put(`https://backend.lawyerstor.com/api/users/${userId.value}`, {
-      data: {
-        role: {
-          connect: roleNumber.value
-        }
+      "role": {
+        "connect": [
+          {
+            "id": roleNumber.value
+          }
+        ],
+        "disconnect": [
+          {
+            "id": 1
+          }
+        ]
       }
     }, {
       headers: {
@@ -112,9 +122,19 @@ const cardClass = computed(() => {
   return colorMode.preference === 'dark' ? 'bg-grey-darken-3' : 'bg-white'
 })
 
-definePageMeta({
-  layout: 'custome'
+const showTable = ref(false)
+
+onMounted(() => {
+  const roleId = localStorage.getItem('roleId')
+  if (roleId !== '13') {
+    router.push('/login')
+  } else {
+    setTimeout(() => {
+      showTable.value = true
+    }) // Delay in milliseconds
+  }
 })
+
 </script>
 
 <style scoped>

@@ -40,24 +40,34 @@ import axios from 'axios'
 const username = ref('')
 const password = ref('')
 
-
 const login = async () => {
   try {
     const response = await axios.post('https://backend.lawyerstor.com/api/auth/local', {
       identifier: username.value,
       password: password.value
     })
-    // تحديث حالة تسجيل الدخول في localStorage
     const token = response.data.jwt
     localStorage.setItem('jwt', token)
     localStorage.setItem('logedIn', 'true')
-    
-navigateTo('/cases') ;  
+
+    // جلب جميع المستخدمين بعد تسجيل الدخول بنجاح
+    const usersResponse = await axios.get('https://backend.lawyerstor.com/api/users?populate=*', {
+      headers: {
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g`
+      }
+    })
+    const users = usersResponse.data
+    const currentUser = users.find(user => user.email === username.value)
+
+    if (currentUser) {
+      localStorage.setItem('roleId', currentUser.role.id)
+    }
+
+    navigateTo('/cases')
   } catch (error) {
     console.error('خطأ في تسجيل الدخول:', error.response.data)
     alert('حدث خطأ أثناء تسجيل الدخول، يرجى المحاولة مرة أخرى.')
   }
-  
 }
 
 const showTable = ref(false)
@@ -72,7 +82,6 @@ onMounted(() => {
 const cardClass = computed(() => {
   return colorMode.preference === 'dark' ? 'bg-grey-darken-3' : 'bg-white'
 })
-
 
 definePageMeta({
     layout:"custome"

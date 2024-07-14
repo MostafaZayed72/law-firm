@@ -18,7 +18,7 @@
     </template>
 
     <!-- Add new case button -->
-    <v-btn class="mr-4 mb-4" @click="addNewCaseDialog = true" color="primary"
+    <v-btn class="mr-4 mb-4" @click="addNewCaseDialog = true" color="primary" v-if="roleId ==7 || roleId ==13 || roleId ==11 || roleId ==6 || roleId ==8"
       >إضافة قضية جديدة</v-btn
     >
     <v-btn class="mr-4 mb-4" @click="exportToExcel" color="success"
@@ -217,12 +217,12 @@
       <template v-slot:item.2="{ item }">
         <div style="white-space: nowrap">{{ item["2"] }}</div>
       </template>
-      <template v-slot:[`item.9`]="{ item }">
+      <template v-slot:[`item.delete`]="{ item }" v-if="roleId==13 || roleId==7 || roleId==9 || roleId==10 || roleId==11 ">
         <v-btn small icon @click="confirmDelete(item)">
           <v-icon>mdi-delete</v-icon>
         </v-btn>
       </template>
-      <template v-slot:[`item.edit`]="{ item }">
+      <template v-slot:[`item.edit`]="{ item }" v-if="roleId==13 || roleId==7 || roleId==6 || roleId==10 || roleId==5 ">
        
         <v-btn small icon @click="editCase(item)">
           <v-icon>mdi-pencil</v-icon>
@@ -418,7 +418,7 @@ const headers = [
   { key: "court", title: "المحكمة المختصة" },
   { key: "consultant", title: "اسم المستشار" },
   { key: "notes", title: "ملاحظات" },
-  { key: "9", title: "حذف القضية" },
+  { key: "delete", title: "حذف القضية" },
   // You might need to add an edit key if editCase function is defined elsewhere
   { key: "edit", title: "تعديل القضية" },
 ];
@@ -461,7 +461,8 @@ const confirmDelete = (item) => {
 
 const deleteCase = async () => {
   const id = selectedCase.value.id;
-  const jwt = localStorage.getItem("jwt");
+  // const jwt = localStorage.getItem("jwt");
+  const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
 
   try {
     await axios.delete(`https://backend.lawyerstor.com/api/cases/${id}`, {
@@ -490,7 +491,8 @@ const editCase = (item) => {
 
 const fetchCases = async () => {
   try {
-    const jwt = localStorage.getItem("jwt");
+    // const jwt = localStorage.getItem("jwt");
+    const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
     const response = await axios.get(
       "https://backend.lawyerstor.com/api/cases?populate=*",
       {
@@ -555,7 +557,8 @@ const newCase = ref({
 });
 
 const addNewCase = async () => {
-  const jwt = localStorage.getItem("jwt");
+  // const jwt = localStorage.getItem("jwt");
+  const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
 
   const newCaseData = {
     data: {
@@ -667,7 +670,8 @@ const addNewCase = async () => {
 
  const saveEditedCase = async () => {
   const caseId = selectedCase.value.id; // معرف القضية
-  const jwt = localStorage.getItem("jwt");
+  // const jwt = localStorage.getItem("jwt");
+  const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
 
   // Example safeguard using optional chaining
   const decisions = editedCase.value.decisions?.data; // Ensure decisions is defined and has a 'data' property
@@ -759,7 +763,8 @@ const addNewCase = async () => {
 
 
 const filterCases = async () => {
-  const jwt = localStorage.getItem("jwt");
+  // const jwt = localStorage.getItem("jwt");
+  const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
 
   const filters = {
     start_date: filterStartDate.value,
@@ -805,12 +810,17 @@ const filterCases = async () => {
   }
 };
 
-
+const roleId = ref()
 onMounted(() => {
-  setTimeout(() => {
-    showTable.value = true;
-  });
+   roleId.value = localStorage.getItem('roleId')
+  const jwt = localStorage.getItem('jwt')
+  if (!jwt) {
+    navigateTo('/login')
+  } else {
+    setTimeout(() => {
+      showTable.value = true
+    }) 
+  }
 });
-
 
 </script>

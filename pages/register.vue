@@ -63,37 +63,47 @@ const register = async () => {
     return
   }
   try {
-    const response = await axios.post('https://backend.lawyerstor.com/api/auth/local/register', {
+    const jwt = localStorage.getItem("jwt")
+
+    const response = await axios.post('https://backend.lawyerstor.com/api/users', {
       username: username.value,
       email: email.value,
-      password: password.value
+      password: password.value,
+      role: "4"
+    },{
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
     })
     alert("تم التسجيل بنجاح")
-    setTimeout(() => {
-      navigateTo('/login')
-    });
   } catch (error) {
     console.error('خطأ في التسجيل:', error.response.data)
     alert(error.response.data.error.message)
   }
 }
 
-const showTable = ref(false)
 const colorMode = useColorMode()
 
+const showTable = ref(false)
+
 onMounted(() => {
-  setTimeout(() => {
-    showTable.value = true
-  }) // Delay in milliseconds
+  const roleId = localStorage.getItem('roleId')
+  if (roleId !== '13') {
+    navigateTo('/login')
+  } else {
+    setTimeout(() => {
+      showTable.value = true
+    }) // Delay in milliseconds
+  }
 })
 
 const cardClass = computed(() => {
   return colorMode.preference === 'dark' ? 'bg-grey-darken-3' : 'bg-white'
 })
+
 definePageMeta({
     layout:"custome"
 })
-
 </script>
 
 <style scoped>

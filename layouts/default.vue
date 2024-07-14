@@ -18,6 +18,7 @@
           <NuxtLink to="/"><v-list-item prepend-icon="mdi-home-city" title="الرئيسية" value="home"></v-list-item></NuxtLink>
           <!-- <NuxtLink v-if="logedIn == 'true'" to="/profile"><v-list-item prepend-icon="mdi-account" title="حسابي" value="account"></v-list-item></NuxtLink> -->
           <NuxtLink  to="/cases"><v-list-item prepend-icon="mdi-gavel" title="جميع القضايا" value="users"></v-list-item></NuxtLink>
+          <NuxtLink  to="/permissions"><v-list-item prepend-icon="mdi-account-key" title="إعطاء الصلاحيات للمستخدمين" value="permissions"></v-list-item></NuxtLink>
           <NuxtLink  @click.prevent="logout"><v-list-item prepend-icon="mdi-account-circle" title="تسجيل الخروج" value="logOut"></v-list-item></NuxtLink>
         </v-list>
       </v-navigation-drawer>
@@ -55,6 +56,7 @@ onMounted(() => {
 const logout = () => {
   localStorage.setItem('logedIn', 'false');
   localStorage.removeItem('jwt');
+  localStorage.removeItem('roleId');
   logedIn.value = false;
 navigateTo('/login')
   // يمكن توجيه المستخدم إلى صفحة تسجيل الدخول هنا

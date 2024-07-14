@@ -41,7 +41,7 @@
             <v-list-item-content>
               <v-list-item-title class="text-right">{{ decision.attributes.decision }}</v-list-item-title>
               <v-list-item-subtitle class="text-right">{{ new Date(decision.attributes.date).toLocaleString() }}</v-list-item-subtitle>
-              <v-btn @click="editDecision(decision)" text small color="primary">تعديل القرار</v-btn>
+              <v-btn @click="editDecision(decision)" text small color="primary" v-if="roleId==13 || roleId==7 || roleId==6 || roleId==10 || roleId==5 ">تعديل القرار</v-btn>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
@@ -105,7 +105,8 @@ const cardClass = computed(() => (colorMode.preference === 'dark' ? 'bg-grey-dar
 
 onMounted(async () => {
   const caseId = route.params.id;
-  const jwt = localStorage.getItem('jwt');
+  // const jwt = localStorage.getItem('jwt');
+  const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
 
   try {
     const response = await axios.get(`https://backend.lawyerstor.com/api/cases/${caseId}?populate=*`, {
@@ -128,7 +129,9 @@ function editDecision(decision) {
 }
 
 async function updateDecision() {
-  const jwt = localStorage.getItem('jwt');
+  // const jwt = localStorage.getItem('jwt');
+  const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
+
   const decisionId = editForm.id; // Use the ID from editForm
 
   try {
@@ -159,6 +162,19 @@ async function updateDecision() {
     console.error('Error updating decision:', error);
   }
 }
+const roleId = ref()
+onMounted(() => {
+  roleId.value = localStorage.getItem('roleId')
+
+  const jwt = localStorage.getItem('jwt')
+  if (!jwt) {
+    navigateTo('/login')
+  } else {
+    setTimeout(() => {
+      showTable.value = true
+    }) 
+  }
+});
 
 </script>
 
