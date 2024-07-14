@@ -47,25 +47,26 @@ const login = async () => {
       password: password.value
     })
     const token = response.data.jwt
+    const userId = response.data.user.id
+
     localStorage.setItem('jwt', token)
     localStorage.setItem('logedIn', 'true')
+    localStorage.setItem('userId', userId)
 
     // جلب جميع المستخدمين بعد تسجيل الدخول بنجاح
-    const usersResponse = await axios.get('https://backend.lawyerstor.com/api/users?populate=*', {
+    const usersResponse = await axios.get(`https://backend.lawyerstor.com/api/users/${userId}?populate=*`, {
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g`
+        Authorization: `Bearer ${token}`
       }
     })
-    const users = usersResponse.data
-    const currentUser = users.find(user => user.email === username.value)
+    const role = usersResponse.data.role.id
 
-    if (currentUser) {
-      localStorage.setItem('roleId', currentUser.role.id)
-    }
+      localStorage.setItem('roleId', role)
+    
 
     navigateTo('/cases')
   } catch (error) {
-    console.error('خطأ في تسجيل الدخول:', error.response.data)
+    console.error('خطأ في تسجيل الدخول:', )
     alert('حدث خطأ أثناء تسجيل الدخول، يرجى المحاولة مرة أخرى.')
   }
 }

@@ -105,8 +105,8 @@ const cardClass = computed(() => (colorMode.preference === 'dark' ? 'bg-grey-dar
 
 onMounted(async () => {
   const caseId = route.params.id;
-  // const jwt = localStorage.getItem('jwt');
-  const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
+  const jwt = localStorage.getItem('jwt');
+  // const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
 
   try {
     const response = await axios.get(`https://backend.lawyerstor.com/api/cases/${caseId}?populate=*`, {
