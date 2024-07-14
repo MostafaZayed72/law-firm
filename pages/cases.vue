@@ -431,12 +431,12 @@ const cardClass = computed(() => {
 });
 
 // Export data to Excel
-// const exportToExcel = () => {
-//   const worksheet = XLSX.utils.json_to_sheet(desserts.value);
-//   const workbook = XLSX.utils.book_new();
-//   XLSX.utils.book_append_sheet(workbook, worksheet, "Cases");
-//   XLSX.writeFile(workbook, "cases.xlsx");
-// };
+const exportToExcel = () => {
+  const worksheet = XLSX.utils.json_to_sheet(desserts.value);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Cases");
+  XLSX.writeFile(workbook, "cases.xlsx");
+};
 
 
   // autoTable should be defined or imported properly
