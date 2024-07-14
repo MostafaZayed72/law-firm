@@ -439,22 +439,12 @@ const exportToExcel = () => {
   XLSX.writeFile(workbook, "cases.xlsx");
 };
 
-// Export data to PDF
-const exportToPDF = () => {
-  const doc = new jsPDF();
-  const tableColumn = headers.map((header) => header.title);
-  const tableRows = desserts.value.map((dessert) =>
-    headers.map((header) => dessert[header.key])
-  );
 
   // autoTable should be defined or imported properly
   // autoTable(doc, {
   //   head: [tableColumn],
   //   body: tableRows,
   // });
-
-  doc.save("cases.pdf");
-};
 
 const confirmDelete = (item) => {
   selectedCase.value = item;
