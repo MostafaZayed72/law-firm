@@ -26,7 +26,7 @@
           </div>
         </div>
         <!-- زر إضافة قرار جديد -->
-        <v-btn @click="showAddDialog = true" color="primary" class="mt-4">إضافة قرار جديد</v-btn>
+        <v-btn @click="showAddDialog = true" color="success" class="mt-4">إضافة قرار جديد</v-btn>
         
         <!-- زر لعرض القرارات السابقة -->
         <v-btn @click="showDecisionsTable = true" color="primary" class="mt-4">عرض القرارات السابقة</v-btn>
@@ -56,6 +56,15 @@
           حذف القرار
         </v-btn>
           </template>
+          <!-- قالب لعرض switch -->
+          <template v-slot:item.switch="{ item }">
+  <v-switch
+    v-model="item.attributes.is_active"
+    :label="item.attributes.is_active ? 'مُنجز' : 'غير مُنجز'"
+    @change="toggleSwitch(item)"
+    :color="item.attributes.is_active ? 'green' : 'grey'"
+  ></v-switch>
+</template>
         </v-data-table>
         <!-- زر للعودة أو إغلاق الجدول -->
         <v-btn @click="showDecisionsTable = false" class="mt-4">العودة</v-btn>
@@ -159,6 +168,7 @@ const decisionHeaders = [
   { text: 'القرار', align: 'start', value: 'attributes.decision' },
   { text: 'التاريخ', value: 'attributes.date' },
   { text: 'تعديل القرار', value: 'actions', sortable: false },
+  { text: 'الحالة', value: 'switch', sortable: false }, // إضافة صف switch
 ];
 const canEdit = ref(false);
 
@@ -174,11 +184,49 @@ const fetchData = async () => {
     decisionsData.value = response.data.data.attributes.decisions.data;
     showTable.value = true;
 
+    // Check the status of decisions.data and update switch color
+    decisionsData.value.forEach(decision => {
+      decision.attributes.is_active = decision.attributes.status === 'done';
+    });
+
     // Set edit permissions based on role
     const roleId = localStorage.getItem('roleId');
     canEdit.value = [13, 7, 6, 10, 5].includes(parseInt(roleId));
   } catch (error) {
     console.error('Error fetching case data:', error);
+  }
+};
+
+const toggleSwitch = async (decision) => {
+  const jwt = localStorage.getItem('jwt');
+  const decisionId = decision.id;
+  const newStatus = !decision.attributes.is_active;
+  const newStatusText = newStatus ? 'done' : 'not_done';
+
+  console.log('Toggling decision ID:', decisionId);
+  console.log('New status:', newStatus);
+  console.log('New status text:', newStatusText);
+
+  try {
+    const response = await axios.put(`https://backend.lawyerstor.com/api/decisions/${decisionId}`, {
+      data: {
+        is_active: !newStatus, // Invert the current status
+        status: newStatus ? 'not_done' : 'done' // Toggle the status text
+      }
+    }, {
+      headers: { Authorization: `Bearer ${jwt}` }
+    });
+
+    console.log('Response data:', response.data);
+
+    // Update local decisionsData with toggled status and status text
+    const updatedDecisionIndex = decisionsData.value.findIndex(d => d.id === decisionId);
+    if (updatedDecisionIndex !== -1) {
+      decisionsData.value[updatedDecisionIndex].attributes.is_active = !newStatus; // Update is_active
+      decisionsData.value[updatedDecisionIndex].attributes.status = newStatus ? 'not_done' : 'done'; // Update status text
+    }
+  } catch (error) {
+    console.error('Error toggling switch:', error);
   }
 };
 
