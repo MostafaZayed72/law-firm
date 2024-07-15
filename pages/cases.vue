@@ -892,7 +892,8 @@ const filterCasesByDate = () => {
 
 
 import { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType, HeadingLevel } from 'docx';
-import { saveAs } from 'file-saver';
+const fileSaver = require('file-saver');
+const saveAs = fileSaver.saveAs;
 
 const exportToDoc = async () => {
   // Reverse the order of items from right to left including index+1
