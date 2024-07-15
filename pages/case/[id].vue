@@ -52,10 +52,26 @@
             <v-btn @click="editDecision(item)" text small color="primary" v-if="canEdit">
               تعديل القرار
             </v-btn>
+            <v-btn @click="confirmDelete(item)" text small color="error">
+          حذف القرار
+        </v-btn>
           </template>
         </v-data-table>
         <!-- زر للعودة أو إغلاق الجدول -->
         <v-btn @click="showDecisionsTable = false" class="mt-4">العودة</v-btn>
+        <!-- نافذة منبثقة لتأكيد الحذف -->
+    <v-dialog v-model="showConfirmDeleteDialog" max-width="400">
+      <v-card>
+        <v-card-title class="headline" align="right">تأكيد الحذف</v-card-title>
+        <v-card-text align="right">
+          <div>هل أنت متأكد أنك تريد حذف القرار؟</div>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="error" @click="deleteConfirmed">نعم، حذف</v-btn>
+          <v-btn @click="showConfirmDeleteDialog = false">إلغاء</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
       </v-card-text>
     </v-card>
 
@@ -289,6 +305,36 @@ fetchData();
 const reversedDecisionsData = computed(() => {
   return [...decisionsData.value].reverse(); // عكس ترتيب decisionsData بناءً على الحاجة
 });
+
+const showConfirmDeleteDialog = ref(false);
+let decisionToDelete = null;
+
+const confirmDelete = (decision) => {
+  decisionToDelete = decision;
+  showConfirmDeleteDialog.value = true;
+};
+
+const deleteConfirmed = async () => {
+  if (!decisionToDelete) return;
+
+  const decisionId = decisionToDelete.id;
+  const jwt = localStorage.getItem('jwt');
+
+  try {
+    await axios.delete(`https://backend.lawyerstor.com/api/decisions/${decisionId}`, {
+      headers: { Authorization: `Bearer ${jwt}` }
+    });
+
+    // بعد حذف القرار بنجاح، يمكنك إعادة تحميل البيانات أو تحديث القائمة المحلية
+    fetchData(); // لتحديث البيانات بعد الحذف
+  } catch (error) {
+    console.error('Error deleting decision:', error);
+  } finally {
+    // إغلاق النافذة المنبثقة بعد الحذف بنجاح أو فشله
+    showConfirmDeleteDialog.value = false;
+    decisionToDelete = null; // إعادة تعيين القرار المختار للحذف
+  }
+};
 
 </script>
 
