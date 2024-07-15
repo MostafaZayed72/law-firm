@@ -25,7 +25,9 @@
       >تصدير إلى Excel</v-btn
     >
 
-
+    <v-btn class="mr-4 mb-4" @click="exportToDoc" color="secondary">
+      تحميل كملف DOC
+    </v-btn>
     <!-- Filter by date button -->
     <v-btn class="mr-4 mb-4" @click="filterDialog = true" color="info"
       >فلترة حسب التاريخ</v-btn
@@ -203,6 +205,7 @@
     </v-dialog>
 
     <v-data-table
+    id="dataTable"
       :class="cardClass"
       v-model:search="search"
       :headers="headers"
@@ -210,6 +213,7 @@
       class="elevation-1 mx-4"
       :footer-props="{ itemsPerPageText: 'عدد العناصر في الصفحة:' }"
       :no-data-text="'لا توجد بيانات'"
+      :loading="loading"
     >
       <template v-slot:item.previous_session="{ item }">
         <div style="white-space: nowrap">{{ item["previous_session"] }}</div>
@@ -383,7 +387,21 @@
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 import * as XLSX from 'xlsx';
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
+const exportToPdf = () => {
+  const table = document.getElementById('dataTable'); // استبدل بمعرف جدولك
+  html2canvas(table).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF();
+    const imgWidth = 210; // عرض الصفحة A4 في mm
+    const imgHeight = canvas.height * imgWidth / canvas.width;
+    
+    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    pdf.save('table.pdf');
+  });
+};
 // Ensure useColorMode is properly imported from your library or plugin
 const colorMode = useColorMode(); // Uncomment this if useColorMode is properly imported
 
@@ -500,10 +518,13 @@ const editCase = (item) => {
   case_number.value = item.case_number;
 };
 
+const loading =ref()
 const fetchCases = async () => {
   try {
     const jwt = localStorage.getItem("jwt");
-    // const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
+    // تفعيل الـ loading قبل الاستدعاء
+    loading.value = true;
+
     const response = await axios.get(
       "https://backend.lawyerstor.com/api/cases?populate=*",
       {
@@ -512,6 +533,7 @@ const fetchCases = async () => {
         },
       }
     );
+
     filterDialog.value = false;
     desserts.value = response.data.data.map((item) => {
       const decisions = item.attributes.decisions.data;
@@ -522,26 +544,30 @@ const fetchCases = async () => {
         case_number: item.attributes.case_number,
         id: item.id,
         claimant: item.attributes.claimant,
-        Defendant: item.attributes.defendant,
+        defendant: item.attributes.defendant, // إصلاح اسم الخاصية
         case_type: item.attributes.case_type,
         case_degree: item.attributes.case_degree,
         case_price: item.attributes.case_price,
         previous_session: item.attributes.registration_date,
-      next_session: item.attributes.next_court_session,
-      decision: lastDecision, // عرض آخر قرار بدلاً من أول قرار
-        case_status: item.attributes.case_status, // تأكد من اسم الخاصية
-        Announcement: item.attributes.announcement_type,
+        next_session: item.attributes.next_court_session,
+        decision: lastDecision,
+        case_status: item.attributes.case_status,
+        announcement: item.attributes.announcement_type, // إصلاح اسم الخاصية
         invitation_link: item.attributes.case_url,
-        role: item.attributes.case_roll,
+        role: item.attributes.case_roll, // إصلاح اسم الخاصية
         court: item.attributes.court,
         consultant: item.attributes.advisor_name,
         notes: item.attributes.note,
       };
     });
 
+    // تعطيل الـ loading بعد الاستجابة الناجحة
+    loading.value = false;
     showTable.value = true;
   } catch (error) {
     console.error("Error fetching cases:", error);
+    // تعطيل الـ loading في حالة الخطأ أيضًا
+    loading.value = false;
   }
 };
 
@@ -861,5 +887,95 @@ const filterCasesByDate = () => {
   filterDialog.value = false;
 };
 
+
+
+
+
+import { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType, HeadingLevel } from 'docx';
+import { saveAs } from 'file-saver';
+
+const exportToDoc = async () => {
+  // Reverse the order of items from right to left including index+1
+  const today = new Date();
+  const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+  const reversedRows = desserts.value.slice().reverse().map((item, index) => [
+    item["notes"] ?? "",
+    item["consultant_name"] ?? "",
+    item["court_name"] ?? "",
+    item["case_roll"] ?? "",
+    item["case_link"] ?? "",
+    item["announcement_type"] ?? "",
+    item["case_status"] ?? "",
+    item["decision"] ?? "",
+    item["next_session"] ?? "",
+    item["previous_session"] ?? "",
+    item["case_price"] ?? "",
+    item["case_grade"] ?? "",
+    item["case_type"] ?? "",
+    item["defendant"] ?? "",
+    item["claimant"] ?? "",
+    item["case_number"] ?? "",
+    item["name"] ?? ""
+  ]);
+
+  // Reverse the order of rows vertically
+  reversedRows.reverse();
+
+  const table = new Table({
+    rows: [
+      new TableRow({
+        children: [
+          new TableCell({ children: [new Paragraph("ملاحظات")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("اسم المستشار")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("المحكمة المختصة")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("رول القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("رابط الدعوى")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("نوع الاعلان")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("حالة القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("القرار")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("تاريخ الجلسة القادمة")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("تاريخ الجلسة السابقة")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("قيمة الدعوى")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("درجة القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("نوع القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("المدعي عليه")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("المدعي")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("رقم القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("عنوان القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+        ],
+      }),
+      ...reversedRows.map(
+        (row) =>
+          new TableRow({
+            children: row.map(
+              (cell) =>
+                new TableCell({
+                  children: [new Paragraph(cell.toString())],
+                  width: { size: 10, type: WidthType.PERCENTAGE },
+                })
+            ),
+          })
+      ),
+    ],
+  });
+
+
+
+  const reportTitle = new Paragraph({
+    text: `تقرير أعمال اليوم - ${formattedDate}`,
+    alignment: 'center',
+    heading: HeadingLevel.TITLE, // يمكن تغيير مستوى العنوان حسب الحاجة
+  });
+
+  const doc = new Document({
+    sections: [
+      {
+        children: [reportTitle, table], // إضافة عنوان التقرير قبل الجدول
+      },
+    ],
+  });
+  const blob = await Packer.toBlob(doc);
+  saveAs(blob, "cases.docx");
+};
 
 </script>

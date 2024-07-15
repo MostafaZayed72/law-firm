@@ -1,50 +1,62 @@
-<script setup lang="ts">
-import { sub, format, isSameDay, type Duration } from 'date-fns'
-
-const ranges = [
-  { label: 'Last 7 days', duration: { days: 7 } },
-  { label: 'Last 14 days', duration: { days: 14 } },
-  { label: 'Last 30 days', duration: { days: 30 } },
-  { label: 'Last 3 months', duration: { months: 3 } },
-  { label: 'Last 6 months', duration: { months: 6 } },
-  { label: 'Last year', duration: { years: 1 } }
-]
-const selected = ref({ start: sub(new Date(), { days: 14 }), end: new Date() })
-
-function isRangeSelected (duration: Duration) {
-  return isSameDay(selected.value.start, sub(new Date(), duration)) && isSameDay(selected.value.end, new Date())
-}
-
-function selectRange (duration: Duration) {
-  selected.value = { start: sub(new Date(), duration), end: new Date() }
-}
-</script>
-
 <template>
-  <UPopover :popper="{ placement: 'bottom-start' }">
-    <UButton icon="i-heroicons-calendar-days-20-solid">
-      {{ format(selected.start, 'd MMM, yyy') }} - {{ format(selected.end, 'd MMM, yyy') }}
-    </UButton>
-
-    <template #panel="{ close }">
-      <div class="flex items-center sm:divide-x divide-gray-200 dark:divide-gray-800">
-        <div class="hidden sm:flex flex-col py-4">
-          <UButton
-            v-for="(range, index) in ranges"
-            :key="index"
-            :label="range.label"
-            color="gray"
-            variant="ghost"
-            class="rounded-none px-6"
-            :class="[isRangeSelected(range.duration) ? 'bg-gray-100 dark:bg-gray-800' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50']"
-            truncate
-            @click="selectRange(range.duration)"
-          />
-        </div>
-
-        <DatePicker v-model="selected" @close="close" />
-      </div>
-    </template>
-  </UPopover>
+  <h1 @click="exportToDocx">Download</h1>
 </template>
 
+<script setup>
+import { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType } from 'docx';
+import { saveAs } from 'file-saver';
+
+const exportToDocx = async () => {
+  const tableData = [
+    { file: '70-2024', consultant: 'أستاذ المكاشفي', result: '', requiredActions: 'تحضر وتقدم مذكرة دفاع ونطلب الحكم', previousDecision: 'وضعية القضية مؤجلة للجلسة 2024.07.15 لسماع', party: '', page: '', case: '', session: 'محكمة أبوظبي الاتحادية\nالساعة: 09:30\nرول 1\nنهائية الجلسات\nرابط الجلسة' },
+    { file: '20-2024', consultant: 'أستاذ احمد يوسف', result: '', requiredActions: 'تحضر وتقدم مذكرة شارحة بأسباب الاستئناف', previousDecision: 'أول جلسة في الاستئناف 2024.07.15\nتم إعلان المستأنف عليه بواسطة البريد الإلكتروني', party: '', page: '', case: '', session: 'محكمة عجمان الاتحادية\nالساعة: 08:30\nرول 3\nدائرة الأسرة الاستئنافية الثالثة\nرابط الجلسة' },
+    // أضف المزيد من البيانات حسب الحاجة
+  ];
+
+  const rows = tableData.map(row => new TableRow({
+    children: [
+      new TableCell({ children: [new Paragraph(row.file)] }),
+      new TableCell({ children: [new Paragraph(row.consultant)] }),
+      new TableCell({ children: [new Paragraph(row.result)] }),
+      new TableCell({ children: [new Paragraph(row.requiredActions)] }),
+      new TableCell({ children: [new Paragraph(row.previousDecision)] }),
+      new TableCell({ children: [new Paragraph(row.party)] }),
+      new TableCell({ children: [new Paragraph(row.page)] }),
+      new TableCell({ children: [new Paragraph(row.case)] }),
+      new TableCell({ children: [new Paragraph(row.session)] }),
+    ]
+  }));
+
+  const table = new Table({
+    rows: [
+      new TableRow({
+        children: [
+          new TableCell({ children: [new Paragraph('الملف')] }),
+          new TableCell({ children: [new Paragraph('المستشار')] }),
+          new TableCell({ children: [new Paragraph('النتيجة')] }),
+          new TableCell({ children: [new Paragraph('الإجراءات المطلوبة')] }),
+          new TableCell({ children: [new Paragraph('القرار السابق')] }),
+          new TableCell({ children: [new Paragraph('الطرف')] }),
+          new TableCell({ children: [new Paragraph('الصفحة')] }),
+          new TableCell({ children: [new Paragraph('القضية')] }),
+          new TableCell({ children: [new Paragraph('الجلسة')] }),
+        ]
+      }),
+      ...rows
+    ],
+    width: {
+      size: 100,
+      type: WidthType.PERCENTAGE,
+    },
+  });
+
+  const doc = new Document({
+    sections: [{
+      children: [table],
+    }],
+  });
+
+  const blob = await Packer.toBlob(doc);
+  saveAs(blob, 'table.docx');
+};
+</script>
