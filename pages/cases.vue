@@ -515,7 +515,7 @@ const fetchCases = async () => {
     filterDialog.value = false;
     desserts.value = response.data.data.map((item) => {
       const decisions = item.attributes.decisions.data;
-      const lastDecision = decisions[0]?.attributes.decision; // التأكد من وجود القرارات قبل الوصول للعنصر الأخير
+      const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
 
       return {
         name: item.attributes.case_title,
@@ -852,9 +852,14 @@ const filterCasesByDate = () => {
   const endDate = new Date(filterEndDate.value);
   if (!isNaN(startDate) && !isNaN(endDate)) {
     desserts.value = desserts.value.filter((dessert) => {
-      const registrationDate = new Date(dessert["previous_session"]);
-      return registrationDate >= startDate && registrationDate <= endDate;
+      const previousSessionDate = new Date(dessert["previous_session"]);
+      const nextSessionDate = new Date(dessert["next_session"]);
+      return (previousSessionDate >= startDate && previousSessionDate <= endDate) ||
+             (nextSessionDate >= startDate && nextSessionDate <= endDate);
     });
   }
   filterDialog.value = false;
-};</script>
+};
+
+
+</script>
