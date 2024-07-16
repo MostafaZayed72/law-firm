@@ -8,23 +8,16 @@
             <p><strong>رقم القضية:</strong> {{ caseData.attributes.case_number }}</p>
             <p class="flex flex-col items-center ">
               <strong>المُدعى عليه:</strong> {{ caseData.attributes.defendant }}
-              <v-checkbox
-              v-if="roleId==13 || roleId==7 || roleId==6 || roleId==10 || roleId==5 "
-                @change="toggleDefendantSwitch"
-                label= "موكلي"
-                :color="client == 'on' ? 'green' : 'grey'"
-              ></v-checkbox>
+              
             </p>
             <p class="flex flex-col items-center ">
               <strong>المدعي:</strong> {{ caseData.attributes.claimant }}
-              <v-checkbox
-              v-if="roleId==13 || roleId==7 || roleId==6 || roleId==10 || roleId==5 "
-                @change="toggleClaimantSwitch"
-                label= "موكلي"
-                :color="client == 'in' ? 'green' : 'grey'"
-              ></v-checkbox>
+             
             </p>
             <p><strong>درجة القضية:</strong> {{ caseData.attributes.case_degree }}</p>
+            <p><strong>تاريخ الجلسة السابقة:</strong> {{ caseData.attributes.registration_date }}</p>
+            <p><strong>تاريخ الجلسة القادمة:</strong> {{ caseData.attributes.next_court_session }}</p>
+            <p><strong>قيمة الدعوى:</strong> {{ caseData.attributes.case_price }}</p>
             
           </div>
           <div>
@@ -35,13 +28,12 @@
             <p><strong>المحكمة:</strong> {{ caseData.attributes.court }}</p>
             <p><strong>ملاحظات:</strong> {{ caseData.attributes.note }}</p>
             <p><strong>حالة القضية:</strong> {{ caseData.attributes.case_status }}</p>
-            <p><strong>تاريخ الجلسة السابقة:</strong> {{ caseData.attributes.registration_date }}</p>
-            <p><strong>تاريخ الجلسة القادمة:</strong> {{ caseData.attributes.next_court_session }}</p>
-            <p><strong>قيمة الدعوى:</strong> {{ caseData.attributes.case_price }}</p>
             <p><strong>القرار:</strong> {{ caseData.attributes.decisions.data[caseData.attributes.decisions.data.length - 1].attributes.decision }}</p>
             <p><strong>نوع القضية:</strong> {{ caseData.attributes.case_type }}</p>
 
+
           </div>
+          <v-select v-model="selectedParty" :items="partyOptions" label="موكلي" outlined @change="updateClient"></v-select>
         </div>
         <!-- زر إضافة قرار جديد -->
         <v-btn @click="showAddDialog = true" color="success" class="mt-4" v-if="roleId ==7 || roleId ==13 || roleId ==11 || roleId ==6 || roleId ==8">إضافة قرار جديد</v-btn>
@@ -195,8 +187,9 @@ const roleId = ref()
 
     onMounted(() => {
      roleId.value= localStorage.getItem('roleId');
+     fetchData();
     })
-const fetchData = async () => {
+    const fetchData = async () => {
   const caseId = route.params.id;
   const jwt = localStorage.getItem('jwt');
 
@@ -215,8 +208,10 @@ const fetchData = async () => {
     });
 
     // Set edit permissions based on role
-    
     canEdit.value = [13, 7, 6, 10, 5].includes(parseInt(roleId.value));
+
+    // Set selectedParty based on client value
+    selectedParty.value = response.data.data.attributes.client;
   } catch (error) {
     console.error('Error fetching case data:', error);
   }
@@ -401,7 +396,7 @@ const deleteConfirmed = async () => {
     });
 
     // بعد حذف القرار بنجاح، يمكنك إعادة تحميل البيانات أو تحديث القائمة المحلية
-    fetchData(); // لتحديث البيانات بعد الحذف
+     // لتحديث البيانات بعد الحذف
   } catch (error) {
     console.error('Error deleting decision:', error);
   } finally {
@@ -410,7 +405,38 @@ const deleteConfirmed = async () => {
     decisionToDelete = null; // إعادة تعيين القرار المختار للحذف
   }
 };
+const selectedParty = ref(''); // قيمة افتراضية للـ v-select
+const partyOptions = ['المدعي', 'المدعي عليه']; // خيارات الـ v-select
 
+const updateClient = async () => {
+  console.log('Selected party:', selectedParty.value); // تأكد من أن قيمة selectedParty تتغير بشكل صحيح
+
+  const caseId = caseData.value.id;
+  const jwt = localStorage.getItem('jwt');
+
+  try {
+    const response = await axios.put(`https://backend.lawyerstor.com/api/cases/${caseId}`, {
+      data: {
+        client: selectedParty.value
+      }
+    }, {
+      headers: { Authorization: `Bearer ${jwt}` }
+    });
+
+    console.log('Update client success:', response.data); // سجل نجاح الطلب في وحدة تحكم المتصفح
+
+    // تحديث البيانات المحلية أو إعادة تحميلها بعد النجاح
+    // تنفيذ ذلك حسب متطلبات تطبيقك
+  } catch (error) {
+    console.error('Error updating client:', error); // سجل أي خطأ في وحدة تحكم المتصفح
+  }
+};
+
+watch(selectedParty, (newValue, oldValue) => {
+  if (newValue !== oldValue) {
+    updateClient(newValue); // استدعاء الدالة لإرسال الطلب مع القيمة الجديدة
+  }
+});
 </script>
 
 <style scoped>
