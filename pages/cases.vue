@@ -595,37 +595,40 @@ const newCase = ref({
 
 const addNewCase = async () => {
   const jwt = localStorage.getItem("jwt");
-  // const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
+
+  // التحقق من وجود قيمة لـ previous_session
+  if (!newCase.value["previous_session"]) {
+    alert("يجب إدخال تاريخ الجلسة السابقة");
+    return;
+  }
 
   const newCaseData = {
-  data: {
-    case_number: newCase.value.case_number,
-    case_title: newCase.value.name,
-    defendant: newCase.value.Defendant,
-    claimant: newCase.value.claimant,
-    case_degree: newCase.value.case_degree,
-    case_type: newCase.value.case_type,
-    case_price: parseFloat(newCase.value.case_price) || 0,
-    case_decision: newCase.value["decision"],
-    announcement_type: newCase.value["Announcement"],
-    case_roll: newCase.value["role"],
-    case_url: newCase.value["invitation_link"],
-    advisor_name: newCase.value.consultant,
-    court: newCase.value.court,
-    note: newCase.value.notes,
-    case_status: newCase.value.case_status,
-    locale: "ar",
-  },
-};
+    data: {
+      case_number: newCase.value.case_number,
+      case_title: newCase.value.name,
+      defendant: newCase.value.Defendant,
+      claimant: newCase.value.claimant,
+      case_degree: newCase.value.case_degree,
+      case_type: newCase.value.case_type,
+      case_price: parseFloat(newCase.value.case_price) || 0,
+      case_decision: newCase.value["decision"],
+      announcement_type: newCase.value["Announcement"],
+      case_roll: newCase.value["role"],
+      case_url: newCase.value["invitation_link"],
+      registration_date: newCase.value["previous_session"],
+      advisor_name: newCase.value.consultant,
+      court: newCase.value.court,
+      note: newCase.value.notes,
+      case_status: newCase.value.case_status,
+      locale: "ar",
+    },
+  };
 
-// إضافة حقول التاريخ إذا كانت موجودة
-if (newCase.value["previous_session"]) {
-  newCaseData.data.registration_date = newCase.value["previous_session"];
-}
+  // إضافة حقول التاريخ إذا كانت موجودة
+  if (newCase.value["next_session"]) {
+    newCaseData.data.next_court_session = newCase.value["next_session"];
+  }
 
-if (newCase.value["next_session"]) {
-  newCaseData.data.next_court_session = newCase.value["next_session"];
-}
   try {
     const response = await axios.post(
       "https://backend.lawyerstor.com/api/cases",
@@ -642,7 +645,6 @@ if (newCase.value["next_session"]) {
 
       const newDecisionData = {
         data: {
-          date: newCase.value["previous_session"],
           decision: newCase.value["decision"],
           status: newCase.value.case_status,
           case: caseId,
@@ -650,60 +652,69 @@ if (newCase.value["next_session"]) {
         },
       };
 
-      const decisionResponse = await axios.post(
-        "https://backend.lawyerstor.com/api/decisions",
-        newDecisionData,
-        {
-          headers: {
-            Authorization: `Bearer ${jwt}`,
-          },
+      // إضافة حقول التاريخ إذا كانت موجودة
+      if (newCase.value["previous_session"]) {
+        newDecisionData.data.date = newCase.value["previous_session"];
+      }
+
+      try {
+        const decisionResponse = await axios.post(
+          "https://backend.lawyerstor.com/api/decisions",
+          newDecisionData,
+          {
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+          }
+        );
+
+        if (decisionResponse && decisionResponse.data) {
+          const decisionId = decisionResponse.data.data.id;
+
+          desserts.value.push({
+            name: newCase.value.name,
+            case_number: newCase.value.case_number,
+            id: caseId,
+            claimant: newCase.value.claimant,
+            Defendant: newCase.value.Defendant,
+            case_type: newCase.value.case_type,
+            case_degree: newCase.value.case_degree,
+            case_price: newCase.value.case_price,
+            previous_session: newCase.value["previous_session"],
+            next_session: newCase.value["next_session"],
+            decision: newCase.value["decision"],
+            Announcement: newCase.value["Announcement"],
+            invitation_link: newCase.value["invitation_link"],
+            role: newCase.value.role,
+            court: newCase.value.court,
+            consultant: newCase.value.consultant,
+            notes: newCase.value.notes,
+            case_status: newCase.value.case_status,
+          });
+
+          addNewCaseDialog.value = false;
+          newCase.value = {
+            name: "",
+            id: "",
+            claimant: "",
+            Defendant: "",
+            case_type: "",
+            case_degree: "",
+            case_price: "",
+            previous_session: "",
+            next_session: "",
+            decision: "",
+            Announcement: "",
+            invitation_link: "",
+            role: "",
+            court: "",
+            consultant: "",
+            notes: "",
+            case_status: ""
+          };
         }
-      );
-
-      if (decisionResponse && decisionResponse.data) {
-        const decisionId = decisionResponse.data.data.id;
-
-        desserts.value.push({
-          name: newCase.value.name,
-          case_number: newCase.value.case_number,
-          id: caseId,
-          claimant: newCase.value.claimant,
-          Defendant: newCase.value.Defendant,
-          case_type: newCase.value.case_type,
-          case_degree: newCase.value.case_degree,
-          case_price: newCase.value.case_price,
-          previous_session: newCase.value["previous_session"],
-          next_session: newCase.value["next_session"],
-          decision: newCase.value["decision"],
-          Announcement: newCase.value["Announcement"],
-          invitation_link: newCase.value["invitation_link"],
-          role: newCase.value.role,
-          court: newCase.value.court,
-          consultant: newCase.value.consultant,
-          notes: newCase.value.notes,
-          case_status: newCase.value.case_status,
-        });
-
-        addNewCaseDialog.value = false;
-        newCase.value = {
-          name: "",
-          id: "",
-          claimant: "",
-          Defendant: "",
-          case_type: "",
-          case_degree: "",
-          case_price: "",
-          previous_session: "",
-         next_session: "",
-         decision: "",
-         Announcement: "",
-          invitation_link: "",
-          role: "",
-          court: "",
-          consultant: "",
-          notes: "",
-          case_status: ""
-        };
+      } catch (error) {
+        console.error("Error adding new decision:", error);
       }
     }
   } catch (error) {

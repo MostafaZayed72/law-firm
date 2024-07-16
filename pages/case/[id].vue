@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto p-4" v-if="showTable">
     <v-card v-if="caseData" class="my-4 p-4 text-center mx-auto" :class="cardClass">
-      <v-card-title>{{ caseData.attributes.case_title }}</v-card-title>
+      <v-card-title >{{ caseData.attributes.case_title }}</v-card-title>
       <v-card-text>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center mx-auto">
           <div>
@@ -9,6 +9,7 @@
             <p class="flex flex-col items-center ">
               <strong>المُدعى عليه:</strong> {{ caseData.attributes.defendant }}
               <v-checkbox
+              v-if="roleId==13 || roleId==7 || roleId==6 || roleId==10 || roleId==5 "
                 @change="toggleDefendantSwitch"
                 label= "موكلي"
                 :color="client == 'on' ? 'green' : 'grey'"
@@ -17,6 +18,7 @@
             <p class="flex flex-col items-center ">
               <strong>المدعي:</strong> {{ caseData.attributes.claimant }}
               <v-checkbox
+              v-if="roleId==13 || roleId==7 || roleId==6 || roleId==10 || roleId==5 "
                 @change="toggleClaimantSwitch"
                 label= "موكلي"
                 :color="client == 'in' ? 'green' : 'grey'"
