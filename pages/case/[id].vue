@@ -26,7 +26,7 @@
           </div>
         </div>
         <!-- زر إضافة قرار جديد -->
-        <v-btn @click="showAddDialog = true" color="success" class="mt-4">إضافة قرار جديد</v-btn>
+        <v-btn @click="showAddDialog = true" color="success" class="mt-4" v-if="roleId ==7 || roleId ==13 || roleId ==11 || roleId ==6 || roleId ==8">إضافة قرار جديد</v-btn>
         
         <!-- زر لعرض القرارات السابقة -->
         <v-btn @click="showDecisionsTable = true" color="primary" class="mt-4">عرض القرارات السابقة</v-btn>
@@ -52,12 +52,12 @@
             <v-btn @click="editDecision(item)" text small color="primary" v-if="canEdit">
               تعديل القرار
             </v-btn>
-            <v-btn @click="confirmDelete(item)" text small color="error">
+            <v-btn @click="confirmDelete(item)" text small color="error" v-if="roleId==13 || roleId==7 || roleId==9 || roleId==10 || roleId==11 ">
           حذف القرار
         </v-btn>
           </template>
           <!-- قالب لعرض switch -->
-          <template v-slot:item.switch="{ item }">
+          <template v-slot:item.switch="{ item }" v-if="roleId==13 || roleId==7 || roleId==6 || roleId==10 || roleId==5 ">
   <v-switch
     v-model="item.attributes.is_active"
     :label="item.attributes.is_active ? 'مُنجز' : 'غير مُنجز'"
@@ -103,7 +103,7 @@
           </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click="addNewDecision" color="primary">إضافة القرار</v-btn>
+          <v-btn @click="addNewDecision" color="primary" >إضافة القرار</v-btn>
           <v-btn @click="showAddDialog = false">إلغاء</v-btn>
         </v-card-actions>
       </v-card>
