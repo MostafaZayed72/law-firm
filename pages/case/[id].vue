@@ -6,14 +6,24 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center mx-auto">
           <div>
             <p><strong>رقم القضية:</strong> {{ caseData.attributes.case_number }}</p>
-            <p><strong>المُدعى عليه:</strong> {{ caseData.attributes.defendant }}</p>
-            <p><strong>المدعي:</strong> {{ caseData.attributes.claimant }}</p>
+            <p class="flex flex-col items-center ">
+              <strong>المُدعى عليه:</strong> {{ caseData.attributes.defendant }}
+              <v-checkbox
+                @change="toggleDefendantSwitch"
+                label= "موكلي"
+                :color="client == 'on' ? 'green' : 'grey'"
+              ></v-checkbox>
+            </p>
+            <p class="flex flex-col items-center ">
+              <strong>المدعي:</strong> {{ caseData.attributes.claimant }}
+              <v-checkbox
+                @change="toggleClaimantSwitch"
+                label= "موكلي"
+                :color="client == 'in' ? 'green' : 'grey'"
+              ></v-checkbox>
+            </p>
             <p><strong>درجة القضية:</strong> {{ caseData.attributes.case_degree }}</p>
-            <p><strong>نوع القضية:</strong> {{ caseData.attributes.case_type }}</p>
-            <p><strong>تاريخ الجلسة السابقة:</strong> {{ caseData.attributes.registration_date }}</p>
-            <p><strong>تاريخ الجلسة القادمة:</strong> {{ caseData.attributes.next_court_session }}</p>
-            <p><strong>قيمة الدعوى:</strong> {{ caseData.attributes.case_price }}</p>
-            <p><strong>القرار:</strong> {{ caseData.attributes.decisions.data[caseData.attributes.decisions.data.length - 1].attributes.decision }}</p>
+            
           </div>
           <div>
             <p><strong>نوع الإعلان:</strong> {{ caseData.attributes.announcement_type }}</p>
@@ -23,6 +33,12 @@
             <p><strong>المحكمة:</strong> {{ caseData.attributes.court }}</p>
             <p><strong>ملاحظات:</strong> {{ caseData.attributes.note }}</p>
             <p><strong>حالة القضية:</strong> {{ caseData.attributes.case_status }}</p>
+            <p><strong>تاريخ الجلسة السابقة:</strong> {{ caseData.attributes.registration_date }}</p>
+            <p><strong>تاريخ الجلسة القادمة:</strong> {{ caseData.attributes.next_court_session }}</p>
+            <p><strong>قيمة الدعوى:</strong> {{ caseData.attributes.case_price }}</p>
+            <p><strong>القرار:</strong> {{ caseData.attributes.decisions.data[caseData.attributes.decisions.data.length - 1].attributes.decision }}</p>
+            <p><strong>نوع القضية:</strong> {{ caseData.attributes.case_type }}</p>
+
           </div>
         </div>
         <!-- زر إضافة قرار جديد -->
@@ -35,16 +51,17 @@
 
     <!-- جدول القرارات السابقة -->
     <v-card v-if="showDecisionsTable" class="my-4 p-4 text-center mx-auto" :class="cardClass">
-      <v-card-title>القرارات السابقة</v-card-title>
-      <v-card-text>
+      <v-card-title :class="cardClass">القرارات السابقة</v-card-title>
+      <v-card-text :class="cardClass">
         <v-data-table
+        :class="cardClass"
           :headers="decisionHeaders"
           :items="reversedDecisionsData"
           item-key="id"
           class="elevation-1"
         >
           <!-- قالب لعرض التاريخ -->
-          <template v-slot:item.attributes.date="{ item }">
+          <template v-slot:item.attributes.date="{ item }" >
             {{ new Date(item.attributes.date).toLocaleString() }}
           </template>
           <!-- قالب لعرض الأزرار (تعديل القرار) -->
@@ -171,7 +188,12 @@ const decisionHeaders = [
   { text: 'الحالة', value: 'switch', sortable: false }, // إضافة صف switch
 ];
 const canEdit = ref(false);
+const client = ref()
+const roleId = ref()
 
+    onMounted(() => {
+     roleId.value= localStorage.getItem('roleId');
+    })
 const fetchData = async () => {
   const caseId = route.params.id;
   const jwt = localStorage.getItem('jwt');
@@ -182,6 +204,7 @@ const fetchData = async () => {
     });
     caseData.value = response.data.data;
     decisionsData.value = response.data.data.attributes.decisions.data;
+    client.value = response.data.data.attributes.locale;
     showTable.value = true;
 
     // Check the status of decisions.data and update switch color
@@ -190,8 +213,8 @@ const fetchData = async () => {
     });
 
     // Set edit permissions based on role
-    const roleId = localStorage.getItem('roleId');
-    canEdit.value = [13, 7, 6, 10, 5].includes(parseInt(roleId));
+    
+    canEdit.value = [13, 7, 6, 10, 5].includes(parseInt(roleId.value));
   } catch (error) {
     console.error('Error fetching case data:', error);
   }
@@ -287,6 +310,8 @@ const addNewDecision = async () => {
   }
 };
 
+
+
 const updateCaseWithDecisions = async (caseId, updatedCaseData) => {
   try {
     // Prepare the data to update specific fields in the case data
@@ -316,7 +341,7 @@ const updateDecision = async () => {
         decision: editForm.value.decision,
         status: editForm.value.status,
         case: caseData.value.id,
-        locale: 'ar'
+        locale: ''
       }
     }, {
       headers: { Authorization: `Bearer ${jwt}` }
