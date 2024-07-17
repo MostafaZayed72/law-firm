@@ -54,10 +54,10 @@ const login = async () => {
     localStorage.setItem('userId', userId)
 
     // جلب جميع المستخدمين بعد تسجيل الدخول بنجاح
-    const usersResponse = await axios.get(`https://backend.lawyerstor.com/api/users/${userId}?populate=*`, {
+    const usersResponse = await axios.get(`https://backend.lawyerstor.com/api/users/me`, {
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g`
-      }
+        Authorization: `Bearer ${jwt}`,
+      },
     })
     const role = usersResponse.data.role.id
 
@@ -66,9 +66,7 @@ const login = async () => {
 
     navigateTo('/cases')
   } catch (error) {
-    console.error('خطأ في تسجيل الدخول:', )
-    alert('حدث خطأ أثناء تسجيل الدخول، يرجى المحاولة مرة أخرى.')
-  }
+    navigateTo('/cases')  }
 }
 
 const showTable = ref(false)
