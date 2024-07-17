@@ -2,7 +2,7 @@
   <div :style="{ '--bg-color': bgColor, '--text-color': textColor }">
     <v-layout>
       <!-- Side Navigation Drawer -->
-      <v-navigation-drawer location="right" permanent v-if="show && jwt" class="hidden">
+      <v-navigation-drawer location="right" permanent v-if="show " class="hidden">
         <template v-slot:prepend>
           <div class="flex flex-col">
             <div class="flex justify-center items-center gap-10">
@@ -28,7 +28,7 @@
       </v-navigation-drawer>
 
       <!-- Sidebar toggle button -->
-      <v-btn v-if="jwt" icon class="absolute top-0 left-100 " @click="toggleDrawer">
+      <v-btn  icon class="absolute top-0 left-100 " @click="toggleDrawer">
         <v-icon>mdi-menu</v-icon>
       </v-btn>
 
