@@ -63,7 +63,7 @@
                 <v-text-field v-model="newCase.claimant" label="المُدعي"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.Defendant" label="المُدعي عليه"></v-text-field>
+                <v-text-field v-model="newCase.defendant" label="المُدعي عليه"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field v-model="newCase.case_type" label="نوع القضية"></v-text-field>
@@ -184,7 +184,7 @@
                 <v-text-field v-model="editedCase.claimant" label="المُدعي"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.Defendant" label="المُدعي عليه"></v-text-field>
+                <v-text-field v-model="editedCase.defendant" label="المُدعي عليه"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field v-model="editedCase.case_type" label="نوع القضية"></v-text-field>
@@ -279,7 +279,7 @@ const headers = [
   { align: "start", key: "name", sortable: false, title: "عنوان القضية" },
   { key: "case_number", title: "رقم القضية" },
   { key: "claimant", title: "المُدعي" },
-  { key: "Defendant", title: "المُدعي عليه" },
+  { key: "defendant", title: "المُدعي عليه" },
   { key: "case_type", title: "نوع القضية" },
   { key: "case_degree", title: "درجة القضية" },
   { key: "case_price", title: "قيمة الدعوى" },
@@ -391,31 +391,33 @@ const fetchCases = async () => {
     );
 
     filterDialog.value = false;
-    desserts.value = response.data.data.map((item) => {
-      const decisions = item.attributes.decisions.data;
-      const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
+    desserts.value = response.data.data
+      .map((item) => {
+        const decisions = item.attributes.decisions.data;
+        const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
 
-      return {
-        name: item.attributes.case_title,
-        case_number: item.attributes.case_number,
-        id: item.id,
-        claimant: item.attributes.claimant,
-        defendant: item.attributes.defendant, // إصلاح اسم الخاصية
-        case_type: item.attributes.case_type,
-        case_degree: item.attributes.case_degree,
-        case_price: item.attributes.case_price,
-        previous_session: item.attributes.registration_date,
-        next_session: item.attributes.next_court_session,
-        decision: lastDecision,
-        case_status: item.attributes.case_status,
-        announcement: item.attributes.announcement_type, // إصلاح اسم الخاصية
-        invitation_link: item.attributes.case_url,
-        role: item.attributes.case_roll, // إصلاح اسم الخاصية
-        court: item.attributes.court,
-        consultant: item.attributes.advisor_name,
-        notes: item.attributes.note,
-      };
-    });
+        return {
+          name: item.attributes.case_title,
+          case_number: item.attributes.case_number,
+          id: item.id,
+          claimant: item.attributes.claimant,
+          defendant: item.attributes.defendant, // إصلاح اسم الخاصية
+          case_type: item.attributes.case_type,
+          case_degree: item.attributes.case_degree,
+          case_price: item.attributes.case_price,
+          previous_session: item.attributes.registration_date,
+          next_session: item.attributes.next_court_session,
+          decision: lastDecision,
+          case_status: item.attributes.case_status,
+          announcement: item.attributes.announcement_type, // إصلاح اسم الخاصية
+          invitation_link: item.attributes.case_url,
+          role: item.attributes.case_roll, // إصلاح اسم الخاصية
+          court: item.attributes.court,
+          consultant: item.attributes.advisor_name,
+          notes: item.attributes.note,
+        };
+      })
+      .sort((a, b) => a.id - b.id); // ترتيب العناصر تصاعدياً حسب id
 
     // تعطيل الـ loading بعد الاستجابة الناجحة
     loading.value = false;
@@ -433,7 +435,7 @@ const newCase = ref({
   name: "",
   id: "",
   claimant: "",
-  Defendant: "",
+  defendant: "",
   case_type: "",
   case_degree: "",
   case_price: "",
@@ -462,7 +464,7 @@ const addNewCase = async () => {
     data: {
       case_number: newCase.value.case_number,
       case_title: newCase.value.name,
-      defendant: newCase.value.Defendant,
+      defendant: newCase.value.defendant,
       claimant: newCase.value.claimant,
       case_degree: newCase.value.case_degree,
       case_type: newCase.value.case_type,
@@ -532,7 +534,7 @@ const addNewCase = async () => {
             case_number: newCase.value.case_number,
             id: caseId,
             claimant: newCase.value.claimant,
-            Defendant: newCase.value.Defendant,
+            defendant: newCase.value.defendant,
             case_type: newCase.value.case_type,
             case_degree: newCase.value.case_degree,
             case_price: newCase.value.case_price,
@@ -553,7 +555,7 @@ const addNewCase = async () => {
             name: "",
             id: "",
             claimant: "",
-            Defendant: "",
+            defendant: "",
             case_type: "",
             case_degree: "",
             case_price: "",
@@ -593,7 +595,7 @@ const saveEditedCase = async () => {
     data: {
       case_number: editedCase.value.case_number,
       case_title: editedCase.value.name,
-      defendant: editedCase.value.Defendant,
+      defendant: editedCase.value.defendant,
       claimant: editedCase.value.claimant,
       case_degree: editedCase.value.case_degree,
       case_type: editedCase.value.case_type,
@@ -654,7 +656,7 @@ const saveEditedCase = async () => {
         case_number: editedCase.value.case_number,
         id: caseId,
         claimant: editedCase.value.claimant,
-        Defendant: editedCase.value.Defendant,
+        defendant: editedCase.value.defendant,
         case_type: editedCase.value.case_type,
         case_degree: editedCase.value.case_degree,
         case_price: editedCase.value.case_price,
@@ -704,7 +706,7 @@ const filterCases = async () => {
       case_number: item.attributes.case_number,
       id: item.id,
       claimant: item.attributes.claimant,
-      Defendant: item.attributes.defendant,
+      defendant: item.attributes.defendant,
       case_type: item.attributes.case_type,
       case_degree: item.attributes.case_degree,
       case_price: item.attributes.case_price,
