@@ -1,27 +1,16 @@
 <template>
-  <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;" v-if="showTable">
+  <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;"
+    v-if="showTable">
     <v-card class="pa-5 w-100 rounded-lg" :class="cardClass" style="direction: rtl; text-align: right;">
       <v-card-title>
         <span class="text-h5">تسجيل الدخول</span>
       </v-card-title>
       <v-card-text>
         <v-form style="direction: rtl;">
-          <v-text-field
-            class="text-blue-700"
-            v-model="username"
-            label="username"
-            prepend-icon="mdi-account"
-            type="text"
-            required
-          ></v-text-field>
-          <v-text-field
-            class="text-blue-700"
-            v-model="password"
-            label="password"
-            prepend-icon="mdi-lock"
-            type="password"
-            required
-          ></v-text-field>
+          <v-text-field class="text-blue-700" v-model="username" label="username" prepend-icon="mdi-account" type="text"
+            required></v-text-field>
+          <v-text-field class="text-blue-700" v-model="password" label="password" prepend-icon="mdi-lock"
+            type="password" required></v-text-field>
           <v-btn color="primary" block @click="login">تسجيل الدخول</v-btn>
         </v-form>
       </v-card-text>
@@ -46,7 +35,7 @@ const login = async () => {
     const trimmedUsername = username.value.trim()
     const trimmedPassword = password.value.trim()
 
-    const response = await axios.post('https://backend.lawyerstor.com/api/auth/local', {
+    const response = await axios.post('https://backend.eyhadvocates.com/api/auth/local', {
       identifier: trimmedUsername,
       password: trimmedPassword
     })
@@ -58,7 +47,7 @@ const login = async () => {
     localStorage.setItem('userId', userId)
 
     // جلب جميع المستخدمين بعد تسجيل الدخول بنجاح
-    const usersResponse = await axios.get(`https://backend.lawyerstor.com/api/users/me`, {
+    const usersResponse = await axios.get(`https://backend.eyhadvocates.com/api/users/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -87,7 +76,7 @@ const cardClass = computed(() => {
 })
 
 definePageMeta({
-    layout: "custome"
+  layout: "custome"
 })
 </script>
 

@@ -6,13 +6,7 @@
           <v-card-title>نسيت كلمة المرور؟</v-card-title>
           <v-card-text>
             <v-form @submit.prevent="handleSubmit">
-              <v-text-field
-                v-model="email"
-                label="E-mail"
-                type="email"
-                required
-                class="text-end"
-              ></v-text-field>
+              <v-text-field v-model="email" label="E-mail" type="email" required class="text-end"></v-text-field>
               <v-btn type="submit" color="primary" class="mt-4">
                 إرسال رابط إعادة تعيين كلمة المرور
               </v-btn>
@@ -33,7 +27,7 @@ const colorMode = useColorMode();
 
 const handleSubmit = async () => {
   try {
-    const response = await fetch('https://backend.lawyerstor.com/api/auth/forgot-password', {
+    const response = await fetch('https://backend.eyhadvocates.com/api/auth/forgot-password', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

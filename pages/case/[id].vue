@@ -1,43 +1,47 @@
 <template>
   <div class="container mx-auto p-4" v-if="showTable">
     <v-card v-if="caseData" class="my-4 p-4 text-center mx-auto" :class="cardClass">
-      <v-card-title >{{ caseData.attributes.case_title }}</v-card-title>
+      <v-card-title>{{ caseData.attributes.case_title }}</v-card-title>
       <v-card-text>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center mx-auto">
           <div>
             <p><strong>رقم القضية:</strong> {{ caseData.attributes.case_number }}</p>
             <p class="flex flex-col items-center ">
               <strong>المُدعى عليه:</strong> {{ caseData.attributes.defendant }}
-              
+
             </p>
             <p class="flex flex-col items-center ">
               <strong>المدعي:</strong> {{ caseData.attributes.claimant }}
-             
+
             </p>
             <p><strong>درجة القضية:</strong> {{ caseData.attributes.case_degree }}</p>
             <p><strong>تاريخ الجلسة السابقة:</strong> {{ caseData.attributes.registration_date }}</p>
             <p><strong>تاريخ الجلسة القادمة:</strong> {{ caseData.attributes.next_court_session }}</p>
             <p><strong>قيمة الدعوى:</strong> {{ caseData.attributes.case_price }}</p>
-            
+
           </div>
           <div>
             <p><strong>نوع الإعلان:</strong> {{ caseData.attributes.announcement_type }}</p>
             <p><strong>رول القضية:</strong> {{ caseData.attributes.case_roll }}</p>
-            <p><strong>رابط الدعوى:</strong> <a :href="caseData.attributes.case_url" target="_blank">{{ caseData.attributes.case_url }}</a></p>
+            <p><strong>رابط الدعوى:</strong> <a :href="caseData.attributes.case_url" target="_blank">{{
+              caseData.attributes.case_url }}</a></p>
             <p><strong>اسم المستشار:</strong> {{ caseData.attributes.advisor_name }}</p>
             <p><strong>المحكمة:</strong> {{ caseData.attributes.court }}</p>
             <p><strong>ملاحظات:</strong> {{ caseData.attributes.note }}</p>
             <p><strong>حالة القضية:</strong> {{ caseData.attributes.case_status }}</p>
-            <p><strong>القرار:</strong> {{ caseData.attributes.decisions.data[caseData.attributes.decisions.data.length - 1].attributes.decision }}</p>
+            <p><strong>القرار:</strong> {{ caseData.attributes.decisions.data[caseData.attributes.decisions.data.length
+              - 1].attributes.decision }}</p>
             <p><strong>نوع القضية:</strong> {{ caseData.attributes.case_type }}</p>
 
 
           </div>
-          <v-select v-model="selectedParty" :items="partyOptions" label="موكلي" outlined @change="updateClient"></v-select>
+          <v-select v-model="selectedParty" :items="partyOptions" label="موكلي" outlined
+            @change="updateClient"></v-select>
         </div>
         <!-- زر إضافة قرار جديد -->
-        <v-btn @click="showAddDialog = true" color="success" class="mt-4" v-if="roleId ==7 || roleId ==13 || roleId ==11 || roleId ==6 || roleId ==8">إضافة قرار جديد</v-btn>
-        
+        <v-btn @click="showAddDialog = true" color="success" class="mt-4"
+          v-if="roleId == 7 || roleId == 13 || roleId == 11 || roleId == 6 || roleId == 8">إضافة قرار جديد</v-btn>
+
         <!-- زر لعرض القرارات السابقة -->
         <v-btn @click="showDecisionsTable = true" color="primary" class="mt-4">عرض القرارات السابقة</v-btn>
       </v-card-text>
@@ -47,15 +51,10 @@
     <v-card v-if="showDecisionsTable" class="my-4 p-4 text-center mx-auto" :class="cardClass">
       <v-card-title :class="cardClass">القرارات السابقة</v-card-title>
       <v-card-text :class="cardClass">
-        <v-data-table
-        :class="cardClass"
-          :headers="decisionHeaders"
-          :items="reversedDecisionsData"
-          item-key="id"
-          class="elevation-1"
-        >
+        <v-data-table :class="cardClass" :headers="decisionHeaders" :items="reversedDecisionsData" item-key="id"
+          class="elevation-1">
           <!-- قالب لعرض التاريخ -->
-          <template v-slot:item.attributes.date="{ item }" >
+          <template v-slot:item.attributes.date="{ item }">
             {{ new Date(item.attributes.date).toLocaleString() }}
           </template>
           <!-- قالب لعرض الأزرار (تعديل القرار) -->
@@ -63,35 +62,33 @@
             <v-btn @click="editDecision(item)" text small color="primary" v-if="canEdit">
               تعديل القرار
             </v-btn>
-            <v-btn @click="confirmDelete(item)" text small color="error" v-if="roleId==13 || roleId==7 || roleId==9 || roleId==10 || roleId==11 ">
-          حذف القرار
-        </v-btn>
+            <v-btn @click="confirmDelete(item)" text small color="error"
+              v-if="roleId == 13 || roleId == 7 || roleId == 9 || roleId == 10 || roleId == 11">
+              حذف القرار
+            </v-btn>
           </template>
           <!-- قالب لعرض switch -->
-          <template v-slot:item.switch="{ item }" v-if="roleId==13 || roleId==7 || roleId==6 || roleId==10 || roleId==5 ">
-  <v-switch
-    v-model="item.attributes.is_active"
-    :label="item.attributes.is_active ? 'مُنجز' : 'غير مُنجز'"
-    @change="toggleSwitch(item)"
-    :color="item.attributes.is_active ? 'green' : 'grey'"
-  ></v-switch>
-</template>
+          <template v-slot:item.switch="{ item }"
+            v-if="roleId == 13 || roleId == 7 || roleId == 6 || roleId == 10 || roleId == 5">
+            <v-switch v-model="item.attributes.is_active" :label="item.attributes.is_active ? 'مُنجز' : 'غير مُنجز'"
+              @change="toggleSwitch(item)" :color="item.attributes.is_active ? 'green' : 'grey'"></v-switch>
+          </template>
         </v-data-table>
         <!-- زر للعودة أو إغلاق الجدول -->
         <v-btn @click="showDecisionsTable = false" class="mt-4">العودة</v-btn>
         <!-- نافذة منبثقة لتأكيد الحذف -->
-    <v-dialog v-model="showConfirmDeleteDialog" max-width="400">
-      <v-card>
-        <v-card-title class="headline" align="right">تأكيد الحذف</v-card-title>
-        <v-card-text align="right">
-          <div>هل أنت متأكد أنك تريد حذف القرار؟</div>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="error" @click="deleteConfirmed">نعم، حذف</v-btn>
-          <v-btn @click="showConfirmDeleteDialog = false">إلغاء</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        <v-dialog v-model="showConfirmDeleteDialog" max-width="400">
+          <v-card>
+            <v-card-title class="headline" align="right">تأكيد الحذف</v-card-title>
+            <v-card-text align="right">
+              <div>هل أنت متأكد أنك تريد حذف القرار؟</div>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="error" @click="deleteConfirmed">نعم، حذف</v-btn>
+              <v-btn @click="showConfirmDeleteDialog = false">إلغاء</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-card-text>
     </v-card>
 
@@ -114,7 +111,7 @@
           </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click="addNewDecision" color="primary" >إضافة القرار</v-btn>
+          <v-btn @click="addNewDecision" color="primary">إضافة القرار</v-btn>
           <v-btn @click="showAddDialog = false">إلغاء</v-btn>
         </v-card-actions>
       </v-card>
@@ -185,16 +182,16 @@ const canEdit = ref(false);
 const client = ref()
 const roleId = ref()
 
-    onMounted(() => {
-     roleId.value= localStorage.getItem('roleId');
-     fetchData();
-    })
-    const fetchData = async () => {
+onMounted(() => {
+  roleId.value = localStorage.getItem('roleId');
+  fetchData();
+})
+const fetchData = async () => {
   const caseId = route.params.id;
   const jwt = localStorage.getItem('jwt');
 
   try {
-    const response = await axios.get(`https://backend.lawyerstor.com/api/cases/${caseId}?populate=*`, {
+    const response = await axios.get(`https://backend.eyhadvocates.com/api/cases/${caseId}?populate=*`, {
       headers: { Authorization: `Bearer ${jwt}` }
     });
     caseData.value = response.data.data;
@@ -228,7 +225,7 @@ const toggleSwitch = async (decision) => {
   console.log('New status text:', newStatusText);
 
   try {
-    const response = await axios.put(`https://backend.lawyerstor.com/api/decisions/${decisionId}`, {
+    const response = await axios.put(`https://backend.eyhadvocates.com/api/decisions/${decisionId}`, {
       data: {
         is_active: !newStatus, // Invert the current status
         status: newStatus ? 'not_done' : 'done' // Toggle the status text
@@ -264,7 +261,7 @@ const addNewDecision = async () => {
   const caseId = caseData.value.id;
 
   try {
-    const response = await axios.post('https://backend.lawyerstor.com/api/decisions', {
+    const response = await axios.post('https://backend.eyhadvocates.com/api/decisions', {
       data: {
         date: newDecision.value.date,
         decision: newDecision.value.decision,
@@ -293,7 +290,7 @@ const addNewDecision = async () => {
       };
 
       // Send PUT request to update the case with new decision
-      await axios.put(`https://backend.lawyerstor.com/api/cases/${caseId}`, updatedCaseData, {
+      await axios.put(`https://backend.eyhadvocates.com/api/cases/${caseId}`, updatedCaseData, {
         headers: { Authorization: `Bearer ${jwt}` }
       });
     } else {
@@ -319,7 +316,7 @@ const updateCaseWithDecisions = async (caseId, updatedCaseData) => {
     };
 
     // Send PUT request to update case data with new decisions
-    await axios.put(`https://backend.lawyerstor.com/api/cases/${caseId}`, updateData, {
+    await axios.put(`https://backend.eyhadvocates.com/api/cases/${caseId}`, updateData, {
       headers: { Authorization: `Bearer ${jwt}` }
     });
   } catch (error) {
@@ -332,7 +329,7 @@ const updateDecision = async () => {
   const decisionId = editForm.value.id;
 
   try {
-    const response = await axios.put(`https://backend.lawyerstor.com/api/decisions/${decisionId}`, {
+    const response = await axios.put(`https://backend.eyhadvocates.com/api/decisions/${decisionId}`, {
       data: {
         date: editForm.value.date,
         decision: editForm.value.decision,
@@ -360,7 +357,7 @@ const updateDecision = async () => {
         }
       };
 
-      await axios.put(`https://backend.lawyerstor.com/api/cases/${caseData.value.id}`, updatedCaseData, {
+      await axios.put(`https://backend.eyhadvocates.com/api/cases/${caseData.value.id}`, updatedCaseData, {
         headers: { Authorization: `Bearer ${jwt}` }
       });
     }
@@ -391,12 +388,12 @@ const deleteConfirmed = async () => {
   const jwt = localStorage.getItem('jwt');
 
   try {
-    await axios.delete(`https://backend.lawyerstor.com/api/decisions/${decisionId}`, {
+    await axios.delete(`https://backend.eyhadvocates.com/api/decisions/${decisionId}`, {
       headers: { Authorization: `Bearer ${jwt}` }
     });
 
     // بعد حذف القرار بنجاح، يمكنك إعادة تحميل البيانات أو تحديث القائمة المحلية
-     // لتحديث البيانات بعد الحذف
+    // لتحديث البيانات بعد الحذف
   } catch (error) {
     console.error('Error deleting decision:', error);
   } finally {
@@ -415,7 +412,7 @@ const updateClient = async () => {
   const jwt = localStorage.getItem('jwt');
 
   try {
-    const response = await axios.put(`https://backend.lawyerstor.com/api/cases/${caseId}`, {
+    const response = await axios.put(`https://backend.eyhadvocates.com/api/cases/${caseId}`, {
       data: {
         client: selectedParty.value
       }

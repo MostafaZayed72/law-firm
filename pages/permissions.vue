@@ -1,5 +1,6 @@
 <template>
-  <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;" v-if="showTable">
+  <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;"
+    v-if="showTable">
     <v-card class="pa-5 w-100 rounded-lg" style="direction: rtl; text-align: right;" :class="cardClass">
       <v-card-title>
         <span class="text-h5">أدخل إيميل المستخدم</span>
@@ -10,12 +11,7 @@
       </v-card-title>
       <v-card-text>
         <v-form style="direction: rtl;">
-          <v-select
-            v-model="selectedRole"
-            :items="roles"
-            label="اختر الصلاحية"
-            required
-          ></v-select>
+          <v-select v-model="selectedRole" :items="roles" label="اختر الصلاحية" required></v-select>
           <v-btn color="primary" block @click="assignRole">تعيين الصلاحية</v-btn>
         </v-form>
       </v-card-text>
@@ -28,7 +24,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
-const roles = ref(["تحكم كامل","إضافة وحذف وتعديل", "إضافة وحذف", "إضافة وتعديل", "تعديل وحذف", "إضافة فقط", "حذف فقط", "تعديل فقط", "مشاهد فقط"])
+const roles = ref(["تحكم كامل", "إضافة وحذف وتعديل", "إضافة وحذف", "إضافة وتعديل", "تعديل وحذف", "إضافة فقط", "حذف فقط", "تعديل فقط", "مشاهد فقط"])
 const selectedRole = ref(null)
 const userEmail = ref('')
 const userId = ref(null)
@@ -75,10 +71,10 @@ const assignRole = async () => {
     alert('يرجى إدخال إيميل المستخدم واختيار صلاحية')
     return
   }
-  
+
   try {
     const jwt = localStorage.getItem("jwt")
-    const userResponse = await axios.get('https://backend.lawyerstor.com/api/users', {
+    const userResponse = await axios.get('https://backend.eyhadvocates.com/api/users', {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
@@ -93,7 +89,7 @@ const assignRole = async () => {
 
     userId.value = user.id
 
-    await axios.put(`https://backend.lawyerstor.com/api/users/${userId.value}`, {
+    await axios.put(`https://backend.eyhadvocates.com/api/users/${userId.value}`, {
       "role": {
         "connect": [
           {

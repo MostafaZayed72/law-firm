@@ -1,43 +1,20 @@
 <template>
-  <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;" v-if="showTable">
+  <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;"
+    v-if="showTable">
     <v-card class="pa-5 w-100 rounded-lg" style="direction: rtl; text-align: right;" :class="cardClass">
       <v-card-title>
         <span class="text-h5">إنشاء حساب جديد</span>
       </v-card-title>
       <v-card-text>
         <v-form style="direction: rtl;">
-          <v-text-field
-          class="text-blue-700"
-            v-model="username"
-            label="username"
-            prepend-icon="mdi-account"
-            type="text"
-            required
-          ></v-text-field>
-          <v-text-field
-          class="text-blue-700"
-            v-model="email"
-            label="email"
-            prepend-icon="mdi-email"
-            type="text"
-            required
-          ></v-text-field>
-          <v-text-field
-          class="text-blue-700"
-            v-model="password"
-            label="password"
-            prepend-icon="mdi-lock"
-            type="password"
-            required
-          ></v-text-field>
-          <v-text-field
-          class="text-blue-700"
-            v-model="confirmPassword"
-            label="confirm password"
-            prepend-icon="mdi-lock"
-            type="password"
-            required
-          ></v-text-field>
+          <v-text-field class="text-blue-700" v-model="username" label="username" prepend-icon="mdi-account" type="text"
+            required></v-text-field>
+          <v-text-field class="text-blue-700" v-model="email" label="email" prepend-icon="mdi-email" type="text"
+            required></v-text-field>
+          <v-text-field class="text-blue-700" v-model="password" label="password" prepend-icon="mdi-lock"
+            type="password" required></v-text-field>
+          <v-text-field class="text-blue-700" v-model="confirmPassword" label="confirm password" prepend-icon="mdi-lock"
+            type="password" required></v-text-field>
           <v-btn color="primary" block @click="register">إنشاء حساب</v-btn>
         </v-form>
       </v-card-text>
@@ -65,12 +42,12 @@ const register = async () => {
   try {
     const jwt = localStorage.getItem("jwt")
 
-    const response = await axios.post('https://backend.lawyerstor.com/api/users', {
+    const response = await axios.post('https://backend.eyhadvocates.com/api/users', {
       username: username.value,
       email: email.value,
       password: password.value,
       role: "4"
-    },{
+    }, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
@@ -102,7 +79,7 @@ const cardClass = computed(() => {
 })
 
 definePageMeta({
-    layout:"custome"
+  layout: "custome"
 })
 </script>
 

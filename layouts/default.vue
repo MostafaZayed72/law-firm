@@ -9,8 +9,7 @@
               <img class="w-[20%]" src="/assets/images/logo.png" alt="">
               <color-mode />
             </div>
-            <v-list-item lines="two"
-            style="direction: rtl;"
+            <v-list-item lines="two" style="direction: rtl;"
               prepend-avatar="https://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg"
               subtitle="Logged in" :title=userName>
             </v-list-item>
@@ -18,12 +17,18 @@
         </template>
 
         <v-list density="compact" nav style="direction: rtl">
-          <NuxtLink to="/"><v-list-item prepend-icon="mdi-home-city" title="الرئيسية" value="home"></v-list-item></NuxtLink>
-          <NuxtLink v-if="logedIn == 'true'" to="/profile"><v-list-item prepend-icon="mdi-account" title="حسابي" value="account"></v-list-item></NuxtLink>
-          <NuxtLink to="/cases"><v-list-item prepend-icon="mdi-gavel" title="جميع القضايا" value="users"></v-list-item></NuxtLink>
-          <NuxtLink v-if="roleId == 13" to="/permissions"><v-list-item prepend-icon="mdi-account-key" title="إعطاء الصلاحيات للمستخدمين" value="permissions"></v-list-item></NuxtLink>
-          <NuxtLink v-if="roleId == 13" to="/users_edit"><v-list-item prepend-icon="mdi-pencil" title="تعديل بيانات الموظفين" value="users_edit"></v-list-item></NuxtLink>
-          <NuxtLink @click.prevent="logout"><v-list-item prepend-icon="mdi-account-circle" title="تسجيل الخروج" value="logOut"></v-list-item></NuxtLink>
+          <NuxtLink to="/"><v-list-item prepend-icon="mdi-home-city" title="الرئيسية" value="home"></v-list-item>
+          </NuxtLink>
+          <NuxtLink v-if="logedIn == 'true'" to="/profile"><v-list-item prepend-icon="mdi-account" title="حسابي"
+              value="account"></v-list-item></NuxtLink>
+          <NuxtLink to="/cases"><v-list-item prepend-icon="mdi-gavel" title="جميع القضايا" value="users"></v-list-item>
+          </NuxtLink>
+          <NuxtLink v-if="roleId == 13" to="/permissions"><v-list-item prepend-icon="mdi-account-key"
+              title="إعطاء الصلاحيات للمستخدمين" value="permissions"></v-list-item></NuxtLink>
+          <NuxtLink v-if="roleId == 13" to="/users_edit"><v-list-item prepend-icon="mdi-pencil"
+              title="تعديل بيانات الموظفين" value="users_edit"></v-list-item></NuxtLink>
+          <NuxtLink @click.prevent="logout"><v-list-item prepend-icon="mdi-account-circle" title="تسجيل الخروج"
+              value="logOut"></v-list-item></NuxtLink>
         </v-list>
       </v-navigation-drawer>
 
@@ -92,14 +97,14 @@ const logout = () => {
   router.push('/login'); // توجيه المستخدم إلى صفحة تسجيل الدخول
 };
 
-const userName=ref()
+const userName = ref()
 
 
 onMounted(async () => {
   try {
     const jwt = localStorage.getItem("jwt");
 
-    const response = await axios.get('https://backend.lawyerstor.com/api/users/me',{
+    const response = await axios.get('https://backend.eyhadvocates.com/api/users/me', {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
