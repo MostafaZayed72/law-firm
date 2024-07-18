@@ -1,7 +1,7 @@
 <template>
   <div class="p-4 rounded-lg">
     <!-- Search Field -->
-    <v-text-field v-model="search" label="Search" class="mb-4" prepend-icon="mdi-magnify"></v-text-field>
+    <v-text-field reverse v-model="search" label="Search" class="mb-4" prepend-icon="mdi-magnify"></v-text-field>
 
     <!-- Data Table -->
     <v-data-table v-if="showTable" :class="cardClass" :headers="headers" :items="filteredEmployees" item-value="id"
@@ -40,7 +40,7 @@
         </v-card-title>
         <v-card-text>
           <v-form>
-            <v-text-field v-model="editedEmployee.username" label="الإسم"></v-text-field>
+            <v-text-field reverse v-model="editedEmployee.username" label="الإسم"></v-text-field>
             <v-text-field v-model="editedEmployee.email" label="الإيميل"></v-text-field>
             <v-text-field v-model="editedEmployee.password" label="الباسورد" type="password"></v-text-field>
             <!-- Add other fields as necessary -->

@@ -1,11 +1,13 @@
 <template>
   <v-card v-if="showTable" title="جميع القضايا" flat :class="cardClass" class="mx-10 rounded-lg">
     <template v-slot:text>
-      <v-text-field v-model="search" label="البحث" prepend-inner-icon="mdi-magnify" variant="outlined" hide-details
+      <v-text-field 
+reverse
+       class="mb-10 mt-2" v-model="search" label="البحث" prepend-inner-icon="mdi-magnify" variant="outlined" hide-details
         single-line></v-text-field>
-      <v-text-field v-model="text" label="استثناء" prepend-inner-icon="mdi-magnify" variant="outlined" hide-details
+      <v-text-field reverse class="mb-2" v-model="text" label="استثناء" prepend-inner-icon="mdi-magnify" variant="outlined" hide-details
         single-line></v-text-field>
-      <v-btn @click="filter()">استثناء</v-btn>
+        <v-btn @click="filter()" class="mb-4">استثناء</v-btn>
     </template>
 
     <!-- Add new case button -->
@@ -27,10 +29,10 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="filterStartDate" type="date" label="من تاريخ"></v-text-field>
+                <v-text-field reverse v-model="filterStartDate" type="date" label="من تاريخ"></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-text-field v-model="filterEndDate" type="date" label="إلى تاريخ"></v-text-field>
+                <v-text-field reverse v-model="filterEndDate" type="date" label="إلى تاريخ"></v-text-field>
               </v-col>
 
               <v-col cols="12" class="flex justify-center">
@@ -57,57 +59,57 @@
           <v-container>
             <v-row style="direction: rtl">
               <v-col cols="12" md="6" style="direction: rtl">
-                <v-text-field style="direction: rtl" v-model="newCase.name" label="عنوان القضية"></v-text-field>
+                <v-text-field reverse style="direction: rtl" v-model="newCase.case_title" label="عنوان القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_number" label="رقم القضية"></v-text-field>
+                <v-text-field reverse v-model="newCase.case_number" label="رقم القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.claimant" label="المُدعي"></v-text-field>
+                <v-text-field reverse v-model="newCase.claimant" label="المُدعي"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.defendant" label="المُدعي عليه"></v-text-field>
+                <v-text-field reverse v-model="newCase.defendant" label="المُدعي عليه"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_type" label="نوع القضية"></v-text-field>
+                <v-text-field reverse v-model="newCase.case_type" label="نوع القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_degree" label="درجة القضية"></v-text-field>
+                <v-text-field reverse v-model="newCase.case_degree" label="درجة القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_price" label="قيمة الدعوى"></v-text-field>
+                <v-text-field reverse v-model="newCase.case_price" label="قيمة الدعوى"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field type="date" v-model="newCase['previous_session']"
+                <v-text-field reverse type="date" v-model="newCase['previous_session']"
                   label="تاريخ الجلسة السابقة"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field type="date" v-model="newCase['next_session']" label="تاريخ الجلسة القادمة"></v-text-field>
+                <v-text-field reverse type="date" v-model="newCase['next_session']" label="تاريخ الجلسة القادمة"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['decision']" label="القرار"></v-text-field>
+                <v-text-field reverse v-model="newCase['decision']" label="القرار"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_status" label="حالة القضية"></v-text-field>
+                <v-text-field reverse v-model="newCase.case_status" label="حالة القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['announcement_type']" label="نوع الإعلان"></v-text-field>
+                <v-text-field reverse v-model="newCase['announcement_type']" label="نوع الإعلان"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['invitation_link']" label="رابط الدعوى"></v-text-field>
+                <v-text-field reverse v-model="newCase['invitation_link']" label="رابط الدعوى"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['role']" label="رول القضية"></v-text-field>
+                <v-text-field reverse v-model="newCase['role']" label="رول القضية"></v-text-field>
               </v-col>
               <!-- New input fields -->
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.court" label="المحكمة المختصة"></v-text-field>
+                <v-text-field reverse v-model="newCase.court" label="المحكمة المختصة"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.consultant" label="اسم المستشار"></v-text-field>
+                <v-text-field reverse v-model="newCase.consultant" label="اسم المستشار"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.notes" label="ملاحظات"></v-text-field>
+                <v-text-field reverse v-model="newCase.notes" label="ملاحظات"></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -146,8 +148,8 @@
       <template v-slot:[`item.id`]="{ item }">
         <nuxt-link :to="`/case/${item.id}`">{{ item.id }}</nuxt-link>
       </template>
-      <template v-slot:[`item.name`]="{ item }">
-        <nuxt-link :to="`/case/${item.id}`">{{ item.name }}</nuxt-link>
+      <template v-slot:[`item.case_title`]="{ item }">
+        <nuxt-link :to="`/case/${item.id}`">{{ item.case_title }}</nuxt-link>
       </template>
     </v-data-table>
 
@@ -179,56 +181,56 @@
             <v-row style="direction: rtl">
               <!-- Existing input fields -->
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.name" label="عنوان القضية"></v-text-field>
+                <v-text-field reverse reverse v-model="editedCase.case_title" label="عنوان القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_number" label="رقم القضية"></v-text-field>
+                <v-text-field reverse reverse v-model="editedCase.case_number" label="رقم القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.claimant" label="المُدعي"></v-text-field>
+                <v-text-field reverse reverse v-model="editedCase.claimant" label="المُدعي"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.defendant" label="المُدعي عليه"></v-text-field>
+                <v-text-field reverse reverse v-model="editedCase.defendant" label="المُدعي عليه"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_type" label="نوع القضية"></v-text-field>
+                <v-text-field reverse reverse v-model="editedCase.case_type" label="نوع القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_degree" label="درجة القضية"></v-text-field>
+                <v-text-field reverse reverse v-model="editedCase.case_degree" label="درجة القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_price" label="قيمة الدعوى"></v-text-field>
+                <v-text-field reverse reverse v-model="editedCase.case_price" label="قيمة الدعوى"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field type="date" v-model="editedCase['previous_session']"
+                <v-text-field reverse reverse type="date" v-model="editedCase['previous_session']"
                   label="تاريخ الجلسة السابقة"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field type="date" v-model="editedCase['next_session']"
+                <v-text-field reverse reverse type="date" v-model="editedCase['next_session']"
                   label="تاريخ الجلسة القادمة"></v-text-field>
               </v-col>
 
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_status" label="حالة القضية"></v-text-field>
+                <v-text-field reverse v-model="editedCase.case_status" label="حالة القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['announcement_type']" label="نوع الإعلان"></v-text-field>
+                <v-text-field reverse v-model="editedCase['announcement_type']" label="نوع الإعلان"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['invitation_link']" label="رابط الدعوى"></v-text-field>
+                <v-text-field reverse v-model="editedCase['invitation_link']" label="رابط الدعوى"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['role']" label="رول القضية"></v-text-field>
+                <v-text-field reverse v-model="editedCase['role']" label="رول القضية"></v-text-field>
               </v-col>
               <!-- New input fields -->
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.court" label="المحكمة المختصة"></v-text-field>
+                <v-text-field reverse v-model="editedCase.court" label="المحكمة المختصة"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.consultant" label="اسم المستشار"></v-text-field>
+                <v-text-field reverse v-model="editedCase.consultant" label="اسم المستشار"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.notes" label="ملاحظات"></v-text-field>
+                <v-text-field reverse v-model="editedCase.notes" label="ملاحظات"></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -281,7 +283,7 @@ const editedCase = ref(null);
 
 const headers = [
   { key: "id", title: "id" },
-  { align: "start", key: "name", sortable: false, title: "عنوان القضية" },
+  { align: "start", key: "case_title", sortable: false, title: "عنوان القضية" },
   { key: "case_number", title: "رقم القضية" },
   { key: "claimant", title: "المُدعي" },
   { key: "defendant", title: "المُدعي عليه" },
@@ -402,7 +404,7 @@ const fetchCases = async () => {
         const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
 
         return {
-          name: item.attributes.case_title,
+          case_title: item.attributes.case_title,
           case_number: item.attributes.case_number,
           id: item.id,
           claimant: item.attributes.claimant,
@@ -437,7 +439,7 @@ const fetchCases = async () => {
 onMounted(fetchCases);
 
 const newCase = ref({
-  name: "",
+  case_title: "",
   id: "",
   claimant: "",
   defendant: "",
@@ -468,7 +470,7 @@ const addNewCase = async () => {
   const newCaseData = {
     data: {
       case_number: newCase.value.case_number,
-      case_title: newCase.value.name.trim(),
+      case_title: newCase.value.case_title.trim(),
       defendant: newCase.value.defendant.trim(),
       claimant: newCase.value.claimant.trim(),
       case_degree: newCase.value.case_degree.trim(),
@@ -535,7 +537,7 @@ const addNewCase = async () => {
           const decisionId = decisionResponse.data.data.id;
 
           desserts.value.push({
-            name: newCase.value.name,
+            case_title: newCase.value.case_title,
             case_number: newCase.value.case_number,
             id: caseId,
             claimant: newCase.value.claimant,
@@ -557,7 +559,7 @@ const addNewCase = async () => {
 
           addNewCaseDialog.value = false;
           newCase.value = {
-            name: "",
+            case_title: "",
             id: "",
             claimant: "",
             defendant: "",
@@ -599,7 +601,7 @@ const saveEditedCase = async () => {
   const updatedCaseData = {
     data: {
       case_number: editedCase.value.case_number,
-      case_title: editedCase.value.name.trim(),
+      case_title: editedCase.value.case_title.trim(),
       defendant: editedCase.value.defendant.trim(),
       claimant: editedCase.value.claimant.trim(),
       case_degree: editedCase.value.case_degree.trim(),
@@ -657,7 +659,7 @@ const saveEditedCase = async () => {
     const index = desserts.value.findIndex((item) => item.id === caseId);
     if (index !== -1) {
       desserts.value.splice(index, 1, {
-        name: editedCase.value.name,
+        case_title: editedCase.value.case_title,
         case_number: editedCase.value.case_number,
         id: caseId,
         claimant: editedCase.value.claimant,
@@ -707,7 +709,7 @@ const filterCases = async () => {
     );
 
     desserts.value = response.data.data.map((item) => ({
-      name: item.attributes.case_title,
+      case_title: item.attributes.case_title,
       case_number: item.attributes.case_number,
       id: item.id,
       claimant: item.attributes.claimant,
@@ -789,7 +791,7 @@ const exportToDoc = async () => {
     item["defendant"] ?? "",
     item["claimant"] ?? "",
     item["case_number"] ?? "",
-    item["name"] ?? ""
+    item["case_title"] ?? ""
   ]);
 
   // Reverse the order of rows vertically
@@ -862,30 +864,20 @@ const filter = async () => {
         Authorization: `Bearer ${jwt}`,
       },
       params: {
-        'populate': 'decisions' ,
-        'filters[case_title][$nei][0]': `${text.value}`,
-        'filters[case_number][$nei][0]': `${text.value}`,
-        'filters[claimant][$nei][0]': `${text.value}`,
-        'filters[defendant][$nei][0]': `${text.value}`,
-        'filters[case_type][$nei][0]': `${text.value}`,
-        'filters[case_degree][$nei][0]': `${text.value}`,
-        'filters[case_price][$nei][0]': `${text.value}`,
-        'filters[registration_date][$nei][0]': `${text.value}`,
-        'filters[next_court_session][$nei][0]': `${text.value}`,
-        'filters[case_status][$nei][0]': `${text.value}`,
-        'filters[announcement_type][$nei][0]': `${text.value}`,
-        'filters[case_url][$nei][0]': `${text.value}`,
-        'filters[case_roll][$nei][0]': `${text.value}`,
-        'filters[advisor_name][$nei][0]': `${text.value}`
+        'populate': 'decisions' // تأكد من تضمين كائن decisions
       }
     });
 
-    // التحقق من الاستجابة
+    // تحقق من الاستجابة الفعلية
+    console.log("Response data:", response.data);
+
     if (response.data && response.data.data) {
+      const excludeText = `${text.value}`.toLowerCase();
+
       const filteredData = response.data.data
         .map((item) => {
           const decisions = item.attributes.decisions?.data || [];
-          const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
+          const lastDecision = decisions.slice(-1)[0]?.attributes.decision || '';
 
           return {
             case_title: item.attributes.case_title || '',
@@ -895,64 +887,57 @@ const filter = async () => {
             defendant: item.attributes.defendant || '',
             case_type: item.attributes.case_type || '',
             case_degree: item.attributes.case_degree || '',
-            case_price: item.attributes.case_price || '',
+            case_price: item.attributes.case_price || '0',
             previous_session: item.attributes.registration_date || '',
             next_session: item.attributes.next_court_session || '',
             case_status: item.attributes.case_status || '',
             announcement_type: item.attributes.announcement_type || '',
             invitation_link: item.attributes.case_url || '',
-            decision: lastDecision || '',
+            decision: lastDecision,
             role: item.attributes.case_roll || '',
             court: item.attributes.court || '',
             consultant: item.attributes.advisor_name || '',
             notes: item.attributes.note || '',
           };
-        })
+        });
+
+      // تحقق من البيانات بعد الفلترة
+      console.log("Filtered data:", filteredData);
+
+      const visibleData = filteredData
         .filter((item) => {
-          // استبعاد العناصر بناءً على النصوص المستبعدة
-          const excludeText = `${text.value}`.toLowerCase();
-          const decisionText = item.decision.toLowerCase();
-          const caseTitle = item.case_title.toLowerCase();
-          const caseNumber = item.case_number.toLowerCase();
-          const claimant = item.claimant.toLowerCase();
-          const defendant = item.defendant.toLowerCase();
-          const caseType = item.case_type.toLowerCase();
-          const caseDegree = item.case_degree.toLowerCase();
-          const casePrice = item.case_price.toString().toLowerCase();
-          const previousSession = item.previous_session.toLowerCase();
-          const nextSession = item.next_session.toLowerCase();
-          const caseStatus = item.case_status.toLowerCase();
-          const announcementType = item.announcement_type.toLowerCase();
-          const invitationLink = item.invitation_link.toLowerCase();
-          const role = item.role.toLowerCase();
-          const court = item.court.toLowerCase();
-          const consultant = item.consultant.toLowerCase();
-          const notes = item.notes.toLowerCase();
+          // تحسين الفلتر باستخدام RegExp للتأكد من عدم إخفاء النصوص
+          const patterns = [
+            item.decision,
+            item.case_title,
+            item.case_number,
+            item.claimant,
+            item.defendant,
+            item.case_type,
+            item.case_degree,
+            item.case_price.toString(), // تحويل القيم العددية إلى نص
+            item.previous_session,
+            item.next_session,
+            item.case_status,
+            item.announcement_type,
+            item.invitation_link,
+            item.role,
+            item.court,
+            item.consultant,
+            item.notes,
+          ];
 
-          // تطبيق الفلتر
-          return !(
-            decisionText.includes(excludeText) ||
-            caseTitle.includes(excludeText) ||
-            caseNumber.includes(excludeText) ||
-            claimant.includes(excludeText) ||
-            defendant.includes(excludeText) ||
-            caseType.includes(excludeText) ||
-            caseDegree.includes(excludeText) ||
-            casePrice.includes(excludeText) ||
-            previousSession.includes(excludeText) ||
-            nextSession.includes(excludeText) ||
-            caseStatus.includes(excludeText) ||
-            announcementType.includes(excludeText) ||
-            invitationLink.includes(excludeText) ||
-            role.includes(excludeText) ||
-            court.includes(excludeText) ||
-            consultant.includes(excludeText) ||
-            notes.includes(excludeText)
-          );
-        })
-        .sort((a, b) => a.id - b.id); // ترتيب العناصر تصاعدياً حسب id
+          return !patterns.some((text) => {
+            if (!text) return false;
+            const pattern = new RegExp(excludeText, 'i'); // تعبير نمطي غير حساس لحالة الأحرف
+            return pattern.test(text);
+          });
+        });
 
-      desserts.value = filteredData;
+      // تحقق من البيانات بعد الفلترة
+      console.log("Visible data:", visibleData);
+
+      desserts.value = visibleData;
     } else {
       console.error("Invalid response structure", response.data);
     }
@@ -964,6 +949,5 @@ const filter = async () => {
     loading.value = false;
   }
 };
-
 
 </script>

@@ -102,10 +102,10 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="newDecision.date" label="تاريخ القرار" outlined type="date"></v-text-field>
+                <v-text-field reverse v-model="newDecision.date" label="تاريخ القرار" outlined type="date"></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-text-field v-model="newDecision.decision" label="نص القرار" outlined></v-text-field>
+                <v-text-field reverse v-model="newDecision.decision" label="نص القرار" outlined></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -127,10 +127,10 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="editForm.date" label="تاريخ القرار" outlined type="date"></v-text-field>
+                <v-text-field reverse v-model="editForm.date" label="تاريخ القرار" outlined type="date"></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-text-field v-model="editForm.decision" label="نص القرار" outlined></v-text-field>
+                <v-text-field reverse v-model="editForm.decision" label="نص القرار" outlined></v-text-field>
               </v-col>
             </v-row>
           </v-container>

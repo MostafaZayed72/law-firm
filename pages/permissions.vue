@@ -5,7 +5,7 @@
       <v-card-title>
         <span class="text-h5">أدخل إيميل المستخدم</span>
       </v-card-title>
-      <v-text-field v-model="userEmail" label="إيميل المستخدم" required></v-text-field>
+      <v-text-field  v-model="userEmail" label="إيميل المستخدم" required></v-text-field>
       <v-card-title>
         <span class="text-h5">اختر الصلاحيات</span>
       </v-card-title>
