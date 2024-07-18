@@ -47,7 +47,7 @@ const login = async () => {
     localStorage.setItem('userId', userId)
 
     // جلب جميع المستخدمين بعد تسجيل الدخول بنجاح
-    const usersResponse = await axios.get(`https://backend.eyhadvocates.com/api/users/me`, {
+    const usersResponse = await axios.get(`https://backend.eyhadvocates.com/api/users/me?populate=*`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
