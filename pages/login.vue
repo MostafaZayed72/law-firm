@@ -7,7 +7,7 @@
       <v-card-text>
         <v-form style="direction: rtl;">
           <v-text-field
-          class="text-blue-700"
+            class="text-blue-700"
             v-model="username"
             label="username"
             prepend-icon="mdi-account"
@@ -15,7 +15,7 @@
             required
           ></v-text-field>
           <v-text-field
-          class="text-blue-700"
+            class="text-blue-700"
             v-model="password"
             label="password"
             prepend-icon="mdi-lock"
@@ -42,9 +42,13 @@ const password = ref('')
 
 const login = async () => {
   try {
+    // Trim whitespace from username and password
+    const trimmedUsername = username.value.trim()
+    const trimmedPassword = password.value.trim()
+
     const response = await axios.post('https://backend.lawyerstor.com/api/auth/local', {
-      identifier: username.value,
-      password: password.value
+      identifier: trimmedUsername,
+      password: trimmedPassword
     })
     const token = response.data.jwt
     const userId = response.data.user.id
@@ -56,17 +60,17 @@ const login = async () => {
     // جلب جميع المستخدمين بعد تسجيل الدخول بنجاح
     const usersResponse = await axios.get(`https://backend.lawyerstor.com/api/users/me`, {
       headers: {
-        Authorization: `Bearer ${jwt}`,
+        Authorization: `Bearer ${token}`,
       },
     })
     const role = usersResponse.data.role.id
 
-      localStorage.setItem('roleId', role)
-    
+    localStorage.setItem('roleId', role)
 
     navigateTo('/cases')
   } catch (error) {
-    navigateTo('/cases')  }
+    navigateTo('/cases')
+  }
 }
 
 const showTable = ref(false)
@@ -83,7 +87,7 @@ const cardClass = computed(() => {
 })
 
 definePageMeta({
-    layout:"custome"
+    layout: "custome"
 })
 </script>
 
