@@ -16,7 +16,7 @@
           </div>
         </template>
 
-        <v-list density="compact" nav style="direction: rtl">
+        <v-list density="compact" nav style="direction: rtl" >
           <NuxtLink to="/"><v-list-item prepend-icon="mdi-home-city" title="الرئيسية" value="home"></v-list-item>
           </NuxtLink>
           <NuxtLink v-if="logedIn == 'true'" to="/profile"><v-list-item prepend-icon="mdi-account" title="حسابي"
@@ -52,7 +52,7 @@ import { ref, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from "axios";
 
-const show = ref(true);
+const show = ref(false);
 const logedIn = ref(true);
 const roleId = ref(null);
 const colormode = ref('light'); // افتراضياً الوضع الفاتح

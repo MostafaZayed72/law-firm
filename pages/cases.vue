@@ -3,6 +3,9 @@
     <template v-slot:text>
       <v-text-field v-model="search" label="البحث" prepend-inner-icon="mdi-magnify" variant="outlined" hide-details
         single-line></v-text-field>
+      <v-text-field v-model="text" label="استثناء" prepend-inner-icon="mdi-magnify" variant="outlined" hide-details
+        single-line></v-text-field>
+      <v-btn @click='filter()'>استثناء</v-btn>
     </template>
 
     <!-- Add new case button -->
@@ -88,7 +91,7 @@
                 <v-text-field v-model="newCase.case_status" label="حالة القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['Announcement']" label="نوع الإعلان"></v-text-field>
+                <v-text-field v-model="newCase['announcement_type']" label="نوع الإعلان"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field v-model="newCase['invitation_link']" label="رابط الدعوى"></v-text-field>
@@ -117,7 +120,7 @@
       </v-card>
     </v-dialog>
 
-    <v-data-table id="dataTable" :class="cardClass" v-model:search="search" :headers="headers" :items="desserts"
+    <v-data-table id="dataTable" :class="cardClass" v-model:search="search" v-model:text="text" :headers="headers" :items="desserts"
       class="elevation-1 mx-4" :footer-props="{ itemsPerPageText: 'عدد العناصر في الصفحة:' }"
       :no-data-text="'لا توجد بيانات'" :loading="loading">
       <template v-slot:item.previous_session="{ item }">
@@ -132,7 +135,8 @@
           <v-icon>mdi-delete</v-icon>
         </v-btn>
       </template>
-      <template v-slot:[`item.edit`]="{ item }" v-if="roleId == 13 || roleId == 7 || roleId == 6 || roleId == 10 || roleId == 5">
+      <template v-slot:[`item.edit`]="{ item }"
+        v-if="roleId == 13 || roleId == 7 || roleId == 6 || roleId == 10 || roleId == 5">
 
         <v-btn small icon @click="editCase(item)">
           <v-icon>mdi-pencil</v-icon>
@@ -208,7 +212,7 @@
                 <v-text-field v-model="editedCase.case_status" label="حالة القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['Announcement']" label="نوع الإعلان"></v-text-field>
+                <v-text-field v-model="editedCase['announcement_type']" label="نوع الإعلان"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field v-model="editedCase['invitation_link']" label="رابط الدعوى"></v-text-field>
@@ -263,6 +267,7 @@ const colorMode = useColorMode(); // Uncomment this if useColorMode is properly 
 
 const case_number = ref("");
 const search = ref("");
+const text = ref("");
 const showTable = ref(false);
 const addNewCaseDialog = ref(false);
 const deleteDialog = ref(false);
@@ -287,7 +292,7 @@ const headers = [
   { key: "next_session", title: "تاريخ الجلسة القادمة" },
   { key: "decision", title: "القرار" },
   { key: "case_status", title: "حالة القضية" },
-  { key: "Announcement", title: "نوع الإعلان" },
+  { key: "announcement_type", title: "نوع الإعلان" },
   { key: "invitation_link", title: "رابط الدعوى" },
   { key: "role", title: "رول القضية" },
   { key: "court", title: "المحكمة المختصة" },
@@ -409,7 +414,7 @@ const fetchCases = async () => {
           next_session: item.attributes.next_court_session,
           decision: lastDecision,
           case_status: item.attributes.case_status,
-          announcement: item.attributes.announcement_type, // إصلاح اسم الخاصية
+          announcement_type: item.attributes.announcement_type, // إصلاح اسم الخاصية
           invitation_link: item.attributes.case_url,
           role: item.attributes.case_roll, // إصلاح اسم الخاصية
           court: item.attributes.court,
@@ -442,7 +447,7 @@ const newCase = ref({
   previous_session: "",
   next_session: "",
   decision: "",
-  Announcement: "",
+  announcement_type: "",
   invitation_link: "",
   role: "",
   court: "",
@@ -463,21 +468,21 @@ const addNewCase = async () => {
   const newCaseData = {
     data: {
       case_number: newCase.value.case_number,
-      case_title: newCase.value.name,
-      defendant: newCase.value.defendant,
-      claimant: newCase.value.claimant,
-      case_degree: newCase.value.case_degree,
-      case_type: newCase.value.case_type,
+      case_title: newCase.value.name.trim(),
+      defendant: newCase.value.defendant.trim(),
+      claimant: newCase.value.claimant.trim(),
+      case_degree: newCase.value.case_degree.trim(),
+      case_type: newCase.value.case_type.trim(),
       case_price: parseFloat(newCase.value.case_price) || 0,
-      case_decision: newCase.value["decision"],
-      announcement_type: newCase.value["Announcement"],
-      case_roll: newCase.value["role"],
-      case_url: newCase.value["invitation_link"],
+      case_decision: newCase.value["decision"].trim(),
+      announcement_type: newCase.value["announcement_type"].trim(),
+      case_roll: newCase.value["role"].trim(),
+      case_url: newCase.value["invitation_link"].trim(),
       registration_date: newCase.value["previous_session"],
-      advisor_name: newCase.value.consultant,
-      court: newCase.value.court,
+      advisor_name: newCase.value.consultant.trim(),
+      court: newCase.value.court.trim(),
       note: newCase.value.notes,
-      case_status: newCase.value.case_status,
+      case_status: newCase.value.case_status.trim(),
       locale: "ar",
     },
   };
@@ -541,7 +546,7 @@ const addNewCase = async () => {
             previous_session: newCase.value["previous_session"],
             next_session: newCase.value["next_session"],
             decision: newCase.value["decision"],
-            Announcement: newCase.value["Announcement"],
+            announcement_type: newCase.value["announcement_type"],
             invitation_link: newCase.value["invitation_link"],
             role: newCase.value.role,
             court: newCase.value.court,
@@ -562,7 +567,7 @@ const addNewCase = async () => {
             previous_session: "",
             next_session: "",
             decision: "",
-            Announcement: "",
+            announcement_type: "",
             invitation_link: "",
             role: "",
             court: "",
@@ -594,18 +599,18 @@ const saveEditedCase = async () => {
   const updatedCaseData = {
     data: {
       case_number: editedCase.value.case_number,
-      case_title: editedCase.value.name,
-      defendant: editedCase.value.defendant,
-      claimant: editedCase.value.claimant,
-      case_degree: editedCase.value.case_degree,
-      case_type: editedCase.value.case_type,
+      case_title: editedCase.value.name.trim(),
+      defendant: editedCase.value.defendant.trim(),
+      claimant: editedCase.value.claimant.trim(),
+      case_degree: editedCase.value.case_degree.trim(),
+      case_type: editedCase.value.case_type.trim(),
       case_price: parseFloat(editedCase.value.case_price) || 0,
-      case_decision: editedCase.value["decision"],
-      announcement_type: editedCase.value["Announcement"],
-      case_roll: editedCase.value["role"],
-      case_url: editedCase.value["invitation_link"],
-      advisor_name: editedCase.value.consultant,
-      court: editedCase.value.court,
+      case_decision: editedCase.value["decision"].trim(),
+      announcement_type: editedCase.value["announcement_type"],
+      case_roll: editedCase.value["role"].trim(),
+      case_url: editedCase.value["invitation_link"].trim(),
+      advisor_name: editedCase.value.consultant.trim(),
+      court: editedCase.value.court.trim(),
       note: editedCase.value.notes,
       case_status: editedCase.value.case_status,
       locale: "ar",
@@ -663,7 +668,7 @@ const saveEditedCase = async () => {
         previous_session: editedCase.value["previous_session"],
         previous_session: editedCase.value["next_session"],
         decision: editedCase.value["decision"],
-        Announcement: editedCase.value["Announcement"],
+        announcement_type: editedCase.value["announcement_type"],
         invitation_link: editedCase.value["invitation_link"],
         role: editedCase.value.role,
         court: editedCase.value.court,
@@ -714,7 +719,7 @@ const filterCases = async () => {
       next_session: item.attributes.next_court_session,
       decision: item.attributes.case_decision,
       case_status: item.attributes.case_status, // Double check attribute name
-      Announcement: item.attributes.announcement_type,
+      announcement_type: item.attributes.announcement_type,
       invitation_link: item.attributes.case_url,
       role: item.attributes.case_roll,
       court: item.attributes.court,
@@ -847,4 +852,53 @@ const exportToDoc = async () => {
   saveAs(blob, "cases.docx");
 };
 
+
+
+
+const filter = async () => {
+  const jwt = localStorage.getItem("jwt");
+
+  try {
+    const response = await axios.get(`https://backend.eyhadvocates.com/api/cases?filters[decisions.data[.].attributes.decision][$nei][0]=${text.value}&filters[case_title][$nei][0]=${text.value}&filters[case_number][$nei][0]=${text.value}&filters[claimant][$nei][0]=${text.value}&filters[defendant][$nei][0]=${text.value}&filters[case_type][$nei][0]=${text.value}&filters[case_degree][$nei][0]=${text.value}&filters[case_price][$nei][0]=${text.value}&filters[registration_date][$nei][0]=${text.value}&filters[next_court_session][$nei][0]=${text.value}&filters[case_status][$nei][0]=${text.value}&filters[announcement_type][$nei][0]=${text.value}&filters[case_url][$nei][0]=${text.value}&filters[case_roll][$nei][0]=${text.value}&filters[advisor_name][$nei][0]=${text.value}&populate=*`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    },);
+    desserts.value = response.data.data
+      .map((item) => {
+        const decisions = item.attributes.decisions.data;
+        const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
+
+        return {
+          name: item.attributes.case_title,
+          case_number: item.attributes.case_number,
+          id: item.id,
+          claimant: item.attributes.claimant,
+          defendant: item.attributes.defendant, // إصلاح اسم الخاصية
+          case_type: item.attributes.case_type,
+          case_degree: item.attributes.case_degree,
+          case_price: item.attributes.case_price,
+          previous_session: item.attributes.registration_date,
+          next_session: item.attributes.next_court_session,
+          case_status: item.attributes.case_status,
+          announcement_type: item.attributes.announcement_type, // إصلاح اسم الخاصية
+          invitation_link: item.attributes.case_url,
+          decision: lastDecision,
+          role: item.attributes.case_roll, // إصلاح اسم الخاصية
+          court: item.attributes.court,
+          consultant: item.attributes.advisor_name,
+          notes: item.attributes.note,
+        };
+      })
+      .sort((a, b) => a.id - b.id); // ترتيب العناصر تصاعدياً حسب id
+
+    // تعطيل الـ loading بعد الاستجابة الناجحة
+    loading.value = false;
+    showTable.value = true;
+  } catch (error) {
+    console.error("Error fetching cases:", error);
+    // تعطيل الـ loading في حالة الخطأ أيضًا
+    loading.value = false;
+  }
+};
 </script>
