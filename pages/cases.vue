@@ -5,7 +5,7 @@
         single-line></v-text-field>
       <v-text-field v-model="text" label="استثناء" prepend-inner-icon="mdi-magnify" variant="outlined" hide-details
         single-line></v-text-field>
-      <v-btn @click='filter()'>استثناء</v-btn>
+      <v-btn @click="filter()">استثناء</v-btn>
     </template>
 
     <!-- Add new case button -->
@@ -120,7 +120,7 @@
       </v-card>
     </v-dialog>
 
-    <v-data-table id="dataTable" :class="cardClass" v-model:search="search" v-model:text="text" :headers="headers" :items="desserts"
+    <v-data-table id="dataTable" :class="cardClass" v-model:search="search"  :headers="headers" :items="desserts"
       class="elevation-1 mx-4" :footer-props="{ itemsPerPageText: 'عدد العناصر في الصفحة:' }"
       :no-data-text="'لا توجد بيانات'" :loading="loading">
       <template v-slot:item.previous_session="{ item }">
@@ -853,52 +853,117 @@ const exportToDoc = async () => {
 };
 
 
-
-
 const filter = async () => {
   const jwt = localStorage.getItem("jwt");
 
   try {
-    const response = await axios.get(`https://backend.eyhadvocates.com/api/cases?filters[decisions.data[.].attributes.decision][$nei][0]=${text.value}&filters[case_title][$nei][0]=${text.value}&filters[case_number][$nei][0]=${text.value}&filters[claimant][$nei][0]=${text.value}&filters[defendant][$nei][0]=${text.value}&filters[case_type][$nei][0]=${text.value}&filters[case_degree][$nei][0]=${text.value}&filters[case_price][$nei][0]=${text.value}&filters[registration_date][$nei][0]=${text.value}&filters[next_court_session][$nei][0]=${text.value}&filters[case_status][$nei][0]=${text.value}&filters[announcement_type][$nei][0]=${text.value}&filters[case_url][$nei][0]=${text.value}&filters[case_roll][$nei][0]=${text.value}&filters[advisor_name][$nei][0]=${text.value}&populate=*`, {
+    const response = await axios.get(`https://backend.eyhadvocates.com/api/cases`, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
-    },);
-    desserts.value = response.data.data
-      .map((item) => {
-        const decisions = item.attributes.decisions.data;
-        const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
+      params: {
+        'populate': 'decisions' ,
+        'filters[case_title][$nei][0]': `${text.value}`,
+        'filters[case_number][$nei][0]': `${text.value}`,
+        'filters[claimant][$nei][0]': `${text.value}`,
+        'filters[defendant][$nei][0]': `${text.value}`,
+        'filters[case_type][$nei][0]': `${text.value}`,
+        'filters[case_degree][$nei][0]': `${text.value}`,
+        'filters[case_price][$nei][0]': `${text.value}`,
+        'filters[registration_date][$nei][0]': `${text.value}`,
+        'filters[next_court_session][$nei][0]': `${text.value}`,
+        'filters[case_status][$nei][0]': `${text.value}`,
+        'filters[announcement_type][$nei][0]': `${text.value}`,
+        'filters[case_url][$nei][0]': `${text.value}`,
+        'filters[case_roll][$nei][0]': `${text.value}`,
+        'filters[advisor_name][$nei][0]': `${text.value}`
+      }
+    });
 
-        return {
-          name: item.attributes.case_title,
-          case_number: item.attributes.case_number,
-          id: item.id,
-          claimant: item.attributes.claimant,
-          defendant: item.attributes.defendant, // إصلاح اسم الخاصية
-          case_type: item.attributes.case_type,
-          case_degree: item.attributes.case_degree,
-          case_price: item.attributes.case_price,
-          previous_session: item.attributes.registration_date,
-          next_session: item.attributes.next_court_session,
-          case_status: item.attributes.case_status,
-          announcement_type: item.attributes.announcement_type, // إصلاح اسم الخاصية
-          invitation_link: item.attributes.case_url,
-          decision: lastDecision,
-          role: item.attributes.case_roll, // إصلاح اسم الخاصية
-          court: item.attributes.court,
-          consultant: item.attributes.advisor_name,
-          notes: item.attributes.note,
-        };
-      })
-      .sort((a, b) => a.id - b.id); // ترتيب العناصر تصاعدياً حسب id
+    // التحقق من الاستجابة
+    if (response.data && response.data.data) {
+      const filteredData = response.data.data
+        .map((item) => {
+          const decisions = item.attributes.decisions?.data || [];
+          const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
 
-    // تعطيل الـ loading بعد الاستجابة الناجحة
+          return {
+            case_title: item.attributes.case_title || '',
+            case_number: item.attributes.case_number || '',
+            id: item.id,
+            claimant: item.attributes.claimant || '',
+            defendant: item.attributes.defendant || '',
+            case_type: item.attributes.case_type || '',
+            case_degree: item.attributes.case_degree || '',
+            case_price: item.attributes.case_price || '',
+            previous_session: item.attributes.registration_date || '',
+            next_session: item.attributes.next_court_session || '',
+            case_status: item.attributes.case_status || '',
+            announcement_type: item.attributes.announcement_type || '',
+            invitation_link: item.attributes.case_url || '',
+            decision: lastDecision || '',
+            role: item.attributes.case_roll || '',
+            court: item.attributes.court || '',
+            consultant: item.attributes.advisor_name || '',
+            notes: item.attributes.note || '',
+          };
+        })
+        .filter((item) => {
+          // استبعاد العناصر بناءً على النصوص المستبعدة
+          const excludeText = `${text.value}`.toLowerCase();
+          const decisionText = item.decision.toLowerCase();
+          const caseTitle = item.case_title.toLowerCase();
+          const caseNumber = item.case_number.toLowerCase();
+          const claimant = item.claimant.toLowerCase();
+          const defendant = item.defendant.toLowerCase();
+          const caseType = item.case_type.toLowerCase();
+          const caseDegree = item.case_degree.toLowerCase();
+          const casePrice = item.case_price.toString().toLowerCase();
+          const previousSession = item.previous_session.toLowerCase();
+          const nextSession = item.next_session.toLowerCase();
+          const caseStatus = item.case_status.toLowerCase();
+          const announcementType = item.announcement_type.toLowerCase();
+          const invitationLink = item.invitation_link.toLowerCase();
+          const role = item.role.toLowerCase();
+          const court = item.court.toLowerCase();
+          const consultant = item.consultant.toLowerCase();
+          const notes = item.notes.toLowerCase();
+
+          // تطبيق الفلتر
+          return !(
+            decisionText.includes(excludeText) ||
+            caseTitle.includes(excludeText) ||
+            caseNumber.includes(excludeText) ||
+            claimant.includes(excludeText) ||
+            defendant.includes(excludeText) ||
+            caseType.includes(excludeText) ||
+            caseDegree.includes(excludeText) ||
+            casePrice.includes(excludeText) ||
+            previousSession.includes(excludeText) ||
+            nextSession.includes(excludeText) ||
+            caseStatus.includes(excludeText) ||
+            announcementType.includes(excludeText) ||
+            invitationLink.includes(excludeText) ||
+            role.includes(excludeText) ||
+            court.includes(excludeText) ||
+            consultant.includes(excludeText) ||
+            notes.includes(excludeText)
+          );
+        })
+        .sort((a, b) => a.id - b.id); // ترتيب العناصر تصاعدياً حسب id
+
+      desserts.value = filteredData;
+    } else {
+      console.error("Invalid response structure", response.data);
+    }
+
     loading.value = false;
     showTable.value = true;
   } catch (error) {
     console.error("Error fetching cases:", error);
-    // تعطيل الـ loading في حالة الخطأ أيضًا
     loading.value = false;
   }
 };
+
+
 </script>
