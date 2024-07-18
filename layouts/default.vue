@@ -2,7 +2,7 @@
   <div :style="{ '--bg-color': bgColor, '--text-color': textColor }">
     <v-layout>
       <!-- Side Navigation Drawer -->
-      <v-navigation-drawer location="right" permanent v-if="show && jwt" class="hidden">
+      <v-navigation-drawer location="right" permanent v-if="show" class="hidden">
         <template v-slot:prepend>
           <div class="flex flex-col">
             <div class="flex justify-center items-center gap-10">
@@ -27,13 +27,13 @@
               title="إعطاء الصلاحيات للمستخدمين" value="permissions"></v-list-item></NuxtLink>
           <NuxtLink v-if="roleId == 13" to="/users_edit"><v-list-item prepend-icon="mdi-pencil"
               title="تعديل بيانات الموظفين" value="users_edit"></v-list-item></NuxtLink>
-          <NuxtLink @click.prevent="logout"><v-list-item prepend-icon="mdi-account-circle" title="تسجيل الخروج"
+          <NuxtLink @click.prevent="logout" v-if="jwt"><v-list-item prepend-icon="mdi-account-circle" title="تسجيل الخروج"
               value="logOut"></v-list-item></NuxtLink>
         </v-list>
       </v-navigation-drawer>
 
       <!-- Sidebar toggle button -->
-      <v-btn v-if="jwt" icon class="absolute top-0 left-100 " @click="toggleDrawer">
+      <v-btn  icon class="absolute top-0 left-100 " @click="toggleDrawer">
         <v-icon>mdi-menu</v-icon>
       </v-btn>
 
