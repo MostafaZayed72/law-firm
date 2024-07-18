@@ -52,7 +52,7 @@ import { ref, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from "axios";
 
-const show = ref(false);
+const show = ref(true);
 const logedIn = ref(true);
 const roleId = ref(null);
 const colormode = ref('light'); // افتراضياً الوضع الفاتح
