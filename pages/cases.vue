@@ -1,20 +1,37 @@
 <template>
-  <v-card v-if="showTable" title="جميع القضايا" flat :class="cardClass" class="mx-10 rounded-lg">
+  <v-card
+    v-if="showTable"
+    title="جميع القضايا"
+    flat
+    :class="cardClass"
+    class="mx-10 rounded-lg"
+  >
     <template v-slot:text>
-      <v-text-field v-model="search" label="البحث" prepend-inner-icon="mdi-magnify" variant="outlined" hide-details
-        single-line></v-text-field>
+      <v-text-field
+        v-model="search"
+        label="البحث"
+        prepend-inner-icon="mdi-magnify"
+        variant="outlined"
+        hide-details
+        single-line
+      ></v-text-field>
     </template>
 
     <!-- Add new case button -->
-    <v-btn class="mr-4 mb-4" @click="addNewCaseDialog = true" color="primary"
-      v-if="roleId == 7 || roleId == 13 || roleId == 11 || roleId == 6 || roleId == 8">إضافة قضية جديدة</v-btn>
-    <v-btn class="mr-4 mb-4" @click="exportToExcel()" color="success">تصدير إلى Excel</v-btn>
+    <v-btn class="mr-4 mb-4" @click="addNewCaseDialog = true" color="primary" v-if="roleId ==7 || roleId ==13 || roleId ==11 || roleId ==6 || roleId ==8"
+      >إضافة قضية جديدة</v-btn
+    >
+    <v-btn class="mr-4 mb-4" @click="exportToExcel()" color="success"
+      >تصدير إلى Excel</v-btn
+    >
 
     <v-btn class="mr-4 mb-4" @click="exportToDoc" color="secondary">
       تحميل كملف DOC
     </v-btn>
     <!-- Filter by date button -->
-    <v-btn class="mr-4 mb-4" @click="filterDialog = true" color="info">فلترة حسب التاريخ</v-btn>
+    <v-btn class="mr-4 mb-4" @click="filterDialog = true" color="info"
+      >فلترة حسب التاريخ</v-btn
+    >
 
     <!-- Filter by date dialog -->
     <v-dialog v-model="filterDialog" max-width="600px" style="direction: rtl">
@@ -23,11 +40,19 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="12">
-                <v-text-field v-model="filterStartDate" type="date" label="من تاريخ"></v-text-field>
+              <v-col cols="12" >
+                <v-text-field
+                  v-model="filterStartDate"
+                  type="date"
+                  label="من تاريخ"
+                ></v-text-field>
               </v-col>
-              <v-col cols="12">
-                <v-text-field v-model="filterEndDate" type="date" label="إلى تاريخ"></v-text-field>
+              <v-col cols="12" >
+                <v-text-field
+                  v-model="filterEndDate"
+                  type="date"
+                  label="إلى تاريخ"
+                ></v-text-field>
               </v-col>
 
               <v-col cols="12" class="flex justify-center">
@@ -38,8 +63,11 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="filterDialog = false">إلغاء</v-btn>
-          <v-btn color="blue darken-1" text @click="filterCasesByDate">تأكيد</v-btn>
+          <v-btn color="blue darken-1" text @click="filterDialog = false"
+            >إلغاء</v-btn
+          >
+          <v-btn color="blue darken-1" text @click="filterCasesByDate"
+            >تأكيد</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -47,96 +75,162 @@
     <!-- Rest of the template remains unchanged -->
 
     <!-- Add new case dialog -->
-    <v-dialog v-model="addNewCaseDialog" max-width="800px" style="direction: rtl">
+    <v-dialog
+      v-model="addNewCaseDialog"
+      max-width="800px"
+      style="direction: rtl"
+    >
       <v-card>
         <v-card-title>إضافة قضية جديدة</v-card-title>
         <v-card-text>
           <v-container>
             <v-row style="direction: rtl">
               <v-col cols="12" md="6" style="direction: rtl">
-                <v-text-field style="direction: rtl" v-model="newCase.name" label="عنوان القضية"></v-text-field>
+                <v-text-field
+                  style="direction: rtl"
+                  v-model="newCase.name"
+                  label="عنوان القضية"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_number" label="رقم القضية"></v-text-field>
+                <v-text-field
+                  v-model="newCase.case_number"
+                  label="رقم القضية"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.claimant" label="المُدعي"></v-text-field>
+                <v-text-field
+                  v-model="newCase.claimant"
+                  label="المُدعي"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.Defendant" label="المُدعي عليه"></v-text-field>
+                <v-text-field
+                  v-model="newCase.Defendant"
+                  label="المُدعي عليه"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_type" label="نوع القضية"></v-text-field>
+                <v-text-field
+                  v-model="newCase.case_type"
+                  label="نوع القضية"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_degree" label="درجة القضية"></v-text-field>
+                <v-text-field
+                  v-model="newCase.case_degree"
+                  label="درجة القضية"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_price" label="قيمة الدعوى"></v-text-field>
+                <v-text-field
+                  v-model="newCase.case_price"
+                  label="قيمة الدعوى"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field type="date" v-model="newCase['previous_session']"
-                  label="تاريخ الجلسة السابقة"></v-text-field>
+                <v-text-field
+                  type="date"
+                  v-model="newCase['previous_session']"
+                  label="تاريخ الجلسة السابقة"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field type="date" v-model="newCase['next_session']" label="تاريخ الجلسة القادمة"></v-text-field>
+                <v-text-field
+                  type="date"
+                  v-model="newCase['next_session']"
+                  label="تاريخ الجلسة القادمة"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['decision']" label="القرار"></v-text-field>
+                <v-text-field
+                  v-model="newCase['decision']"
+                  label="القرار"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_status" label="حالة القضية"></v-text-field>
+                <v-text-field
+                  v-model="newCase.case_status"
+                  label="حالة القضية"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['Announcement']" label="نوع الإعلان"></v-text-field>
+                <v-text-field
+                  v-model="newCase['Announcement']"
+                  label="نوع الإعلان"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['invitation_link']" label="رابط الدعوى"></v-text-field>
+                <v-text-field
+                  v-model="newCase['invitation_link']"
+                  label="رابط الدعوى"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['role']" label="رول القضية"></v-text-field>
+                <v-text-field
+                  v-model="newCase['role']"
+                  label="رول القضية"
+                ></v-text-field>
               </v-col>
               <!-- New input fields -->
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.court" label="المحكمة المختصة"></v-text-field>
+                <v-text-field
+                  v-model="newCase.court"
+                  label="المحكمة المختصة"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.consultant" label="اسم المستشار"></v-text-field>
+                <v-text-field
+                  v-model="newCase.consultant"
+                  label="اسم المستشار"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.notes" label="ملاحظات"></v-text-field>
+                <v-text-field
+                  v-model="newCase.notes"
+                  label="ملاحظات"
+                ></v-text-field>
               </v-col>
             </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="addNewCaseDialog = false">إلغاء</v-btn>
+          <v-btn color="blue darken-1" text @click="addNewCaseDialog = false"
+            >إلغاء</v-btn
+          >
           <v-btn color="blue darken-1" text @click="addNewCase">تأكيد</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-data-table id="dataTable" :class="cardClass" v-model:search="search" :headers="headers" :items="desserts"
-      class="elevation-1 mx-4" :footer-props="{ itemsPerPageText: 'عدد العناصر في الصفحة:' }"
-      :no-data-text="'لا توجد بيانات'" :loading="loading">
+    <v-data-table
+    id="dataTable"
+      :class="cardClass"
+      v-model:search="search"
+      :headers="headers"
+      :items="desserts"
+      class="elevation-1 mx-4"
+      :footer-props="{ itemsPerPageText: 'عدد العناصر في الصفحة:' }"
+      :no-data-text="'لا توجد بيانات'"
+      :loading="loading"
+    >
       <template v-slot:item.previous_session="{ item }">
         <div style="white-space: nowrap">{{ item["previous_session"] }}</div>
       </template>
       <template v-slot:item.next_session="{ item }">
         <div style="white-space: nowrap">{{ item["next_session"] }}</div>
       </template>
-      <template v-slot:[`item.delete`]="{ item }"
-        v-if="roleId == 13 || roleId == 7 || roleId == 9 || roleId == 10 || roleId == 11">
+      <template v-slot:[`item.delete`]="{ item }" v-if="roleId==13 || roleId==7 || roleId==9 || roleId==10 || roleId==11 ">
         <v-btn small icon @click="confirmDelete(item)">
           <v-icon>mdi-delete</v-icon>
         </v-btn>
       </template>
-      <template v-slot:[`item.edit`]="{ item }" v-if="roleId == 13 || roleId == 7 || roleId == 6 || roleId == 10 || roleId == 5">
-
+      <template v-slot:[`item.edit`]="{ item }" v-if="roleId==13 || roleId==7 || roleId==6 || roleId==10 || roleId==5 ">
+       
         <v-btn small icon @click="editCase(item)">
           <v-icon>mdi-pencil</v-icon>
-
+         
         </v-btn>
       </template>
       <template v-slot:[`item.id`]="{ item }">
@@ -149,22 +243,22 @@
 
     <!-- Delete confirmation dialog -->
     <v-dialog v-model="deleteDialog" max-width="500px">
-      <v-card>
-        <v-card-title class="text-right">تأكيد الحذف</v-card-title>
-        <v-card-text class="text-right">
-          <p>هل أنت متأكد من رغبتك في حذف هذه القضية؟</p>
-        </v-card-text>
-        <v-card-actions class="justify-end">
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="deleteDialog = false">
-            إلغاء
-          </v-btn>
-          <v-btn color="blue darken-1" text @click="deleteCase">
-            تأكيد
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+  <v-card>
+    <v-card-title class="text-right">تأكيد الحذف</v-card-title>
+    <v-card-text class="text-right">
+      <p>هل أنت متأكد من رغبتك في حذف هذه القضية؟</p>
+    </v-card-text>
+    <v-card-actions class="justify-end">
+      <v-spacer></v-spacer>
+      <v-btn color="blue darken-1" text @click="deleteDialog = false">
+        إلغاء
+      </v-btn>
+      <v-btn color="blue darken-1" text @click="deleteCase">
+        تأكيد
+      </v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 
     <!-- Edit case dialog -->
     <v-dialog v-model="editDialog" max-width="800px">
@@ -175,63 +269,113 @@
             <v-row style="direction: rtl">
               <!-- Existing input fields -->
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.name" label="عنوان القضية"></v-text-field>
+                <v-text-field
+                  v-model="editedCase.name"
+                  label="عنوان القضية"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_number" label="رقم القضية"></v-text-field>
+                <v-text-field
+                  v-model="editedCase.case_number"
+                  label="رقم القضية"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.claimant" label="المُدعي"></v-text-field>
+                <v-text-field
+                  v-model="editedCase.claimant"
+                  label="المُدعي"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.Defendant" label="المُدعي عليه"></v-text-field>
+                <v-text-field
+                  v-model="editedCase.Defendant"
+                  label="المُدعي عليه"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_type" label="نوع القضية"></v-text-field>
+                <v-text-field
+                  v-model="editedCase.case_type"
+                  label="نوع القضية"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_degree" label="درجة القضية"></v-text-field>
+                <v-text-field
+                  v-model="editedCase.case_degree"
+                  label="درجة القضية"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_price" label="قيمة الدعوى"></v-text-field>
+                <v-text-field
+                  v-model="editedCase.case_price"
+                  label="قيمة الدعوى"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field type="date" v-model="editedCase['previous_session']"
-                  label="تاريخ الجلسة السابقة"></v-text-field>
+                <v-text-field
+                  type="date"
+                  v-model="editedCase['previous_session']"
+                  label="تاريخ الجلسة السابقة"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field type="date" v-model="editedCase['next_session']"
-                  label="تاريخ الجلسة القادمة"></v-text-field>
+                <v-text-field
+                  type="date"
+                  v-model="editedCase['next_session']"
+                  label="تاريخ الجلسة القادمة"
+                ></v-text-field>
               </v-col>
-
+             
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_status" label="حالة القضية"></v-text-field>
+                <v-text-field
+                  v-model="editedCase.case_status"
+                  label="حالة القضية"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['Announcement']" label="نوع الإعلان"></v-text-field>
+                <v-text-field
+                  v-model="editedCase['Announcement']"
+                  label="نوع الإعلان"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['invitation_link']" label="رابط الدعوى"></v-text-field>
+                <v-text-field
+                  v-model="editedCase['invitation_link']"
+                  label="رابط الدعوى"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['role']" label="رول القضية"></v-text-field>
+                <v-text-field
+                  v-model="editedCase['role']"
+                  label="رول القضية"
+                ></v-text-field>
               </v-col>
               <!-- New input fields -->
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.court" label="المحكمة المختصة"></v-text-field>
+                <v-text-field
+                  v-model="editedCase.court"
+                  label="المحكمة المختصة"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.consultant" label="اسم المستشار"></v-text-field>
+                <v-text-field
+                  v-model="editedCase.consultant"
+                  label="اسم المستشار"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.notes" label="ملاحظات"></v-text-field>
+                <v-text-field
+                  v-model="editedCase.notes"
+                  label="ملاحظات"
+                ></v-text-field>
               </v-col>
             </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="editDialog = false">إلغاء</v-btn>
+          <v-btn color="blue darken-1" text @click="editDialog = false"
+            >إلغاء</v-btn
+          >
           <v-btn color="blue darken-1" text @click="saveEditedCase">حفظ</v-btn>
         </v-card-actions>
       </v-card>
@@ -253,7 +397,7 @@ const exportToPdf = () => {
     const pdf = new jsPDF();
     const imgWidth = 210; // عرض الصفحة A4 في mm
     const imgHeight = canvas.height * imgWidth / canvas.width;
-
+    
     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
     pdf.save('table.pdf');
   });
@@ -350,7 +494,7 @@ const deleteCase = async () => {
   // const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
 
   try {
-    await axios.delete(`https://backend.eyhadvocates.com/api/cases/${id}`, {
+    await axios.delete(`https://backend.lawyerstor.com/api/cases/${id}`, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
@@ -374,7 +518,7 @@ const editCase = (item) => {
   case_number.value = item.case_number;
 };
 
-const loading = ref()
+const loading =ref()
 const fetchCases = async () => {
   try {
     const jwt = localStorage.getItem("jwt");
@@ -382,7 +526,7 @@ const fetchCases = async () => {
     loading.value = true;
 
     const response = await axios.get(
-      "https://backend.eyhadvocates.com/api/cases?populate=*",
+      "https://backend.lawyerstor.com/api/cases?populate=*",
       {
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -487,7 +631,7 @@ const addNewCase = async () => {
 
   try {
     const response = await axios.post(
-      "https://backend.eyhadvocates.com/api/cases",
+      "https://backend.lawyerstor.com/api/cases",
       newCaseData,
       {
         headers: {
@@ -515,7 +659,7 @@ const addNewCase = async () => {
 
       try {
         const decisionResponse = await axios.post(
-          "https://backend.eyhadvocates.com/api/decisions",
+          "https://backend.lawyerstor.com/api/decisions",
           newDecisionData,
           {
             headers: {
@@ -578,7 +722,7 @@ const addNewCase = async () => {
   }
 };
 
-const saveEditedCase = async () => {
+ const saveEditedCase = async () => {
   const caseId = selectedCase.value.id; // معرف القضية
   const jwt = localStorage.getItem("jwt");
   // const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
@@ -590,34 +734,34 @@ const saveEditedCase = async () => {
   const decisionId = lastDecision ? lastDecision.id : null; // استخدام قيمة القرار الأخير
 
   const updatedCaseData = {
-    data: {
-      case_number: editedCase.value.case_number,
-      case_title: editedCase.value.name,
-      defendant: editedCase.value.Defendant,
-      claimant: editedCase.value.claimant,
-      case_degree: editedCase.value.case_degree,
-      case_type: editedCase.value.case_type,
-      case_price: parseFloat(editedCase.value.case_price) || 0,
-      case_decision: editedCase.value["decision"],
-      announcement_type: editedCase.value["Announcement"],
-      case_roll: editedCase.value["role"],
-      case_url: editedCase.value["invitation_link"],
-      advisor_name: editedCase.value.consultant,
-      court: editedCase.value.court,
-      note: editedCase.value.notes,
-      case_status: editedCase.value.case_status,
-      locale: "ar",
-    },
-  };
+  data: {
+    case_number: editedCase.value.case_number,
+    case_title: editedCase.value.name,
+    defendant: editedCase.value.Defendant,
+    claimant: editedCase.value.claimant,
+    case_degree: editedCase.value.case_degree,
+    case_type: editedCase.value.case_type,
+    case_price: parseFloat(editedCase.value.case_price) || 0,
+    case_decision: editedCase.value["decision"],
+    announcement_type: editedCase.value["Announcement"],
+    case_roll: editedCase.value["role"],
+    case_url: editedCase.value["invitation_link"],
+    advisor_name: editedCase.value.consultant,
+    court: editedCase.value.court,
+    note: editedCase.value.notes,
+    case_status: editedCase.value.case_status,
+    locale: "ar",
+  },
+};
 
-  // إضافة حقول التاريخ إذا كانت موجودة
-  if (editedCase.value["next_session"]) {
-    updatedCaseData.data.registration_date = editedCase.value["previous_session"];
-  }
+// إضافة حقول التاريخ إذا كانت موجودة
+if (editedCase.value["next_session"]) {
+  updatedCaseData.data.registration_date = editedCase.value["previous_session"];
+}
 
-  if (editedCase.value["next_session"]) {
-    updatedCaseData.data.next_court_session = editedCase.value["pnext_session"];
-  }
+if (editedCase.value["next_session"]) {
+  updatedCaseData.data.next_court_session = editedCase.value["pnext_session"];
+}
 
   const updatedDecisionData = {
     data: {
@@ -632,7 +776,7 @@ const saveEditedCase = async () => {
   try {
     // ريكويست لتحديث القضية
     await axios.put(
-      `https://backend.eyhadvocates.com/api/cases/${caseId}`,
+      `https://backend.lawyerstor.com/api/cases/${caseId}`,
       updatedCaseData,
       {
         headers: {
@@ -642,9 +786,9 @@ const saveEditedCase = async () => {
     );
 
     // ريكويست لتحديث القرار باستخدام decisionId إذا كان متوفرًا
-
-
-
+    
+      
+    
 
     // تحديث القائمة المحلية للقضايا إذا كانت هناك قيمة desserts مستخدمة
     const index = desserts.value.findIndex((item) => item.id === caseId);
@@ -662,7 +806,7 @@ const saveEditedCase = async () => {
         previous_session: editedCase.value["next_session"],
         decision: editedCase.value["decision"],
         Announcement: editedCase.value["Announcement"],
-        invitation_link: editedCase.value["7"],
+        invitation_link: editedCase.value["invitation_link"],
         role: editedCase.value.role,
         court: editedCase.value.court,
         consultant: editedCase.value.consultant,
@@ -690,7 +834,7 @@ const filterCases = async () => {
 
   try {
     const response = await axios.post(
-      "https://backend.eyhadvocates.com/api/cases",
+      "https://backend.lawyerstor.com/api/cases",
       filters,
       {
         headers: {
@@ -729,14 +873,14 @@ const filterCases = async () => {
 
 const roleId = ref()
 onMounted(() => {
-  roleId.value = localStorage.getItem('roleId')
+   roleId.value = localStorage.getItem('roleId')
   const jwt = localStorage.getItem('jwt')
   if (!jwt) {
     navigateTo('/login')
   } else {
     setTimeout(() => {
       showTable.value = true
-    })
+    }) 
   }
 });
 
@@ -748,7 +892,7 @@ const filterCasesByDate = () => {
       const previousSessionDate = new Date(dessert["previous_session"]);
       const nextSessionDate = new Date(dessert["next_session"]);
       return (previousSessionDate >= startDate && previousSessionDate <= endDate) ||
-        (nextSessionDate >= startDate && nextSessionDate <= endDate);
+             (nextSessionDate >= startDate && nextSessionDate <= endDate);
     });
   }
   filterDialog.value = false;
