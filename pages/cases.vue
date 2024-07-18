@@ -181,32 +181,32 @@ reverse
             <v-row style="direction: rtl">
               <!-- Existing input fields -->
               <v-col cols="12" md="6">
-                <v-text-field reverse reverse v-model="editedCase.case_title" label="عنوان القضية"></v-text-field>
+                <v-text-field reverse  v-model="editedCase.case_title" label="عنوان القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field reverse reverse v-model="editedCase.case_number" label="رقم القضية"></v-text-field>
+                <v-text-field reverse  v-model="editedCase.case_number" label="رقم القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field reverse reverse v-model="editedCase.claimant" label="المُدعي"></v-text-field>
+                <v-text-field reverse  v-model="editedCase.claimant" label="المُدعي"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field reverse reverse v-model="editedCase.defendant" label="المُدعي عليه"></v-text-field>
+                <v-text-field reverse  v-model="editedCase.defendant" label="المُدعي عليه"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field reverse reverse v-model="editedCase.case_type" label="نوع القضية"></v-text-field>
+                <v-text-field reverse  v-model="editedCase.case_type" label="نوع القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field reverse reverse v-model="editedCase.case_degree" label="درجة القضية"></v-text-field>
+                <v-text-field reverse  v-model="editedCase.case_degree" label="درجة القضية"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field reverse reverse v-model="editedCase.case_price" label="قيمة الدعوى"></v-text-field>
+                <v-text-field reverse  v-model="editedCase.case_price" label="قيمة الدعوى"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field reverse reverse type="date" v-model="editedCase['previous_session']"
+                <v-text-field reverse  type="date" v-model="editedCase['previous_session']"
                   label="تاريخ الجلسة السابقة"></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field reverse reverse type="date" v-model="editedCase['next_session']"
+                <v-text-field reverse  type="date" v-model="editedCase['next_session']"
                   label="تاريخ الجلسة القادمة"></v-text-field>
               </v-col>
 
