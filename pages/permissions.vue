@@ -80,7 +80,7 @@ const assignRole = async () => {
       },
     })
 
-    const user = userResponse.data.find(u => u.email.toLowerCase() === userEmail.value.toLowerCase())
+    const user = userResponse.data.find(u => u.email.toLowerCase() === userEmail.value.toLowerCase().trim())
     console.log(user)
     if (!user) {
       alert('لم يتم العثور على المستخدم بهذا الإيميل')
