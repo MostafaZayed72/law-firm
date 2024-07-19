@@ -47,9 +47,9 @@ const login = async () => {
     localStorage.setItem('userId', userId)
 
     // جلب جميع المستخدمين بعد تسجيل الدخول بنجاح
-    const usersResponse = await axios.get(`https://backend.eyhadvocates.com/api/users/me?populate=*`, {
+    const usersResponse = await axios.get(`https://backend.eyhadvocates.com/api/users/${userId}?populate=*`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImlhdCI6MTcyMTQwNTM1OSwiZXhwIjoxNzIzOTk3MzU5fQ.EqxbE3K6rqoS9XFkz_wo27BLiZh6y3RtHeuA0SlZYew`,
       },
     })
     const role = usersResponse.data.role.id
