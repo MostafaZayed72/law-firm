@@ -19,7 +19,7 @@
         <v-list density="compact" nav style="direction: rtl" >
           <NuxtLink to="/"><v-list-item prepend-icon="mdi-home-city" title="الرئيسية" value="home"></v-list-item>
           </NuxtLink>
-          <NuxtLink v-if="logedIn == 'true'" to="/profile"><v-list-item prepend-icon="mdi-account" title="حسابي"
+          <NuxtLink  to="/profile"><v-list-item prepend-icon="mdi-account" title="حسابي"
               value="account"></v-list-item></NuxtLink>
           <NuxtLink to="/cases"><v-list-item prepend-icon="mdi-gavel" title="جميع القضايا" value="users"></v-list-item>
           </NuxtLink>
@@ -104,9 +104,10 @@ onMounted(async () => {
   try {
     const jwt = localStorage.getItem("jwt");
 
-    const response = await axios.get('https://backend.eyhadvocates.com/api/users/me', {
+    const userId= localStorage.getItem("userId");
+    const response = await axios.get(`https://backend.eyhadvocates.com/api/users/${userId}?populate=*`, {
       headers: {
-        Authorization: `Bearer ${jwt}`,
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImlhdCI6MTcyMTQwNTM1OSwiZXhwIjoxNzIzOTk3MzU5fQ.EqxbE3K6rqoS9XFkz_wo27BLiZh6y3RtHeuA0SlZYew`,
       },
     });
     userName.value = response.data.username;
