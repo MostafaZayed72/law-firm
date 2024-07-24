@@ -1,385 +1,99 @@
 <template>
-  <v-card v-if="showTable" title="جميع القضايا" flat :class="cardClass" class="mx-10 rounded-lg">
-    <template v-slot:text>
-      <v-text-field v-model="search" label="البحث" prepend-inner-icon="mdi-magnify" variant="outlined" hide-details
-        single-line></v-text-field>
-      <v-text-field v-model="text" label="استثناء" prepend-inner-icon="mdi-magnify" variant="outlined" hide-details
-        single-line></v-text-field>
-      <v-btn @click='filter()'>استثناء</v-btn>
-    </template>
-
-    <!-- Add new case button -->
-    <v-btn class="mr-4 mb-4" @click="addNewCaseDialog = true" color="primary"
-      v-if="roleId == 7 || roleId == 13 || roleId == 11 || roleId == 6 || roleId == 8">إضافة قضية جديدة</v-btn>
-    <v-btn class="mr-4 mb-4" @click="exportToExcel()" color="success">تصدير إلى Excel</v-btn>
-
-    <v-btn class="mr-4 mb-4" @click="exportToDoc" color="secondary">
-      تحميل كملف DOC
-    </v-btn>
-    <!-- Filter by date button -->
-    <v-btn class="mr-4 mb-4" @click="filterDialog = true" color="info">فلترة حسب التاريخ</v-btn>
-
-    <!-- Filter by date dialog -->
-    <v-dialog v-model="filterDialog" max-width="600px" style="direction: rtl">
-      <v-card>
-        <v-card-title>فلترة القضايا حسب التاريخ</v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-text-field v-model="filterStartDate" type="date" label="من تاريخ"></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field v-model="filterEndDate" type="date" label="إلى تاريخ"></v-text-field>
-              </v-col>
-
-              <v-col cols="12" class="flex justify-center">
-                <v-btn class=" mb-4" color="info" @click="fetchCases">كل القضايا بدون فلتر</v-btn>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="filterDialog = false">إلغاء</v-btn>
-          <v-btn color="blue darken-1" text @click="filterCasesByDate">تأكيد</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Rest of the template remains unchanged -->
-
-    <!-- Add new case dialog -->
-    <v-dialog v-model="addNewCaseDialog" max-width="800px" style="direction: rtl">
-      <v-card>
-        <v-card-title>إضافة قضية جديدة</v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row style="direction: rtl">
-              <v-col cols="12" md="6" style="direction: rtl">
-                <v-text-field style="direction: rtl" v-model="newCase.case_title" label="عنوان القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_number" label="رقم القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.claimant" label="المُدعي"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.defendant" label="المُدعي عليه"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_type" label="نوع القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_degree" label="درجة القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_price" label="قيمة الدعوى"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field type="date" v-model="newCase['previous_session']"
-                  label="تاريخ الجلسة السابقة"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field type="date" v-model="newCase['next_session']" label="تاريخ الجلسة القادمة"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['decision']" label="القرار"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.case_status" label="حالة القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['announcement_type']" label="نوع الإعلان"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['invitation_link']" label="رابط الدعوى"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase['role']" label="رول القضية"></v-text-field>
-              </v-col>
-              <!-- New input fields -->
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.court" label="المحكمة المختصة"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.consultant" label="اسم المستشار"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="newCase.notes" label="ملاحظات"></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="addNewCaseDialog = false">إلغاء</v-btn>
-          <v-btn color="blue darken-1" text @click="addNewCase">تأكيد</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-data-table id="dataTable" :class="cardClass" v-model:search="search" v-model:text="text" :headers="headers" :items="desserts"
-      class="elevation-1 mx-4" :footer-props="{ itemsPerPageText: 'عدد العناصر في الصفحة:' }"
-      :no-data-text="'لا توجد بيانات'" :loading="loading">
-      <template v-slot:item.previous_session="{ item }">
-        <div style="white-space: nowrap">{{ item["previous_session"] }}</div>
+  <div class="card rtl">
+    <DataTable v-model:filters="filters" :value="customers" paginator :rows="10" dataKey="id" filterDisplay="row" :loading="loading"
+              :globalFilterFields="['case_title', 'claimant', 'defendant', 'case_status']">
+      <template #header>
+        <div class="flex justify-end">
+          <IconField>
+            <InputIcon>
+              <i class="pi pi-search" />
+            </InputIcon>
+            <InputText v-model="filters['global'].value" placeholder="بحث عن كلمة" />
+          </IconField>
+        </div>
       </template>
-      <template v-slot:item.next_session="{ item }">
-        <div style="white-space: nowrap">{{ item["next_session"] }}</div>
-      </template>
-      <template v-slot:[`item.delete`]="{ item }"
-        v-if="roleId == 13 || roleId == 7 || roleId == 9 || roleId == 10 || roleId == 11">
-        <v-btn small icon @click="confirmDelete(item)">
-          <v-icon>mdi-delete</v-icon>
-        </v-btn>
-      </template>
-      <template v-slot:[`item.edit`]="{ item }"
-        v-if="roleId == 13 || roleId == 7 || roleId == 6 || roleId == 10 || roleId == 5">
 
-        <v-btn small icon @click="editCase(item)">
-          <v-icon>mdi-pencil</v-icon>
-
-        </v-btn>
-      </template>
-      <template v-slot:[`item.id`]="{ item }">
-        <nuxt-link :to="`/case/${item.id}`">{{ item.id }}</nuxt-link>
-      </template>
-      <template v-slot:[`item.case_title`]="{ item }">
-        <nuxt-link :to="`/case/${item.id}`">{{ item.case_title }}</nuxt-link>
-      </template>
-    </v-data-table>
-
-    <!-- Delete confirmation dialog -->
-    <v-dialog v-model="deleteDialog" max-width="500px">
-      <v-card>
-        <v-card-title class="text-right">تأكيد الحذف</v-card-title>
-        <v-card-text class="text-right">
-          <p>هل أنت متأكد من رغبتك في حذف هذه القضية؟</p>
-        </v-card-text>
-        <v-card-actions class="justify-end">
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="deleteDialog = false">
-            إلغاء
-          </v-btn>
-          <v-btn color="blue darken-1" text @click="deleteCase">
-            تأكيد
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Edit case dialog -->
-    <v-dialog v-model="editDialog" max-width="800px">
-      <v-card>
-        <v-card-title>تعديل القضية</v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row style="direction: rtl">
-              <!-- Existing input fields -->
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_title" label="عنوان القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_number" label="رقم القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.claimant" label="المُدعي"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.defendant" label="المُدعي عليه"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_type" label="نوع القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_degree" label="درجة القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_price" label="قيمة الدعوى"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field type="date" v-model="editedCase['previous_session']"
-                  label="تاريخ الجلسة السابقة"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field type="date" v-model="editedCase['next_session']"
-                  label="تاريخ الجلسة القادمة"></v-text-field>
-              </v-col>
-
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.case_status" label="حالة القضية"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['announcement_type']" label="نوع الإعلان"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['invitation_link']" label="رابط الدعوى"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase['role']" label="رول القضية"></v-text-field>
-              </v-col>
-              <!-- New input fields -->
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.court" label="المحكمة المختصة"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.consultant" label="اسم المستشار"></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="editedCase.notes" label="ملاحظات"></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="editDialog = false">إلغاء</v-btn>
-          <v-btn color="blue darken-1" text @click="saveEditedCase">حفظ</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-card>
+      <Column field="case_title" header="عنوان القضية" style="min-width: 12rem">
+        <template #body="{ data }">
+          {{ data.case_title }}
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="ابحث بالعنوان" />
+        </template>
+      </Column>
+      <Column header="المدعي" filterField="claimant" style="min-width: 12rem">
+        <template #body="{ data }">
+          {{ data.claimant }}
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="ابحث بالمدعي" />
+        </template>
+      </Column>
+      <Column header="المدعى عليه" filterField="defendant" style="min-width: 12rem">
+        <template #body="{ data }">
+          {{ data.defendant }}
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="ابحث بالمدعى عليه" />
+        </template>
+      </Column>
+      <Column header="الحالة" filterField="case_status" style="min-width: 12rem">
+        <template #body="{ data }">
+          <Tag :value="data.case_status" :severity="getSeverity(data.case_status)" />
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <Select v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="اختر واحدة" style="min-width: 12rem" :showClear="true">
+            <template #option="slotProps">
+              <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
+            </template>
+          </Select>
+        </template>
+      </Column>
+      <Column field="verified" header="تم التحقق" dataType="boolean" style="min-width: 6rem">
+        <template #body="{ data }">
+          <i class="pi" :class="{ 'pi-check-circle text-green-500': data.verified, 'pi-times-circle text-red-400': !data.verified }"></i>
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <Checkbox v-model="filterModel.value" :indeterminate="filterModel.value === null" binary @change="filterCallback()" />
+        </template>
+      </Column>
+    </DataTable>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import axios from "axios";
-import * as XLSX from 'xlsx';
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import { FilterMatchMode } from '@primevue/core/api';
 
-const exportToPdf = () => {
-  const table = document.getElementById('dataTable'); // استبدل بمعرف جدولك
-  html2canvas(table).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF();
-    const imgWidth = 210; // عرض الصفحة A4 في mm
-    const imgHeight = canvas.height * imgWidth / canvas.width;
+const customers = ref([]);
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  case_title: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  claimant: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  defendant: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  case_status: { value: null, matchMode: FilterMatchMode.EQUALS },
+  verified: { value: null, matchMode: FilterMatchMode.EQUALS }
+});
+const representatives = ref([
+  { name: 'Amy Elsner', image: 'amyelsner.png' },
+  { name: 'Anna Fali', image: 'annafali.png' },
+  { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
+  { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
+  { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
+  { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
+  { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
+  { name: 'Onyama Limba', image: 'onyamalimba.png' },
+  { name: 'Stephen Shaw', image: 'stephenshaw.png' },
+  { name: 'XuXue Feng', image: 'xuxuefeng.png' }
+]);
+const statuses = ref(['منتهي', 'نشط']);
+const loading = ref(true);
 
-    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-    pdf.save('table.pdf');
-  });
-};
-// Ensure useColorMode is properly imported from your library or plugin
-const colorMode = useColorMode(); // Uncomment this if useColorMode is properly imported
-
-const case_number = ref("");
-const search = ref("");
-const text = ref("");
-const showTable = ref(false);
-const addNewCaseDialog = ref(false);
-const deleteDialog = ref(false);
-const editDialog = ref(false);
-const filterDialog = ref(false);
-const filterStartDate = ref("");
-const filterEndDate = ref("");
-
-const selectedCase = ref(null);
-const editedCase = ref(null);
-
-const headers = [
-  { key: "id", title: "id" },
-  { align: "start", key: "case_title", sortable: false, title: "عنوان القضية" },
-  { key: "case_number", title: "رقم القضية" },
-  { key: "claimant", title: "المُدعي" },
-  { key: "defendant", title: "المُدعي عليه" },
-  { key: "case_type", title: "نوع القضية" },
-  { key: "case_degree", title: "درجة القضية" },
-  { key: "case_price", title: "قيمة الدعوى" },
-  { key: "previous_session", title: "تاريخ الجلسة السابقة" },
-  { key: "next_session", title: "تاريخ الجلسة القادمة" },
-  { key: "decision", title: "القرار" },
-  { key: "case_status", title: "حالة القضية" },
-  { key: "announcement_type", title: "نوع الإعلان" },
-  { key: "invitation_link", title: "رابط الدعوى" },
-  { key: "role", title: "رول القضية" },
-  { key: "court", title: "المحكمة المختصة" },
-  { key: "consultant", title: "اسم المستشار" },
-  { key: "notes", title: "ملاحظات" },
-  { key: "delete", title: "حذف القضية" },
-  // You might need to add an edit key if editCase function is defined elsewhere
-  { key: "edit", title: "تعديل القضية" },
-];
-
-const desserts = ref([]);
-
-const cardClass = computed(() => {
-  return colorMode.preference === "dark" ? "bg-grey-darken-3" : "bg-white";
+onMounted(() => {
+  fetchCases();
 });
 
-// Export data to Excel
-const exportToExcel = async () => {
-  const XLSX = await import('xlsx');
-  const wb = XLSX.utils.book_new(); // إنشاء ملف عمل جديد
-  const ws = XLSX.utils.json_to_sheet(desserts.value); // تحويل البيانات إلى ورقة
-
-  // إضافة الورقة إلى ملف العمل
-  XLSX.utils.book_append_sheet(wb, ws, 'قضايا');
-
-  // توليد ملف Excel وبدء التحميل
-  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
-  function s2ab(s) {
-    const buf = new ArrayBuffer(s.length);
-    const view = new Uint8Array(buf);
-    for (let i = 0; i < s.length; i++) {
-      view[i] = s.charCodeAt(i) & 0xFF;
-    }
-    return buf;
-  }
-
-  // إنشاء Blob من البيانات الثنائية
-  const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
-
-  // إنشاء عنصر رابط وبدء التحميل
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'cases.xlsx';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  window.URL.revokeObjectURL(url);
-};
-
-const confirmDelete = (item) => {
-  selectedCase.value = item;
-  deleteDialog.value = true;
-};
-
-const deleteCase = async () => {
-  const id = selectedCase.value.id;
-  const jwt = localStorage.getItem("jwt");
-  // const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
-
-  try {
-    await axios.delete(`https://backend.eyhadvocates.com/api/cases/${id}`, {
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
-    });
-
-    const index = desserts.value.indexOf(selectedCase.value);
-    if (index !== -1) {
-      desserts.value.splice(index, 1);
-    }
-
-    deleteDialog.value = false;
-  } catch (error) {
-    console.error("خطأ في حذف القضية:", error.response.data);
-  }
-};
-
-const editCase = (item) => {
-  selectedCase.value = item;
-  editedCase.value = { ...item };
-  editDialog.value = true;
-  case_number.value = item.case_number;
-};
-
-const loading = ref()
 const fetchCases = async () => {
   try {
     const jwt = localStorage.getItem("jwt");
@@ -395,8 +109,7 @@ const fetchCases = async () => {
       }
     );
 
-    filterDialog.value = false;
-    desserts.value = response.data.data
+    customers.value = response.data.data
       .map((item) => {
         const decisions = item.attributes.decisions.data;
         const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
@@ -426,7 +139,6 @@ const fetchCases = async () => {
 
     // تعطيل الـ loading بعد الاستجابة الناجحة
     loading.value = false;
-    showTable.value = true;
   } catch (error) {
     console.error("Error fetching cases:", error);
     // تعطيل الـ loading في حالة الخطأ أيضًا
@@ -434,474 +146,25 @@ const fetchCases = async () => {
   }
 };
 
-onMounted(fetchCases);
-
-const newCase = ref({
-  case_title: "",
-  id: "",
-  claimant: "",
-  defendant: "",
-  case_type: "",
-  case_degree: "",
-  case_price: "",
-  previous_session: "",
-  next_session: "",
-  decision: "",
-  announcement_type: "",
-  invitation_link: "",
-  role: "",
-  court: "",
-  consultant: "",
-  notes: "",
-  case_status: ""
-});
-
-const addNewCase = async () => {
-  const jwt = localStorage.getItem("jwt");
-
-  // التحقق من وجود قيمة لـ previous_session
-  if (!newCase.value["previous_session"]) {
-    alert("يجب إدخال تاريخ الجلسة السابقة");
-    return;
-  }
-
-  const newCaseData = {
-    data: {
-      case_number: newCase.value.case_number,
-      case_title: newCase.value.case_title.trim(),
-      defendant: newCase.value.defendant.trim(),
-      claimant: newCase.value.claimant.trim(),
-      case_degree: newCase.value.case_degree.trim(),
-      case_type: newCase.value.case_type.trim(),
-      case_price: parseFloat(newCase.value.case_price) || 0,
-      case_decision: newCase.value["decision"].trim(),
-      announcement_type: newCase.value["announcement_type"].trim(),
-      case_roll: newCase.value["role"].trim(),
-      case_url: newCase.value["invitation_link"].trim(),
-      registration_date: newCase.value["previous_session"],
-      advisor_name: newCase.value.consultant.trim(),
-      court: newCase.value.court.trim(),
-      note: newCase.value.notes,
-      case_status: newCase.value.case_status.trim(),
-      locale: "ar",
-    },
-  };
-
-  // إضافة حقول التاريخ إذا كانت موجودة
-  if (newCase.value["next_session"]) {
-    newCaseData.data.next_court_session = newCase.value["next_session"];
-  }
-
-  try {
-    const response = await axios.post(
-      "https://backend.eyhadvocates.com/api/cases",
-      newCaseData,
-      {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      }
-    );
-
-    if (response && response.data) {
-      const caseId = response.data.data.id;
-
-      const newDecisionData = {
-        data: {
-          decision: newCase.value["decision"],
-          status: newCase.value.case_status,
-          case: caseId,
-          locale: "ar",
-        },
-      };
-
-      // إضافة حقول التاريخ إذا كانت موجودة
-      if (newCase.value["previous_session"]) {
-        newDecisionData.data.date = newCase.value["previous_session"];
-      }
-
-      try {
-        const decisionResponse = await axios.post(
-          "https://backend.eyhadvocates.com/api/decisions",
-          newDecisionData,
-          {
-            headers: {
-              Authorization: `Bearer ${jwt}`,
-            },
-          }
-        );
-
-        if (decisionResponse && decisionResponse.data) {
-          const decisionId = decisionResponse.data.data.id;
-
-          desserts.value.push({
-            case_title: newCase.value.case_title,
-            case_number: newCase.value.case_number,
-            id: caseId,
-            claimant: newCase.value.claimant,
-            defendant: newCase.value.defendant,
-            case_type: newCase.value.case_type,
-            case_degree: newCase.value.case_degree,
-            case_price: newCase.value.case_price,
-            previous_session: newCase.value["previous_session"],
-            next_session: newCase.value["next_session"],
-            decision: newCase.value["decision"],
-            announcement_type: newCase.value["announcement_type"],
-            invitation_link: newCase.value["invitation_link"],
-            role: newCase.value.role,
-            court: newCase.value.court,
-            consultant: newCase.value.consultant,
-            notes: newCase.value.notes,
-            case_status: newCase.value.case_status,
-          });
-
-          addNewCaseDialog.value = false;
-          newCase.value = {
-            case_title: "",
-            id: "",
-            claimant: "",
-            defendant: "",
-            case_type: "",
-            case_degree: "",
-            case_price: "",
-            previous_session: "",
-            next_session: "",
-            decision: "",
-            announcement_type: "",
-            invitation_link: "",
-            role: "",
-            court: "",
-            consultant: "",
-            notes: "",
-            case_status: ""
-          };
-        }
-      } catch (error) {
-        console.error("Error adding new decision:", error);
-      }
-    }
-  } catch (error) {
-    console.error("Error adding new case:", error);
-  }
-};
-
-const saveEditedCase = async () => {
-  const caseId = selectedCase.value.id; // معرف القضية
-  const jwt = localStorage.getItem("jwt");
-  // const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
-
-  // Example safeguard using optional chaining
-  const decisions = editedCase.value.decisions?.data; // Ensure decisions is defined and has a 'data' property
-
-  const lastDecision = decisions?.length > 0 ? decisions[decisions.length - 1]?.attributes.decision : null;
-  const decisionId = lastDecision ? lastDecision.id : null; // استخدام قيمة القرار الأخير
-
-  const updatedCaseData = {
-    data: {
-      case_number: editedCase.value.case_number,
-      case_title: editedCase.value.case_title.trim(),
-      defendant: editedCase.value.defendant.trim(),
-      claimant: editedCase.value.claimant.trim(),
-      case_degree: editedCase.value.case_degree.trim(),
-      case_type: editedCase.value.case_type.trim(),
-      case_price: parseFloat(editedCase.value.case_price) || 0,
-      case_decision: editedCase.value["decision"].trim(),
-      announcement_type: editedCase.value["announcement_type"].trim(),
-      case_roll: editedCase.value["role"].trim(),
-      case_url: editedCase.value["invitation_link"].trim(),
-      advisor_name: editedCase.value.consultant.trim(),
-      court: editedCase.value.court.trim(),
-      note: editedCase.value.notes,
-      case_status: editedCase.value.case_status,
-      locale: "ar",
-    },
-  };
-
-  // إضافة حقول التاريخ إذا كانت موجودة
-  if (editedCase.value["next_session"]) {
-    updatedCaseData.data.registration_date = editedCase.value["previous_session"];
-  }
-
-  if (editedCase.value["next_session"]) {
-    updatedCaseData.data.next_court_session = editedCase.value["pnext_session"];
-  }
-
-  const updatedDecisionData = {
-    data: {
-      date: new Date().toISOString(),
-      decision: lastDecision ? lastDecision.decision : null,
-      status: editedCase.value.case_status,
-      case: caseId, // معرف القضية
-      locale: "ar",
-    },
-  };
-
-  try {
-    // ريكويست لتحديث القضية
-    await axios.put(
-      `https://backend.eyhadvocates.com/api/cases/${caseId}`,
-      updatedCaseData,
-      {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      }
-    );
-
-    // ريكويست لتحديث القرار باستخدام decisionId إذا كان متوفرًا
-
-
-
-
-    // تحديث القائمة المحلية للقضايا إذا كانت هناك قيمة desserts مستخدمة
-    const index = desserts.value.findIndex((item) => item.id === caseId);
-    if (index !== -1) {
-      desserts.value.splice(index, 1, {
-        case_title: editedCase.value.case_title,
-        case_number: editedCase.value.case_number,
-        id: caseId,
-        claimant: editedCase.value.claimant,
-        defendant: editedCase.value.defendant,
-        case_type: editedCase.value.case_type,
-        case_degree: editedCase.value.case_degree,
-        case_price: editedCase.value.case_price,
-        previous_session: editedCase.value["previous_session"],
-        previous_session: editedCase.value["next_session"],
-        decision: editedCase.value["decision"],
-        announcement_type: editedCase.value["announcement_type"],
-        invitation_link: editedCase.value["invitation_link"],
-        role: editedCase.value.role,
-        court: editedCase.value.court,
-        consultant: editedCase.value.consultant,
-        notes: editedCase.value.notes,
-        case_status: editedCase.value.case_status,
-      });
-    }
-
-    // إغلاق نافذة التعديل بعد الانتهاء
-    editDialog.value = false;
-  } catch (error) {
-    console.error("Error saving edited case:", error);
-  }
-};
-
-
-const filterCases = async () => {
-  const jwt = localStorage.getItem("jwt");
-  // const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzIwODEwOTYwLCJleHAiOjE3MjM0MDI5NjB9.QgOqOE0x-ZCcH_KKV4y-6wB1dxjIoNTehqW9BeXRG9g";
-
-  const filters = {
-    start_date: filterStartDate.value,
-    end_date: filterEndDate.value,
-  };
-
-  try {
-    const response = await axios.post(
-      "https://backend.eyhadvocates.com/api/cases",
-      filters,
-      {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      }
-    );
-
-    desserts.value = response.data.data.map((item) => ({
-      case_title: item.attributes.case_title,
-      case_number: item.attributes.case_number,
-      id: item.id,
-      claimant: item.attributes.claimant,
-      defendant: item.attributes.defendant,
-      case_type: item.attributes.case_type,
-      case_degree: item.attributes.case_degree,
-      case_price: item.attributes.case_price,
-      previous_session: item.attributes.registration_date,
-      next_session: item.attributes.next_court_session,
-      decision: item.attributes.case_decision,
-      case_status: item.attributes.case_status, // Double check attribute name
-      announcement_type: item.attributes.announcement_type,
-      invitation_link: item.attributes.case_url,
-      role: item.attributes.case_roll,
-      court: item.attributes.court,
-      consultant: item.attributes.advisor_name,
-      notes: item.attributes.note,
-    }));
-
-    showTable.value = true;
-    filterDialog.value = false;
-  } catch (error) {
-    console.error("Error filtering cases:", error);
-  }
-};
-
-const roleId = ref()
-onMounted(() => {
-  roleId.value = localStorage.getItem('roleId')
-  const jwt = localStorage.getItem('jwt')
-  if (!jwt) {
-    navigateTo('/login')
-  } else {
-    setTimeout(() => {
-      showTable.value = true
-    })
-  }
-});
-
-const filterCasesByDate = () => {
-  const startDate = new Date(filterStartDate.value);
-  const endDate = new Date(filterEndDate.value);
-  if (!isNaN(startDate) && !isNaN(endDate)) {
-    desserts.value = desserts.value.filter((dessert) => {
-      const previousSessionDate = new Date(dessert["previous_session"]);
-      const nextSessionDate = new Date(dessert["next_session"]);
-      return (previousSessionDate >= startDate && previousSessionDate <= endDate) ||
-        (nextSessionDate >= startDate && nextSessionDate <= endDate);
-    });
-  }
-  filterDialog.value = false;
-};
-
-
-
-
-
-import { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType, HeadingLevel } from 'docx';
-import fileSaver from 'file-saver';
-const { saveAs } = fileSaver;
-const exportToDoc = async () => {
-  // Reverse the order of items from right to left including index+1
-  const today = new Date();
-  const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
-  const reversedRows = desserts.value.slice().reverse().map((item, index) => [
-    item["notes"] ?? "",
-    item["consultant_name"] ?? "",
-    item["court_name"] ?? "",
-    item["case_roll"] ?? "",
-    item["case_link"] ?? "",
-    item["announcement_type"] ?? "",
-    item["case_status"] ?? "",
-    item["decision"] ?? "",
-    item["next_session"] ?? "",
-    item["previous_session"] ?? "",
-    item["case_price"] ?? "",
-    item["case_grade"] ?? "",
-    item["case_type"] ?? "",
-    item["defendant"] ?? "",
-    item["claimant"] ?? "",
-    item["case_number"] ?? "",
-    item["case_title"] ?? ""
-  ]);
-
-  // Reverse the order of rows vertically
-  reversedRows.reverse();
-
-  const table = new Table({
-    rows: [
-      new TableRow({
-        children: [
-          new TableCell({ children: [new Paragraph("ملاحظات")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("اسم المستشار")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("المحكمة المختصة")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("رول القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("رابط الدعوى")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("نوع الاعلان")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("حالة القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("القرار")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("تاريخ الجلسة القادمة")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("تاريخ الجلسة السابقة")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("قيمة الدعوى")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("درجة القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("نوع القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("المدعي عليه")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("المدعي")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("رقم القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("عنوان القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-        ],
-      }),
-      ...reversedRows.map(
-        (row) =>
-          new TableRow({
-            children: row.map(
-              (cell) =>
-                new TableCell({
-                  children: [new Paragraph(cell.toString())],
-                  width: { size: 10, type: WidthType.PERCENTAGE },
-                })
-            ),
-          })
-      ),
-    ],
-  });
-
-
-
-  const reportTitle = new Paragraph({
-    text: `تقرير أعمال اليوم - ${formattedDate}`,
-    alignment: 'center',
-    heading: HeadingLevel.TITLE, // يمكن تغيير مستوى العنوان حسب الحاجة
-  });
-
-  const doc = new Document({
-    sections: [
-      {
-        children: [reportTitle, table], // إضافة عنوان التقرير قبل الجدول
-      },
-    ],
-  });
-  const blob = await Packer.toBlob(doc);
-  saveAs(blob, "cases.docx");
-};
-
-
-
-
-const filter = async () => {
-  const jwt = localStorage.getItem("jwt");
-
-  try {
-  
-    const response = await axios.get(`https://backend.eyhadvocates.com/api/cases?filters[case_title][$notContainsi][0]=${text.value}&filters[case_number][$notContainsi][1]=${text.value}&filters[claimant][$notContainsi][2]=${text.value}&filters[defendant][$notContainsi][3]=${text.value}&filters[case_type][$notContainsi][4]=${text.value}&filters[case_degree][$notContainsi][5]=${text.value}&filters[case_price][$notContainsi][6]=${text.value}&filters[registration_date][$notContainsi][7]=${text.value}&filters[next_court_session][$notContainsi][8]=${text.value}&filters[case_status][$notContainsi][9]=${text.value}&filters[announcement_type][$notContainsi][11]=${text.value}&filters[case_url][$notContainsi][12]=${text.value}&filters[case_roll][$notContainsi][13]=${text.value}&filters[advisor_name][$notContainsi][14]=${text.value}&populate=*`, {
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
-    },);
-
-
-    desserts.value = response.data.data
-      .map((item) => {
-        const decisions = item.attributes.decisions.data;
-        const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
-
-        return {
-          case_title: item.attributes.case_title,
-          case_number: item.attributes.case_number,
-          id: item.id,
-          claimant: item.attributes.claimant,
-          defendant: item.attributes.defendant, // إصلاح اسم الخاصية
-          case_type: item.attributes.case_type,
-          case_degree: item.attributes.case_degree,
-          case_price: item.attributes.case_price,
-          previous_session: item.attributes.registration_date,
-          next_session: item.attributes.next_court_session,
-          case_status: item.attributes.case_status,
-          announcement_type: item.attributes.announcement_type, // إصلاح اسم الخاصية
-          invitation_link: item.attributes.case_url,
-          decision: lastDecision,
-          role: item.attributes.case_roll, // إصلاح اسم الخاصية
-          court: item.attributes.court,
-          consultant: item.attributes.advisor_name,
-          notes: item.attributes.note,
-        };
-      })
-      .sort((a, b) => a.id - b.id); // ترتيب العناصر تصاعدياً حسب id
-
-    // تعطيل الـ loading بعد الاستجابة الناجحة
-    loading.value = false;
-    showTable.value = true;
-  } catch (error) {
-    console.error("Error fetching cases:", error);
-    // تعطيل الـ loading في حالة الخطأ أيضًا
-    loading.value = false;
+const getSeverity = (status) => {
+  switch (status) {
+    case 'منتهي':
+      return 'danger';
+    case 'نشط':
+      return 'success';
+   
   }
 };
 </script>
+
+<style>
+.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl .p-datatable .p-datatable-thead > tr > th,
+.rtl .p-datatable .p-datatable-tbody > tr > td {
+  text-align: right;
+}
+</style>

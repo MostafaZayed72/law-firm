@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col justify-center items-center h-screen gap-6">
+    <div class="flex flex-col  items-center h-screen gap-6">
       <h1 class="font-bold text-3xl">أهلاً ومرحباً بك في مكتب البلوشي والمراشدة للمحاماة والإستشارات القانونية</h1>
       <div class="flex gap-4">
         <NuxtLink to="/login" v-if="!jwt"><v-btn class="hover:bg-black hover:text-white delayed">تسجيل الدخول</v-btn></NuxtLink>
