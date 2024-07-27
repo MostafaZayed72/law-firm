@@ -17,6 +17,6 @@ body{
 }
 
 .print{
-@apply bg-yellow-300
+  background:rgb(233 235 16) !important;
 }
 </style>
