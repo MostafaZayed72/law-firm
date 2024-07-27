@@ -219,6 +219,14 @@ const submitForm = async () => {
     console.error('حدث خطأ:', error);
   }
 };
+
+const roleId = ref()
+onMounted(() => {
+  roleId.value = localStorage.getItem('roleId')
+ 
+  
+});
+
 </script>
 <style scoped>
 .field {
