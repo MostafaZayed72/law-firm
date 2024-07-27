@@ -78,34 +78,24 @@
         </template>
       </Column>
       <Column field="is_active" header="حالة القضية" :filter="true" :filterPlaceholder="'اختر الحالة'"
-    style="max-width: 12rem">
-    <template #body="{ data }">
-      <Tag :value="data.is_active ? 'نشط' : 'منتهي'" :severity="getSeverity(data.is_active ? 'نشط' : 'منتهي')" />
-    </template>
-    <template #filter="{ filterModel, filterCallback }">
-  <select style="border:1px solid grey" class="px-4 rounded" v-model="filterModel.value" @change="filterCallback()">
-    <option value="true">نشط</option>
-    <option value="false">منتهي</option>
-  </select>
-</template>
-  </Column>
-       
-  
-  <Column field="is_important" header="أهمية القضية" :filter="true" :filterPlaceholder="'ابحث بالأهمية'"
-    style="max-width: 12rem">
-    <template #body="{ data }">
-      <Tag :value="data.is_important ? 'هامة' : 'عادية'" :severity="getMySeverity(data.is_active ? 'نشط' : 'منتهي')"  :class="data.is_important? 'bg-yellow-400 text-black' : 'bg-slate-500 text-white'"/>  </template>
+  style="max-width: 12rem">
+  <template #body="{ data }">
+    <Tag :value="data.is_active ? 'نشط' : 'منتهي'" :severity="getSeverity(data.is_active ? 'نشط' : 'منتهي')" />
+  </template>
     
-      <template #filter="{ filterModel, filterCallback }">
-  <select style="border:1px solid grey" class="px-4 rounded" v-model="filterModel.value" @change="filterCallback()">
-    <option value="true">هامة</option>
-    <option value="false">عادية</option>
-  </select>
-</template>
+      
+</Column>
+     
 
+<Column field="is_important" header="أهمية القضية" :filter="true" :filterPlaceholder="'ابحث بالأهمية'"
+  style="max-width: 12rem">
+  <template #body="{ data }">
+    <Tag :value="data.is_important ? 'هامة' : 'عادية'" :severity="getMySeverity(data.is_active ? 'نشط' : 'منتهي')"  :class="data.is_important? 'bg-yellow-400 text-black' : 'bg-slate-500 text-white'"/>  </template>
   
-  </Column>
-  
+
+
+</Column>
+
 
 
       <Column field="case_price" header="قيمة الدعوى" :filter="true" :filterPlaceholder="'ابحث بقيمة الدعوى'"
@@ -553,8 +543,7 @@ const printTable = () => {
 
 
 import { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType, HeadingLevel } from 'docx';
-import fileSaver from 'file-saver';
-const { saveAs } = fileSaver;
+import { saveAs } from 'file-saver';
 
 const exportToDoc = async () => {
   // تنسيق التاريخ الحالي
@@ -688,5 +677,58 @@ onMounted(() => {
   text-align: right;
 }
 
+.p-datatable {
+  border-collapse: collapse;
+}
+
+.p-datatable .p-datatable-thead>tr>th,
+.p-datatable .p-datatable-tbody>tr>td {
+  border: 1px solid #dddddd;
+  padding: 4px;
+}
+
+.p-datatable .p-datatable-thead>tr>th {
+  background-color: #f2f2f2;
+}
+
+/* CSS للطباعة فقط */
+@media print {
+  .p-datatable {
+    border-collapse: collapse;
+  }
+
+  .p-datatable th,
+  .p-datatable td {
+    border: 1px solid black;
+    padding: 2px;
+    text-align: right;
+    font-size: 8px;
+    white-space: nowrap;
+  }
+
+  .p-datatable th {
+    background-color: #f2f2f2;
+  }
+}
+
+.p-button-rounded {
+  width: 2rem;
+  height: 2rem;
+  padding: 0.5rem;
+}
+
+.p-button-info {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+}
+
+.p-button-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.p-mr-2 {
+  margin-right: 0.5rem;
+}
 
 </style>
