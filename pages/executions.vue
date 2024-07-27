@@ -447,6 +447,7 @@
           is_important: item.attributes.is_important
         };
       })
+      .filter(item => item.is_active)
       .sort((a, b) => a.id - b.id);
 
     loading.value = false;

@@ -445,7 +445,8 @@ try {
         is_important: item.attributes.is_important
       };
     })
-    .filter(item => item.is_important) // Filter only inactive cases
+    .filter(item => item.is_important)
+    .filter(item => item.is_active) // Filter only inactive cases
     .sort((a, b) => a.id - b.id);
 
   loading.value = false;
@@ -689,58 +690,5 @@ if (!jwt) {
   text-align: right;
 }
 
-.p-datatable {
-  border-collapse: collapse;
-}
-
-.p-datatable .p-datatable-thead>tr>th,
-.p-datatable .p-datatable-tbody>tr>td {
-  border: 1px solid #dddddd;
-  padding: 4px;
-}
-
-.p-datatable .p-datatable-thead>tr>th {
-  background-color: #f2f2f2;
-}
-
-/* CSS للطباعة فقط */
-@media print {
-  .p-datatable {
-    border-collapse: collapse;
-  }
-
-  .p-datatable th,
-  .p-datatable td {
-    border: 1px solid black;
-    padding: 2px;
-    text-align: right;
-    font-size: 8px;
-    white-space: nowrap;
-  }
-
-  .p-datatable th {
-    background-color: #f2f2f2;
-  }
-}
-
-.p-button-rounded {
-  width: 2rem;
-  height: 2rem;
-  padding: 0.5rem;
-}
-
-.p-button-info {
-  background-color: #17a2b8;
-  border-color: #17a2b8;
-}
-
-.p-button-danger {
-  background-color: #dc3545;
-  border-color: #dc3545;
-}
-
-.p-mr-2 {
-  margin-right: 0.5rem;
-}
 
 </style>

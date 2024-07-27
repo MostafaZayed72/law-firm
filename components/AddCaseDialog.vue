@@ -102,6 +102,7 @@
             placeholder="اختر أهمية القضية"
           />
         </div>
+        
         <div class="field">
           <Button label="إرسال" type="submit" />
         </div>
@@ -264,8 +265,4 @@ form {
   margin-left: 0.5rem;
 }
 
-.p-button-danger {
-  background-color: #ef5350;
-  border: none;
-}
 </style>
