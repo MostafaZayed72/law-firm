@@ -553,7 +553,8 @@ const printTable = () => {
 
 
 import { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType, HeadingLevel } from 'docx';
-import { saveAs } from 'file-saver';
+import fileSaver from 'file-saver';
+const { saveAs } = fileSaver;
 
 const exportToDoc = async () => {
   // تنسيق التاريخ الحالي
