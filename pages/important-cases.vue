@@ -82,12 +82,6 @@
     <template #body="{ data }">
       <Tag :value="data.is_active ? 'نشط' : 'منتهي'" :severity="getSeverity(data.is_active ? 'نشط' : 'منتهي')" />
     </template>
-    <template #filter="{ filterModel, filterCallback }">
-  <select style="border:1px solid grey" class="px-4 rounded" v-model="filterModel.value" @change="filterCallback()">
-    <option value="true">نشط</option>
-    <option value="false">منتهي</option>
-  </select>
-</template>
   </Column>
        
   
