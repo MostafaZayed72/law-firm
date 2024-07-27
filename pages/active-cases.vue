@@ -432,10 +432,12 @@ const fetchCases = async () => {
           advisor_name: item.attributes.advisor_name,
           note: item.attributes.note,
           is_active: item.attributes.is_active,
-          is_important: item.attributes.is_important // تأكد من إضافة هذه القيمة
+          is_important: item.attributes.is_important,
+          case_type_relation: item.attributes.case_type_relation.data?.id
         };
       })
-      .filter(item => item.is_active) // Filter only active cases
+      .filter(item => item.is_active) 
+      .filter(item => item.case_type_relation == 4) 
       .sort((a, b) => a.id - b.id);
 
     loading.value = false;

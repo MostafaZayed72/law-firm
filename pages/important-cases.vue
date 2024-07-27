@@ -436,13 +436,13 @@ try {
         advisor_name: item.attributes.advisor_name,
         note: item.attributes.note,
         is_active: item.attributes.is_active,
-        is_important: item.attributes.is_important
+        is_important: item.attributes.is_important,
+        
       };
     })
     .filter(item => item.is_important)
-    .filter(item => item.is_active) // Filter only inactive cases
+    .filter(item => item.is_active) 
     .sort((a, b) => a.id - b.id);
-
   loading.value = false;
 } catch (error) {
   console.error("Error fetching cases:", error);

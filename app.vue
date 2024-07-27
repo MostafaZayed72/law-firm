@@ -15,4 +15,8 @@ body{
 .delay{
   transition: 0.5s
 }
+
+.print{
+@apply bg-yellow-300
+}
 </style>

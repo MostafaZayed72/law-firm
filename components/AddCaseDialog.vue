@@ -14,8 +14,7 @@
         </div>
         <div class="field">
           <label for="case_type">نوع القضية</label>
-          <InputText v-model="newCaseType" id="case_type" />
-          <Button label="إضافة نوع القضية" @click="addCaseType" />
+          <InputText v-model="formData.case_type" id="case_type" />
         </div>
         <div class="field">
           <label for="case_degree">درجة القضية</label>
@@ -103,7 +102,17 @@
             placeholder="اختر أهمية القضية"
           />
         </div>
-        
+        <div class="field">
+          <label for="case_type_relation">صفحة القضية</label>
+          <Dropdown
+            v-model="formData.case_type_relation"
+            :options="caseTypeRelationOptions"
+            option-label="label"
+            option-value="value"
+            id="case_type_relation"
+            placeholder="اختر صفحة القضية"
+          />
+        </div>
         <div class="field">
           <Button label="إرسال" type="submit" />
         </div>
@@ -111,7 +120,6 @@
     </Dialog>
   </div>
 </template>
-
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
@@ -130,6 +138,14 @@ const importanceOptions = [
 const activeStatusOptions = [
   { label: 'نشط', value: true },
   { label: 'منتهي', value: false }
+];
+
+const caseTypeRelationOptions = [
+  { label: 'قضية جديدة', value: 4 },
+  { label: 'التنفيذات', value: 1 },
+  { label: 'الخبراء', value: 3 },
+  { label: 'مراكز الشرطة', value: 5 },
+  { label: 'كشف الطعون', value: 2 }
 ];
 
 const showDialog = ref(false);
@@ -156,9 +172,8 @@ const formData = ref({
   is_active: true,
   is_important: false,
   decision: '',
+  case_type_relation: null
 });
-
-const newCaseType = ref('');
 
 const addClaimant = () => {
   formData.value.claimants.push({ id: formData.value.claimants.length, name: '' });
@@ -174,24 +189,6 @@ const addDefendant = () => {
 
 const removeDefendant = (index) => {
   formData.value.defendents.splice(index, 1);
-};
-
-const addCaseType = async () => {
-  try {
-    const jwt = localStorage.getItem("jwt");
-    const response = await axios.post('https://backend.eyhadvocates.com/api/case-types', {
-      data: { name: newCaseType.value }
-    }, {
-      headers: {
-        'Authorization': `Bearer ${jwt}`,
-        'Content-Type': 'application/json'
-      }
-    });
-    formData.value.case_type = response.data.data.id; // أو أي مفتاح يعبر عن نوع القضية في الاستجابة
-    alert('تمت إضافة نوع القضية بنجاح');
-  } catch (error) {
-    console.error('حدث خطأ:', error);
-  }
 };
 
 const submitForm = async () => {
@@ -223,6 +220,7 @@ const submitForm = async () => {
     is_active: formData.value.is_active,
     is_important: formData.value.is_important,
     decision: formData.value.decision,
+    case_type_relation: formData.value.case_type_relation
   };
 
   try {
@@ -249,7 +247,6 @@ onMounted(() => {
 });
 
 </script>
-
 <style scoped>
 .field {
   margin-bottom: 1rem;
@@ -286,8 +283,4 @@ form {
   margin-left: 0.5rem;
 }
 
-.p-button-danger {
-  background-color: #ef5350;
-  border: none;
-}
 </style>

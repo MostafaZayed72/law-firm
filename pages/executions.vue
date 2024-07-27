@@ -16,7 +16,7 @@
           </div>
   
         </template>
-        <div class="flex"><Button label="طباعة" icon="pi pi-print" @click="printTable" class="mr-4 bg-yellow-300 " />
+        <div class="flex"><Button label="طباعة" icon="pi pi-print" @click="printTable" class="mr-4 print " />
           <Button label="تحميل كملف DOC" icon="pi pi-download" @click="exportToDoc" class="mx-4 bg-blue-500 text-white " />
           <AddCaseDialog />
         </div>
@@ -440,10 +440,13 @@
           advisor_name: item.attributes.advisor_name,
           note: item.attributes.note,
           is_active: item.attributes.is_active,
-          is_important: item.attributes.is_important
+          is_important: item.attributes.is_important,
+          case_type_relation: item.attributes.case_type_relation.data?.id
+
         };
       })
       .filter(item => item.is_active)
+      .filter(item => item.case_type_relation == 1)
       .sort((a, b) => a.id - b.id);
 
     loading.value = false;
