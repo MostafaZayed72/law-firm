@@ -88,8 +88,8 @@
   <Column field="is_important" header="أهمية القضية" :filter="true" :filterPlaceholder="'ابحث بالأهمية'"
     style="max-width: 12rem">
     <template #body="{ data }">
-      <Tag :value="data.is_important ? 'هامة' : 'عادية'" :severity="getMySeverity(data.is_active ? 'نشط' : 'منتهي')"  :class="data.is_important? 'bg-yellow-400 text-black' : 'bg-slate-500 text-white'"/>  </template>
-    
+      <Tag :value="data.is_important ? 'هامة' : 'عادية'" :severity="getMySeverity(data.is_active ? 'نشط' : 'منتهي')"  :style="data.is_important? 'background : #0eba82; color: white': ''" />
+        </template>
       <template #filter="{ filterModel, filterCallback }">
   <select style="border:1px solid grey" class="px-4 rounded" v-model="filterModel.value" @change="filterCallback()">
     <option value="true">هامة</option>

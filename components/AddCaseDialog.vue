@@ -14,7 +14,8 @@
         </div>
         <div class="field">
           <label for="case_type">نوع القضية</label>
-          <InputText v-model="formData.case_type" id="case_type" />
+          <InputText v-model="newCaseType" id="case_type" />
+          <Button label="إضافة نوع القضية" @click="addCaseType" />
         </div>
         <div class="field">
           <label for="case_degree">درجة القضية</label>
@@ -110,8 +111,9 @@
     </Dialog>
   </div>
 </template>
+
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
@@ -156,6 +158,8 @@ const formData = ref({
   decision: '',
 });
 
+const newCaseType = ref('');
+
 const addClaimant = () => {
   formData.value.claimants.push({ id: formData.value.claimants.length, name: '' });
 };
@@ -170,6 +174,24 @@ const addDefendant = () => {
 
 const removeDefendant = (index) => {
   formData.value.defendents.splice(index, 1);
+};
+
+const addCaseType = async () => {
+  try {
+    const jwt = localStorage.getItem("jwt");
+    const response = await axios.post('https://backend.eyhadvocates.com/api/case-types', {
+      data: { name: newCaseType.value }
+    }, {
+      headers: {
+        'Authorization': `Bearer ${jwt}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    formData.value.case_type = response.data.data.id; // أو أي مفتاح يعبر عن نوع القضية في الاستجابة
+    alert('تمت إضافة نوع القضية بنجاح');
+  } catch (error) {
+    console.error('حدث خطأ:', error);
+  }
 };
 
 const submitForm = async () => {
@@ -224,11 +246,10 @@ const submitForm = async () => {
 const roleId = ref()
 onMounted(() => {
   roleId.value = localStorage.getItem('roleId')
- 
-  
 });
 
 </script>
+
 <style scoped>
 .field {
   margin-bottom: 1rem;
@@ -265,4 +286,8 @@ form {
   margin-left: 0.5rem;
 }
 
+.p-button-danger {
+  background-color: #ef5350;
+  border: none;
+}
 </style>
