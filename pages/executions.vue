@@ -17,7 +17,7 @@
   
         </template>
         <div class="flex"><Button label="طباعة" icon="pi pi-print" @click="printTable" class="mr-4 print " />
-          <Button label="تحميل كملف DOC" icon="pi pi-download" @click="exportToDoc" class="mx-4 bg-blue-500 text-white " />
+          <Button label="تحميل كملف DOC" icon="pi pi-download" @click="exportToDoc" class="mx-4 doc " />
           <AddCaseDialog />
         </div>
   
