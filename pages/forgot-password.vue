@@ -2,7 +2,7 @@
   <v-container class="fill-height text-center" v-if="showTable">
     <v-row justify="center">
       <v-col cols="12">
-        <v-card class="pa-4 rounded-lg" :class="cardClass">
+        <v-card class="pa-4 rounded-lg" >
           <v-card-title>نسيت كلمة المرور؟</v-card-title>
           <v-card-text>
             <v-form @submit.prevent="handleSubmit">
@@ -23,7 +23,6 @@ import { ref, onMounted, computed } from 'vue';
 
 const email = ref('');
 const showTable = ref(false);
-const colorMode = useColorMode();
 
 const handleSubmit = async () => {
   try {
@@ -54,9 +53,6 @@ onMounted(() => {
   });
 });
 
-const cardClass = computed(() => {
-  return colorMode.preference === 'dark' ? 'bg-grey-darken-3' : 'bg-white';
-});
 </script>
 
 <style scoped>

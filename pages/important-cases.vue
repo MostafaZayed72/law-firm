@@ -2,7 +2,7 @@
   <div class="card rtl">
     <DataTable v-model:filters="filters"  @click:row="editCase" :value="customers" paginator :rows="10" dataKey="id" filterDisplay="row"
       :loading="loading"
-      :globalFilterFields="['id', 'client', 'case_number', 'case_title', 'claimant', 'defendant', 'is_active', 'case_type', 'case_degree', 'case_price', 'registration_date', 'next_court_session', 'decision', 'announcement_type', 'case_url', 'case_roll', 'court', 'advisor_name', 'note']"
+      :globalFilterFields="['id', 'client', 'cas_status','is_active','is_important','case_number', 'case_title', 'claimant', 'defendant', 'is_active', 'case_type', 'case_degree', 'case_price', 'registration_date', 'next_court_session', 'decision', 'announcement_type', 'case_url', 'case_roll', 'court', 'advisor_name', 'note']"
       id="cases-table">
 
       <template #header>
@@ -106,7 +106,6 @@
   
   </Column>
   
-
 
       <Column field="case_price" header="قيمة الدعوى" :filter="true" :filterPlaceholder="'ابحث بقيمة الدعوى'"
         style="min-width: 7rem">
@@ -243,7 +242,7 @@
 
         </v-btn>
       <v-btn small icon @click="confirmDelete(data)" v-if="roleId == 13 || roleId == 7 || roleId == 9 || roleId == 10 || roleId == 11">
-          <v-icon >mdi-delete</v-icon>
+          <v-icon>mdi-delete</v-icon>
         </v-btn>
     </div>
   </template>
@@ -382,7 +381,9 @@ const filters = ref({
   case_roll: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   court: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   advisor_name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-  note: { value: null, matchMode: FilterMatchMode.STARTS_WITH }
+  note: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  is_important: { value: null, matchMode: FilterMatchMode.EQUALS },
+
 });
 const statuses = ref([
   { title: 'منتهي', value: false },
@@ -398,61 +399,61 @@ onMounted(() => {
 });
 
 const fetchCases = async () => {
-  try {
-    const jwt = localStorage.getItem("jwt");
-    loading.value = true;
+try {
+  const jwt = localStorage.getItem("jwt");
+  loading.value = true;
 
-    const response = await axios.get(
-      "https://backend.eyhadvocates.com/api/cases?populate=*",
-      {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      }
-    );
+  const response = await axios.get(
+    "https://backend.eyhadvocates.com/api/cases?populate=*",
+    {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    }
+  );
 
-    const importanceOptions = ref([
-      { label: 'هامة', value: true },
-      { label: 'عادية', value: false }
-    ]);
+  const importanceOptions = ref([
+    { label: 'هامة', value: true },
+    { label: 'عادية', value: false }
+  ]);
 
-    customers.value = response.data.data
-      .map((item) => {
-        const decisions = item.attributes.decisions.data;
-        const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
+  customers.value = response.data.data
+    .map((item) => {
+      const decisions = item.attributes.decisions.data;
+      const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
 
-        return {
-          case_title: item.attributes.case_title,
-          case_number: item.attributes.case_number,
-          id: item.id,
-          client: item.attributes.client,
-          claimant: item.attributes.claimant,
-          defendant: item.attributes.defendant,
-          case_type: item.attributes.case_type,
-          case_degree: item.attributes.case_degree,
-          case_price: item.attributes.case_price,
-          registration_date: item.attributes.registration_date,
-          next_court_session: item.attributes.next_court_session,
-          decision: lastDecision,
-          is_active: item.attributes.is_active,
-          announcement_type: item.attributes.announcement_type,
-          case_url: item.attributes.case_url,
-          case_roll: item.attributes.case_roll,
-          court: item.attributes.court,
-          advisor_name: item.attributes.advisor_name,
-          note: item.attributes.note,
-          is_active: item.attributes.is_active,
-          is_important: item.attributes.is_important // تأكد من إضافة هذه القيمة
-        };
-      })
-      .filter(item => item.is_active) // Filter only active cases
-      .sort((a, b) => a.id - b.id);
+      return {
+        case_title: item.attributes.case_title,
+        case_number: item.attributes.case_number,
+        id: item.id,
+        client: item.attributes.client,
+        claimant: item.attributes.claimant,
+        defendant: item.attributes.defendant,
+        case_type: item.attributes.case_type,
+        case_degree: item.attributes.case_degree,
+        case_price: item.attributes.case_price,
+        registration_date: item.attributes.registration_date,
+        next_court_session: item.attributes.next_court_session,
+        decision: lastDecision,
+        case_status: item.attributes.case_status,
+        announcement_type: item.attributes.announcement_type,
+        case_url: item.attributes.case_url,
+        case_roll: item.attributes.case_roll,
+        court: item.attributes.court,
+        advisor_name: item.attributes.advisor_name,
+        note: item.attributes.note,
+        is_active: item.attributes.is_active,
+        is_important: item.attributes.is_important
+      };
+    })
+    .filter(item => item.is_important) // Filter only inactive cases
+    .sort((a, b) => a.id - b.id);
 
-    loading.value = false;
-  } catch (error) {
-    console.error("Error fetching cases:", error);
-    loading.value = false;
-  }
+  loading.value = false;
+} catch (error) {
+  console.error("Error fetching cases:", error);
+  loading.value = false;
+}
 };
 
 const getSeverity = (status) => {
@@ -477,77 +478,77 @@ const getMySeverity = (status) => {
 };
 
 const printTable = () => {
-    const table = document.getElementById('cases-table');
-    if (table) {
-        // Create a new table element to hold only the required columns
-        const printTable = document.createElement('table');
-        printTable.style.width = '100%';
-        printTable.style.borderCollapse = 'collapse';
+  const table = document.getElementById('cases-table');
+  if (table) {
+      // Create a new table element to hold only the required columns
+      const printTable = document.createElement('table');
+      printTable.style.width = '100%';
+      printTable.style.borderCollapse = 'collapse';
 
-        // Create the header row with only the required columns
-        const thead = document.createElement('thead');
-        const headerRow = document.createElement('tr');
-        const headers = ['عنوان القضية', 'رقم القضية', 'نوع القضية', 'درجة القضية', 'المحكمة', 'المدعي', 'المدعي عليه','موكلي','نوع الإعلان','تارريخ الجلسة السابقة','تاريخ الجلسة القادمة','الرول','رابط الدعوة','القرار','ملاحظات'];
-        
-        headers.forEach(headerText => {
-            const th = document.createElement('th');
-            th.style.border = '1px solid black';
-            th.style.padding = '2px';
-            th.style.textAlign = 'right';
-            th.style.wordWrap = 'break-word'; // Ensure words wrap in the header
-            th.textContent = headerText;
-            headerRow.appendChild(th);
-        });
-        thead.appendChild(headerRow);
-        printTable.appendChild(thead);
+      // Create the header row with only the required columns
+      const thead = document.createElement('thead');
+      const headerRow = document.createElement('tr');
+      const headers = ['عنوان القضية', 'رقم القضية', 'نوع القضية', 'درجة القضية', 'المحكمة', 'المدعي', 'المدعي عليه','موكلي','نوع الإعلان','تارريخ الجلسة السابقة','تاريخ الجلسة القادمة','الرول','رابط الدعوة','القرار','ملاحظات'];
+      
+      headers.forEach(headerText => {
+          const th = document.createElement('th');
+          th.style.border = '1px solid black';
+          th.style.padding = '2px';
+          th.style.textAlign = 'right';
+          th.style.wordWrap = 'break-word'; // Ensure words wrap in the header
+          th.textContent = headerText;
+          headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+      printTable.appendChild(thead);
 
-        // Create the body rows with only the required columns
-        const tbody = document.createElement('tbody');
+      // Create the body rows with only the required columns
+      const tbody = document.createElement('tbody');
 
-        const rows = table.querySelectorAll('tbody tr');
-        rows.forEach(row => {
-            const newRow = document.createElement('tr');
-            const cells = row.querySelectorAll('td');
-            
-            // Only get the index of the columns you need (e.g., Title and Number)
-            const dataIndices = [1, 2, 3, 4, 5, 9, 10, 11,  13,14,15,16,17,18,19]; // Adjust indices if necessary
-            
-            dataIndices.forEach(index => {
-                const td = document.createElement('td');
-                td.style.border = '1px solid black';
-                td.style.padding = '2px';
-                td.style.textAlign = 'right';
-                td.style.wordWrap = 'break-word'; // Ensure words wrap in the cells
-                td.textContent = cells[index].textContent.trim();
-                newRow.appendChild(td);
-            });
-            tbody.appendChild(newRow);
-        });
+      const rows = table.querySelectorAll('tbody tr');
+      rows.forEach(row => {
+          const newRow = document.createElement('tr');
+          const cells = row.querySelectorAll('td');
+          
+          // Only get the index of the columns you need (e.g., Title and Number)
+          const dataIndices = [1, 2, 3, 4, 5, 9, 10, 11,  13,14,15,16,17,18,19]; // Adjust indices if necessary
+          
+          dataIndices.forEach(index => {
+              const td = document.createElement('td');
+              td.style.border = '1px solid black';
+              td.style.padding = '2px';
+              td.style.textAlign = 'right';
+              td.style.wordWrap = 'break-word'; // Ensure words wrap in the cells
+              td.textContent = cells[index].textContent.trim();
+              newRow.appendChild(td);
+          });
+          tbody.appendChild(newRow);
+      });
 
-        printTable.appendChild(tbody);
+      printTable.appendChild(tbody);
 
-        // Open a new window and print the new table
-        const printWindow = window.open('', '', 'height=800,width=1000');
-        printWindow.document.open();
-        printWindow.document.write('<html><head><title>•••••••••</title>');
-        printWindow.document.write('<style>');
-        printWindow.document.write(`
-            table { width: 100%; border-collapse: collapse; font-size: 10px; table-layout: fixed; direction: rtl; }
-            th, td { border: 1px solid black; padding: 2px; text-align: right; white-space: normal; word-wrap: break-word; }
-            th { background-color: #f2f2f2; }
-            @media print {
-                body { font-size: 10px; }
-                table { width: 100%; direction: rtl; }
-                th, td { white-space: normal; word-wrap: break-word; }
-            }
-        `);
-        printWindow.document.write('</style></head><body>');
-        printWindow.document.write(printTable.outerHTML);
-        printWindow.document.write('</body></html>');
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-    }
+      // Open a new window and print the new table
+      const printWindow = window.open('', '', 'height=800,width=1000');
+      printWindow.document.open();
+      printWindow.document.write('<html><head><title>•••••••••</title>');
+      printWindow.document.write('<style>');
+      printWindow.document.write(`
+          table { width: 100%; border-collapse: collapse; font-size: 10px; table-layout: fixed; direction: rtl; }
+          th, td { border: 1px solid black; padding: 2px; text-align: right; white-space: normal; word-wrap: break-word; }
+          th { background-color: #f2f2f2; }
+          @media print {
+              body { font-size: 10px; }
+              table { width: 100%; direction: rtl; }
+              th, td { white-space: normal; word-wrap: break-word; }
+          }
+      `);
+      printWindow.document.write('</style></head><body>');
+      printWindow.document.write(printTable.outerHTML);
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+  }
 };
 
 
@@ -639,40 +640,41 @@ const exportToDoc = async () => {
 };
 
 
-
 const confirmDelete = (item) => {
-  if (confirm(`هل أنت متأكد أنك تريد حذف القضية ${item.case_title}?`)) {
-    deleteCase(item.id);
-  }
+if (confirm(`هل أنت متأكد أنك تريد حذف القضية ${item.case_title}?`)) {
+  deleteCase(item.id);
+}
 };
 
 // دالة لحذف القضية
 const deleteCase = async (id) => {
-  try {
-    const jwt = localStorage.getItem("jwt");
-    await axios.delete(
-      `https://backend.eyhadvocates.com/api/cases/${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      }
-    );
+try {
+  const jwt = localStorage.getItem("jwt");
+  await axios.delete(
+    `https://backend.eyhadvocates.com/api/cases/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    }
+  );
 
-    // تحديث بيانات الجدول بعد الحذف
-    fetchCases();
-  } catch (error) {
-    console.error("Error deleting case:", error);
-  }
+  // تحديث بيانات الجدول بعد الحذف
+  fetchCases();
+} catch (error) {
+  console.error("Error deleting case:", error);
+}
 };
+
 const roleId = ref()
 onMounted(() => {
-  roleId.value = localStorage.getItem('roleId')
-  const jwt = localStorage.getItem('jwt')
-  if (!jwt) {
-    navigateTo('/login')
-  } 
+roleId.value = localStorage.getItem('roleId')
+const jwt = localStorage.getItem('jwt')
+if (!jwt) {
+  navigateTo('/login')
+} 
 });
+
 
 </script>
 

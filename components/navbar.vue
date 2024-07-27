@@ -4,8 +4,9 @@
         <template #start>
           <div class="flex items-center gap-2">
             <img class="w-8" src="/assets/images/logo.png" alt="">
-            <NuxtLink class="bg-blue-400 px-2 py-1 rounded-lg text-slate-50 hover:bg-blue-500 hover:text-black  delay" to="/">القضايا المنتهية</NuxtLink>
-            <NuxtLink class="bg-blue-400 px-2 py-1 rounded-lg text-slate-50 hover:bg-blue-500 hover:text-black  delay" to="/active-cases">القضايا النشطة</NuxtLink>
+            <NuxtLink class="bg-blue-400 px-2 py-1 rounded-lg text-slate-50 hover:bg-blue-500 hover:text-black  delay" to="/users_edit" v-if="roleId == 13">تعديل بيانات المستخدمين</NuxtLink>
+            <NuxtLink class="bg-blue-400 px-2 py-1 rounded-lg text-slate-50 hover:bg-blue-500 hover:text-black  delay" to="/permissions" v-if="roleId == 13">الصلاحيات</NuxtLink>
+            <DropDownMenu v-if="jwt"/>
             <NuxtLink class="bg-blue-400 px-2 py-1 rounded-lg text-slate-50 hover:bg-blue-500 hover:text-black  delay" to="/">الرئيسية</NuxtLink>
           </div>
         </template>
@@ -18,7 +19,7 @@
               style="width: 50px; height: 50px"
             />
             <div v-if="dropdownVisible" class="dropdown-menu text-end">
-              <NuxtLink class="cursor-pointer" to="/account">حسابي</NuxtLink>
+              <NuxtLink class="cursor-pointer" to="/profile">حسابي</NuxtLink>
               <nuxt-link class="cursor-pointer" @click="logout">تسجيل الخروج</nuxt-link>
             </div>
           </div>
@@ -33,7 +34,14 @@
   
   const username = ref('');
   const dropdownVisible = ref(false);
-  
+  const jwt = ref('');
+  const roleId = ref('');
+
+onMounted(() => {
+  jwt.value= localStorage.getItem('jwt')
+  roleId.value= localStorage.getItem('roleId')
+})
+
   onMounted(async () => {
     try {
       const response = await axios.get('https://backend.eyhadvocates.com/api/users/me', {
@@ -51,6 +59,8 @@
     dropdownVisible.value = !dropdownVisible.value;
   };
   
+
+
   const logout = () => {
   localStorage.removeItem('jwt');
   localStorage.removeItem('roleId');

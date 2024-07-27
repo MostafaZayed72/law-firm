@@ -1,6 +1,6 @@
 <template>
-    <v-container>
-      <v-card v-if="user" class="mx-auto my-12" max-width="400">
+    <v-container style="direction: rtl;">
+      <v-card v-if="user" class="mx-auto my-12 text-center" max-width="400">
         <v-card-title>{{ user.username }}</v-card-title>
         <v-card-text>
           <p><strong>Email:</strong> {{ user.email }}</p>
@@ -20,9 +20,9 @@
   
   onMounted(async () => {
     const userId= localStorage.getItem('userId')
-    const res = await fetch(`https://backend.eyhadvocates.com/api/users/${userId}?populate=*`,{
+    const res = await fetch(`https://backend.eyhadvocates.com/api/users/me?populate=*`,{
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImlhdCI6MTcyMTQwNTM1OSwiZXhwIjoxNzIzOTk3MzU5fQ.EqxbE3K6rqoS9XFkz_wo27BLiZh6y3RtHeuA0SlZYew`,
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
       },
     })
     user.value = await res.json()

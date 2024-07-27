@@ -1,10 +1,10 @@
 <template>
-  <div class="p-4 rounded-lg">
+  <div class="p-4 rounded-lg" style="direction: rtl;">
     <!-- Search Field -->
     <v-text-field reverse v-model="search" label="Search" class="mb-4" prepend-icon="mdi-magnify"></v-text-field>
 
     <!-- Data Table -->
-    <v-data-table v-if="showTable" :class="cardClass" :headers="headers" :items="filteredEmployees" item-value="id"
+    <v-data-table v-if="showTable" :headers="headers" :items="filteredEmployees" item-value="id"
       class="elevation-1">
       <template v-slot:item.actions="{ item }">
         <v-icon small class="mr-2" @click="editEmployee(item)">
@@ -59,7 +59,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
-const colorMode = useColorMode();
 
 const employees = ref([]);
 const search = ref('');
@@ -213,10 +212,12 @@ onMounted(() => {
     showTable.value = true;
   });
 });
-
-const cardClass = computed(() => {
-  return colorMode.preference === "dark" ? "bg-grey-darken-3" : "bg-white";
-});
+onMounted(() => {
+  const roleId = localStorage.getItem('roleId')
+  if (roleId !== '13') {
+    router.push('/')
+  } 
+})
 
 </script>
 

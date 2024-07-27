@@ -1,7 +1,7 @@
 <template>
   <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;"
     v-if="showTable">
-    <v-card class="pa-5 w-100 rounded-lg" :class="cardClass" style="direction: rtl; text-align: right;">
+    <v-card class="pa-5 w-100 rounded-lg"  style="direction: rtl; text-align: right;">
       <v-card-title>
         <span class="text-h5">تسجيل الدخول</span>
       </v-card-title>
@@ -56,14 +56,13 @@ const login = async () => {
 
     localStorage.setItem('roleId', role)
 
-    navigateTo('/cases')
+    navigateTo('/')
   } catch (error) {
-    navigateTo('/cases')
+    navigateTo('/')
   }
 }
 
 const showTable = ref(false)
-const colorMode = useColorMode()
 
 onMounted(() => {
   setTimeout(() => {
@@ -71,9 +70,6 @@ onMounted(() => {
   }) // Delay in milliseconds
 })
 
-const cardClass = computed(() => {
-  return colorMode.preference === 'dark' ? 'bg-grey-darken-3' : 'bg-white'
-})
 
 definePageMeta({
   layout: "custome"

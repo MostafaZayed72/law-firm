@@ -1,7 +1,7 @@
 <template>
-  <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;"
-    v-if="showTable">
-    <v-card class="pa-5 w-100 rounded-lg" style="direction: rtl; text-align: right;" :class="cardClass">
+  <v-container class="d-flex flex-column align-center justify-center fill-height w-100 " style="direction: rtl;"
+   >
+    <v-card class="pa-5 w-100 rounded-lg" style="direction: rtl; text-align: right;" >
       <v-card-title>
         <span class="text-h5">أدخل إيميل المستخدم</span>
       </v-card-title>
@@ -28,7 +28,6 @@ const roles = ref(["تحكم كامل", "إضافة وحذف وتعديل", "إ�
 const selectedRole = ref(null)
 const userEmail = ref('')
 const userId = ref(null)
-const colorMode = useColorMode()
 const router = useRouter()
 const roleNumber = ref(null)
 
@@ -74,7 +73,7 @@ const assignRole = async () => {
 
   try {
     const jwt = localStorage.getItem("jwt")
-    const userResponse = await axios.get('https://backend.eyhadvocates.com/api/users', {
+    const userResponse = await axios.get('https://backend.eyhadvocates.com/api/users?populate=*', {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
@@ -89,7 +88,7 @@ const assignRole = async () => {
 
     userId.value = user.id
 
-    await axios.put(`https://backend.eyhadvocates.com/api/users/${userId.value}`, {
+    await axios.put(`https://backend.eyhadvocates.com/api/users/${userId.value}?populate=*`, {
       "role": {
         "connect": [
           {
@@ -114,20 +113,13 @@ const assignRole = async () => {
   }
 }
 
-const cardClass = computed(() => {
-  return colorMode.preference === 'dark' ? 'bg-grey-darken-3' : 'bg-white'
-})
 
 const showTable = ref(false)
 
 onMounted(() => {
   const roleId = localStorage.getItem('roleId')
   if (roleId !== '13') {
-    router.push('/login')
-  } else {
-    setTimeout(() => {
-      showTable.value = true
-    }) // Delay in milliseconds
+    router.push('/')
   }
 })
 

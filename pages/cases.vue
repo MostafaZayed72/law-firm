@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="showTable" title="جميع القضايا" flat :class="cardClass" class="mx-10 rounded-lg">
+  <v-card v-if="showTable" title="جميع القضايا" flat  class="mx-10 rounded-lg">
     <template v-slot:text>
       <v-text-field 
 reverse
@@ -122,7 +122,7 @@ reverse
       </v-card>
     </v-dialog>
 
-    <v-data-table id="dataTable" :class="cardClass" v-model:search="search"  :headers="headers" :items="desserts"
+    <v-data-table id="dataTable"  v-model:search="search"  :headers="headers" :items="desserts"
       class="elevation-1 mx-4" :footer-props="{ itemsPerPageText: 'عدد العناصر في الصفحة:' }"
       :no-data-text="'لا توجد بيانات'" :loading="loading">
       <template v-slot:item.previous_session="{ item }">
@@ -264,8 +264,6 @@ const exportToPdf = () => {
     pdf.save('table.pdf');
   });
 };
-// Ensure useColorMode is properly imported from your library or plugin
-const colorMode = useColorMode(); // Uncomment this if useColorMode is properly imported
 
 const case_number = ref("");
 const search = ref("");
@@ -306,10 +304,6 @@ const headers = [
 ];
 
 const desserts = ref([]);
-
-const cardClass = computed(() => {
-  return colorMode.preference === "dark" ? "bg-grey-darken-3" : "bg-white";
-});
 
 // Export data to Excel
 const exportToExcel = async () => {

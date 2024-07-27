@@ -1,19 +1,19 @@
 <template>
   <v-container class="d-flex flex-column align-center justify-center fill-height w-100" style="direction: rtl;"
     v-if="showTable">
-    <v-card class="pa-5 w-100 rounded-lg" style="direction: rtl; text-align: right;" :class="cardClass">
+    <v-card class="pa-5 w-100 rounded-lg" style="direction: rtl; text-align: right;" >
       <v-card-title>
         <span class="text-h5">إنشاء حساب جديد</span>
       </v-card-title>
       <v-card-text>
         <v-form style="direction: rtl;">
-          <v-text-field class="text-blue-700" v-model="username" label="username" prepend-icon="mdi-account" type="text"
+          <v-text-field  class="text-blue-700" v-model="username" label="username" prepend-icon="mdi-account" type="text"
             required></v-text-field>
           <v-text-field class="text-blue-700" v-model="email" label="email" prepend-icon="mdi-email" type="text"
             required></v-text-field>
-          <v-text-field class="text-blue-700" v-model="password" label="password" prepend-icon="mdi-lock"
+          <v-text-field  class="text-blue-700" v-model="password" label="password" prepend-icon="mdi-lock"
             type="password" required></v-text-field>
-          <v-text-field class="text-blue-700" v-model="confirmPassword" label="confirm password" prepend-icon="mdi-lock"
+          <v-text-field  class="text-blue-700" v-model="confirmPassword" label="confirm password" prepend-icon="mdi-lock"
             type="password" required></v-text-field>
           <v-btn color="primary" block @click="register">إنشاء حساب</v-btn>
         </v-form>
@@ -59,7 +59,6 @@ const register = async () => {
   }
 }
 
-const colorMode = useColorMode()
 
 const showTable = ref(false)
 
@@ -74,9 +73,6 @@ onMounted(() => {
   }
 })
 
-const cardClass = computed(() => {
-  return colorMode.preference === 'dark' ? 'bg-grey-darken-3' : 'bg-white'
-})
 
 definePageMeta({
   layout: "custome"
