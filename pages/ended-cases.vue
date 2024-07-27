@@ -83,7 +83,7 @@
       <Tag :value="data.is_active ? 'نشط' : 'منتهي'" :severity="getSeverity(data.is_active ? 'نشط' : 'منتهي')" />
     </template>
     <template #filter="{ filterModel, filterCallback }">
-  <select style="border:1px solid" class="px-4 rounded" v-model="filterModel.value" @change="filterCallback()">
+  <select style="border:1px solid grey" class="px-4 rounded" v-model="filterModel.value" @change="filterCallback()">
     <option value="true">نشط</option>
     <option value="false">منتهي</option>
   </select>
@@ -97,7 +97,7 @@
       <Tag :value="data.is_important ? 'هامة' : 'عادية'" :severity="getMySeverity(data.is_active ? 'نشط' : 'منتهي')"  :class="data.is_important? 'bg-yellow-400 text-black' : 'bg-slate-500 text-white'"/>  </template>
     
       <template #filter="{ filterModel, filterCallback }">
-  <select style="border:1px solid" class="px-4 rounded" v-model="filterModel.value" @change="filterCallback()">
+  <select style="border:1px solid grey" class="px-4 rounded" v-model="filterModel.value" @change="filterCallback()">
     <option value="true">هامة</option>
     <option value="false">عادية</option>
   </select>
