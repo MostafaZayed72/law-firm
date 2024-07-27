@@ -543,55 +543,59 @@ const printTable = () => {
 
 
 import { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType, HeadingLevel } from 'docx';
-
+import fileSaver from 'file-saver';
+const { saveAs } = fileSaver;
 const exportToDoc = async () => {
-  // تنسيق التاريخ الحالي
+  // Reverse the order of items from right to left including index+1
   const today = new Date();
   const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+  const reversedRows = desserts.value.slice().reverse().map((item, index) => [
+    item["notes"] ?? "",
+    item["consultant_name"] ?? "",
+    item["court_name"] ?? "",
+    item["case_roll"] ?? "",
+    item["case_link"] ?? "",
+    item["announcement_type"] ?? "",
+    item["case_status"] ?? "",
+    item["decision"] ?? "",
+    item["next_session"] ?? "",
+    item["previous_session"] ?? "",
+    item["case_price"] ?? "",
+    item["case_grade"] ?? "",
+    item["case_type"] ?? "",
+    item["defendant"] ?? "",
+    item["claimant"] ?? "",
+    item["case_number"] ?? "",
+    item["case_title"] ?? ""
+  ]);
 
-  // الحصول على بيانات الجدول الظاهرة فقط
-  const table = document.getElementById('cases-table');
-  if (!table) return;
+  // Reverse the order of rows vertically
+  reversedRows.reverse();
 
-  const visibleRows = Array.from(table.querySelectorAll('tbody tr')).map(row => {
-    const cells = Array.from(row.querySelectorAll('td'));
-    return cells.map(cell => cell.textContent.trim());
-  });
-
-  // إضافة الرأس للأعمدة
-  const headers = [
-    'id',
-    'موكلي',
-    'عنوان القضية',
-    'المدعي',
-    'المدعى عليه',
-    'الحالة',
-    'نوع القضية',
-    'درجة القضية',
-    'سعر القضية',
-    'الجلسة السابقة',
-    'الجلسة القادمة',
-    'قرار',
-    'نوع الإعلان',
-    'رابط الدعوة',
-    'الدور',
-    'المحكمة',
-    'الاستشاري',
-    'ملاحظات'
-  ];
-
-  // دمج الرأس مع البيانات المفلترة
-  const dataToExport = [headers, ...visibleRows];
-
-  // إنشاء الجدول
-  const tableDocument = new Table({
+  const table = new Table({
     rows: [
       new TableRow({
-        children: headers.map(header =>
-          new TableCell({ children: [new Paragraph(header)], width: { size: 10, type: WidthType.PERCENTAGE } })
-        ),
+        children: [
+          new TableCell({ children: [new Paragraph("ملاحظات")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("اسم المستشار")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("المحكمة المختصة")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("رول القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("رابط الدعوى")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("نوع الاعلان")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("حالة القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("القرار")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("تاريخ الجلسة القادمة")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("تاريخ الجلسة السابقة")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("قيمة الدعوى")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("درجة القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("نوع القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("المدعي عليه")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("المدعي")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("رقم القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("عنوان القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+        ],
       }),
-      ...visibleRows.map(
+      ...reversedRows.map(
         (row) =>
           new TableRow({
             children: row.map(
@@ -606,27 +610,24 @@ const exportToDoc = async () => {
     ],
   });
 
-  // إنشاء عنوان التقرير
+
+
   const reportTitle = new Paragraph({
     text: `تقرير أعمال اليوم - ${formattedDate}`,
     alignment: 'center',
-    heading: HeadingLevel.TITLE,
+    heading: HeadingLevel.TITLE, // يمكن تغيير مستوى العنوان حسب الحاجة
   });
 
-  // إنشاء مستند DOCX
   const doc = new Document({
     sections: [
       {
-        children: [reportTitle, tableDocument],
+        children: [reportTitle, table], // إضافة عنوان التقرير قبل الجدول
       },
     ],
   });
-
-  // تحويل المستند إلى Blob وحفظه
   const blob = await Packer.toBlob(doc);
   saveAs(blob, "cases.docx");
 };
-
 
 
 const confirmDelete = (item) => {
