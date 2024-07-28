@@ -3,7 +3,7 @@
     <div class="relative" style="direction: rtl;">
       <span class="bg-blue-400 px-2 py-1 rounded-lg text-slate-50 hover:bg-blue-500 hover:text-black  delay cursor-pointer">أنواع القضايا</span>
       <div class="dropdown-menu delay">
-        <NuxtLink class="dropdown-item" to="/active-cases"> النشطة</NuxtLink>
+        <NuxtLink class="dropdown-item" to="/active-cases"> المتداولة</NuxtLink>
         <NuxtLink class="dropdown-item" to="/important-cases"> الهامة</NuxtLink>
         <NuxtLink class="dropdown-item" to="/ended-cases"> المنتهية</NuxtLink>
         <NuxtLink class="dropdown-item" to="/executions"> التنفيذات</NuxtLink>

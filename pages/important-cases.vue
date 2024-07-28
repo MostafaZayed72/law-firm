@@ -554,7 +554,7 @@ const exportToDoc = async () => {
   // Reverse the order of items from right to left including index+1
   const today = new Date();
   const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
-  const reversedRows = desserts.value.slice().reverse().map((item, index) => [
+  const reversedRows = customers.value.slice().reverse().map((item, index) => [
     item["notes"] ?? "",
     item["consultant_name"] ?? "",
     item["court_name"] ?? "",

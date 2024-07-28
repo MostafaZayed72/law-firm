@@ -1,8 +1,8 @@
 <template>
   <div class="card rtl">
-    <DataTable v-model:filters="filters"  @click:row="editCase" :value="customers" paginator :rows="10" dataKey="id" filterDisplay="row"
-      :loading="loading"
-      :globalFilterFields="['id', 'client', 'case_number', 'case_title', 'claimant', 'defendant', 'is_active', 'case_type', 'case_degree', 'case_price', 'registration_date', 'next_court_session', 'decision', 'announcement_type', 'case_url', 'case_roll', 'court', 'advisor_name', 'note']"
+    <DataTable v-model:filters="filters" @click:row="editCase" :value="customers" paginator :rows="10" dataKey="id"
+      filterDisplay="row" :loading="loading"
+      :globalFilterFields="['id', 'client', 'case_number', 'case_title', 'claimants', 'defendents', 'is_active', 'case_type', 'case_degree', 'case_price', 'registration_date', 'next_court_session', 'decision', 'announcement_type', 'case_url', 'case_roll', 'court', 'advisor_name', 'note']"
       id="cases-table">
 
       <template #header>
@@ -78,23 +78,24 @@
         </template>
       </Column>
       <Column field="is_active" header="حالة القضية" :filter="true" :filterPlaceholder="'اختر الحالة'"
-  style="max-width: 12rem">
-  <template #body="{ data }">
-    <Tag :value="data.is_active ? 'نشط' : 'منتهي'" :severity="getSeverity(data.is_active ? 'نشط' : 'منتهي')" />
-  </template>
-    
-      
-</Column>
-     
-
-<Column field="is_important" header="أهمية القضية" :filter="true" :filterPlaceholder="'ابحث بالأهمية'"
-  style="max-width: 12rem">
-  <template #body="{ data }">
-      <Tag :value="data.is_important ? 'هامة' : 'عادية'" :severity="getMySeverity(data.is_active ? 'نشط' : 'منتهي')"  :style="data.is_important? 'background : #0eba82; color: white': ''" />
+        style="max-width: 12rem">
+        <template #body="{ data }">
+          <Tag :value="data.is_active ? 'نشط' : 'منتهي'" :severity="getSeverity(data.is_active ? 'نشط' : 'منتهي')" />
         </template>
 
 
-</Column>
+      </Column>
+
+
+      <Column field="is_important" header="أهمية القضية" :filter="true" :filterPlaceholder="'ابحث بالأهمية'"
+        style="max-width: 12rem">
+        <template #body="{ data }">
+          <Tag :value="data.is_important ? 'هامة' : 'عادية'" :severity="getMySeverity(data.is_active ? 'نشط' : 'منتهي')"
+            :style="data.is_important ? 'background : #0eba82; color: white' : ''" />
+        </template>
+
+
+      </Column>
 
 
 
@@ -109,20 +110,21 @@
         </template>
       </Column>
 
-      <Column field="claimant" header="المدعي" :filter="true" :filterPlaceholder="'ابحث بالمدعي'"
+      <Column field="claimants" header="المدعي" :filter="true" :filterPlaceholder="'ابحث بالمدعي'"
         style="min-width: 8rem">
         <template #body="{ data }">
-          {{ data.claimant }}
+          <div v-for="claimant in data.claimants" :key="claimant.id"> {{ claimant.name }}</div>
+
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="ابحث بالمدعي" />
         </template>
       </Column>
 
-      <Column field="defendant" header="المدعى عليه" :filter="true" :filterPlaceholder="'ابحث بالمدعى عليه'"
+      <Column field="defendents" header="المدعى عليه" :filter="true" :filterPlaceholder="'ابحث بالمدعى عليه'"
         style="min-width: 8rem">
         <template #body="{ data }">
-          {{ data.defendant }}
+          <div v-for="defendant in data.defendents" :key="defendant.id"> {{ defendant.name }}</div>
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText v-model="filterModel.value" type="text" @input="filterCallback()"
@@ -158,8 +160,8 @@
             placeholder="ابحث بنوع الإعلان" />
         </template>
       </Column>
-      <Column field="registration_date" header="الجلسة السابقة" :filter="true" :filterPlaceholder="'ابحث بالجسة السابقة'"
-        style="min-width: 7rem">
+      <Column field="registration_date" header="الجلسة السابقة" :filter="true"
+        :filterPlaceholder="'ابحث بالجسة السابقة'" style="min-width: 7rem">
         <template #body="{ data }">
           {{ data.registration_date }}
         </template>
@@ -169,8 +171,8 @@
         </template>
       </Column>
 
-      <Column field="next_court_session" header="الجلسة القادمة" :filter="true" :filterPlaceholder="'ابحث بالجسة القادمة'"
-        style="min-width: 7rem">
+      <Column field="next_court_session" header="الجلسة القادمة" :filter="true"
+        :filterPlaceholder="'ابحث بالجسة القادمة'" style="min-width: 7rem">
         <template #body="{ data }">
           {{ data.next_court_session }}
         </template>
@@ -179,7 +181,8 @@
             placeholder="ابحث بالجسة القادمة" />
         </template>
       </Column>
-      <Column field="case_roll" header="الرول" :filter="true" :filterPlaceholder="'ابحث بالرول'" style="min-width: 7rem">
+      <Column field="case_roll" header="الرول" :filter="true" :filterPlaceholder="'ابحث بالرول'"
+        style="min-width: 7rem">
         <template #body="{ data }">
           {{ data.case_roll }}
         </template>
@@ -225,53 +228,56 @@
           <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="ابحث بالملاحظات" />
         </template>
       </Column>
-      <Column header="التحكم" style="width: 10rem" v-if="roleId == 13 || roleId == 7 || roleId == 6 || roleId == 10 || roleId == 5 || roleId == 9 || roleId == 11">
-  <template #body="{ data }">
-    <div class="flex justify-center">
-      <v-btn small icon @click="editCase(data)" v-if="roleId == 13 || roleId == 7 || roleId == 6 || roleId == 10 || roleId == 5">
-          <v-icon>mdi-pencil</v-icon>
+      <Column header="التحكم" style="width: 10rem"
+        v-if="roleId == 13 || roleId == 7 || roleId == 6 || roleId == 10 || roleId == 5 || roleId == 9 || roleId == 11">
+        <template #body="{ data }">
+          <div class="flex justify-center">
+            <v-btn small icon @click="editCase(data)"
+              v-if="roleId == 13 || roleId == 7 || roleId == 6 || roleId == 10 || roleId == 5">
+              <v-icon>mdi-pencil</v-icon>
 
-        </v-btn>
-      <v-btn small icon @click="confirmDelete(data)" v-if="roleId == 13 || roleId == 7 || roleId == 9 || roleId == 10 || roleId == 11">
-          <v-icon >mdi-delete</v-icon>
-        </v-btn>
-    </div>
-  </template>
-</Column>
+            </v-btn>
+            <v-btn small icon @click="confirmDelete(data)"
+              v-if="roleId == 13 || roleId == 7 || roleId == 9 || roleId == 10 || roleId == 11">
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </div>
+        </template>
+      </Column>
 
 
- <!-- Dialog تعديل القضية -->
- <v-dialog v-model="dialog.visible" max-width="600px" style="direction:rtl">
-  <v-card>
-    <v-card-title>
-      <span class="headline">تعديل القضية</span>
-    </v-card-title>
-    <v-card-subtitle>
-      <v-text-field  reverse v-model="dialog.case.case_title" label="عنوان القضية" />
-      <v-text-field  reverse v-model="dialog.case.case_number" label="رقم القضية" />
-      <v-text-field  reverse v-model="dialog.case.client" label="موكلي" />
-      <v-text-field reverse v-model="dialog.case.claimant" label="المدعي" />
-      <v-text-field reverse v-model="dialog.case.defendant" label="المدعى عليه" />
-      <v-select v-model="dialog.case.is_active" :items="statuses" label="حالة القضية" />
-      <v-select v-model="dialog.case.is_important" :items="myStatuses" label="أهمية القضية" />
-      <v-text-field reverse v-model="dialog.case.case_type" label="نوع القضية" />
-      <v-text-field reverse v-model="dialog.case.case_degree" label="درجة القضية" />
-      <v-text-field reverse v-model="dialog.case.case_price" label="قيمة الدعوى" />
-      <v-text-field reverse v-model="dialog.case.registration_date" label="الجلسة السابقة" />
-      <v-text-field reverse v-model="dialog.case.next_court_session" label="الجلسة القادمة" />
-      <v-text-field reverse v-model="dialog.case.announcement_type" label="نوع الإعلان" />
-      <v-text-field reverse v-model="dialog.case.case_url" label="رابط الدعوة" />
-      <v-text-field reverse v-model="dialog.case.case_roll" label="الرول" />
-      <v-text-field reverse v-model="dialog.case.court" label="المحكمة" />
-      <v-text-field reverse v-model="dialog.case.advisor_name" label="المستشار المعني" />
-      <v-text-field reverse v-model="dialog.case.note" label="ملاحظات" />
-    </v-card-subtitle>
-    <v-card-actions>
-      <v-btn @click="dialog.visible = false">إلغاء</v-btn>
-      <v-btn @click="saveChanges">حفظ</v-btn>
-    </v-card-actions>
-  </v-card>
-</v-dialog>
+      <!-- Dialog تعديل القضية -->
+      <v-dialog v-model="dialog.visible" max-width="600px" style="direction:rtl">
+        <v-card>
+          <v-card-title>
+            <span class="headline">تعديل القضية</span>
+          </v-card-title>
+          <v-card-subtitle>
+            <v-text-field reverse v-model="dialog.case.case_title" label="عنوان القضية" />
+            <v-text-field reverse v-model="dialog.case.case_number" label="رقم القضية" />
+            <v-text-field reverse v-model="dialog.case.client" label="موكلي" />
+            <!-- <v-text-field reverse v-model="dialog.case.claimants" label="المدعي" />
+      <v-text-field reverse v-model="dialog.case.defendents" label="المدعى عليه" /> -->
+            <v-select v-model="dialog.case.is_active" :items="statuses" label="حالة القضية" />
+            <v-select v-model="dialog.case.is_important" :items="myStatuses" label="أهمية القضية" />
+            <v-text-field reverse v-model="dialog.case.case_type" label="نوع القضية" />
+            <v-text-field reverse v-model="dialog.case.case_degree" label="درجة القضية" />
+            <v-text-field reverse v-model="dialog.case.case_price" label="قيمة الدعوى" />
+            <v-text-field reverse v-model="dialog.case.registration_date" label="الجلسة السابقة" />
+            <v-text-field reverse v-model="dialog.case.next_court_session" label="الجلسة القادمة" />
+            <v-text-field reverse v-model="dialog.case.announcement_type" label="نوع الإعلان" />
+            <v-text-field reverse v-model="dialog.case.case_url" label="رابط الدعوة" />
+            <v-text-field reverse v-model="dialog.case.case_roll" label="الرول" />
+            <v-text-field reverse v-model="dialog.case.court" label="المحكمة" />
+            <v-text-field reverse v-model="dialog.case.advisor_name" label="المستشار المعني" />
+            <v-text-field reverse v-model="dialog.case.note" label="ملاحظات" />
+          </v-card-subtitle>
+          <v-card-actions>
+            <v-btn @click="dialog.visible = false">إلغاء</v-btn>
+            <v-btn @click="saveChanges">حفظ</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </DataTable>
   </div>
 </template>
@@ -284,7 +290,7 @@ import { EventBus } from '/EventBus';
 
 onMounted(() => {
   fetchCases();
-  
+
   watchEffect(() => {
     if (EventBus.value.updateCases) {
       fetchCases();
@@ -319,8 +325,8 @@ const saveChanges = async () => {
           case_title: dialog.case.case_title,
           case_number: dialog.case.case_number,
           client: dialog.case.client,
-          claimant: dialog.case.claimant,
-          defendant: dialog.case.defendant,
+          claimants: dialog.case.claimants,
+          defendents: dialog.case.defendents,
           is_active: dialog.case.is_active,
           case_type: dialog.case.case_type,
           case_degree: dialog.case.case_degree,
@@ -358,8 +364,8 @@ const filters = ref({
   client: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   case_number: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   case_title: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-  claimant: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-  defendant: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  claimants: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  defendents: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   is_active: { value: null, matchMode: FilterMatchMode.EQUALS },
   case_type: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   case_degree: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -381,7 +387,7 @@ const statuses = ref([
 const myStatuses = ref([
   { title: 'عادية', value: false },
   { title: 'هامة', value: true }
-]);const loading = ref(true);
+]); const loading = ref(true);
 
 onMounted(() => {
   fetchCases();
@@ -416,8 +422,8 @@ const fetchCases = async () => {
           case_number: item.attributes.case_number,
           id: item.id,
           client: item.attributes.client,
-          claimant: item.attributes.claimant,
-          defendant: item.attributes.defendant,
+          claimants: item.attributes.claimants,
+          defendents: item.attributes.defendents,
           case_type: item.attributes.case_type,
           case_degree: item.attributes.case_degree,
           case_price: item.attributes.case_price,
@@ -436,8 +442,8 @@ const fetchCases = async () => {
           case_type_relation: item.attributes.case_type_relation.data?.id
         };
       })
-      .filter(item => item.is_active) 
-      .filter(item => item.case_type_relation == 4) 
+      .filter(item => item.is_active)
+      .filter(item => item.case_type_relation == 4)
       .sort((a, b) => a.id - b.id);
 
     loading.value = false;
@@ -469,61 +475,61 @@ const getMySeverity = (status) => {
 };
 
 const printTable = () => {
-    const table = document.getElementById('cases-table');
-    if (table) {
-        // Create a new table element to hold only the required columns
-        const printTable = document.createElement('table');
-        printTable.style.width = '100%';
-        printTable.style.borderCollapse = 'collapse';
+  const table = document.getElementById('cases-table');
+  if (table) {
+    // Create a new table element to hold only the required columns
+    const printTable = document.createElement('table');
+    printTable.style.width = '100%';
+    printTable.style.borderCollapse = 'collapse';
 
-        // Create the header row with only the required columns
-        const thead = document.createElement('thead');
-        const headerRow = document.createElement('tr');
-        const headers = ['عنوان القضية', 'رقم القضية', 'نوع القضية', 'درجة القضية', 'المحكمة', 'المدعي', 'المدعي عليه','موكلي','نوع الإعلان','تارريخ الجلسة السابقة','تاريخ الجلسة القادمة','الرول','رابط الدعوة','القرار','ملاحظات'];
-        
-        headers.forEach(headerText => {
-            const th = document.createElement('th');
-            th.style.border = '1px solid black';
-            th.style.padding = '2px';
-            th.style.textAlign = 'right';
-            th.style.wordWrap = 'break-word'; // Ensure words wrap in the header
-            th.textContent = headerText;
-            headerRow.appendChild(th);
-        });
-        thead.appendChild(headerRow);
-        printTable.appendChild(thead);
+    // Create the header row with only the required columns
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    const headers = ['عنوان القضية', 'رقم القضية', 'نوع القضية', 'درجة القضية', 'المحكمة', 'المدعي', 'المدعي عليه', 'موكلي', 'نوع الإعلان', 'تارريخ الجلسة السابقة', 'تاريخ الجلسة القادمة', 'الرول', 'رابط الدعوة', 'القرار', 'ملاحظات'];
 
-        // Create the body rows with only the required columns
-        const tbody = document.createElement('tbody');
+    headers.forEach(headerText => {
+      const th = document.createElement('th');
+      th.style.border = '1px solid black';
+      th.style.padding = '2px';
+      th.style.textAlign = 'right';
+      th.style.wordWrap = 'break-word'; // Ensure words wrap in the header
+      th.textContent = headerText;
+      headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    printTable.appendChild(thead);
 
-        const rows = table.querySelectorAll('tbody tr');
-        rows.forEach(row => {
-            const newRow = document.createElement('tr');
-            const cells = row.querySelectorAll('td');
-            
-            // Only get the index of the columns you need (e.g., Title and Number)
-            const dataIndices = [1, 2, 3, 4, 5, 9, 10, 11,  13,14,15,16,17,18,19]; // Adjust indices if necessary
-            
-            dataIndices.forEach(index => {
-                const td = document.createElement('td');
-                td.style.border = '1px solid black';
-                td.style.padding = '2px';
-                td.style.textAlign = 'right';
-                td.style.wordWrap = 'break-word'; // Ensure words wrap in the cells
-                td.textContent = cells[index].textContent.trim();
-                newRow.appendChild(td);
-            });
-            tbody.appendChild(newRow);
-        });
+    // Create the body rows with only the required columns
+    const tbody = document.createElement('tbody');
 
-        printTable.appendChild(tbody);
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+      const newRow = document.createElement('tr');
+      const cells = row.querySelectorAll('td');
 
-        // Open a new window and print the new table
-        const printWindow = window.open('', '', 'height=800,width=1000');
-        printWindow.document.open();
-        printWindow.document.write('<html><head><title>•••••••••</title>');
-        printWindow.document.write('<style>');
-        printWindow.document.write(`
+      // Only get the index of the columns you need (e.g., Title and Number)
+      const dataIndices = [1, 2, 3, 4, 5, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19]; // Adjust indices if necessary
+
+      dataIndices.forEach(index => {
+        const td = document.createElement('td');
+        td.style.border = '1px solid black';
+        td.style.padding = '2px';
+        td.style.textAlign = 'right';
+        td.style.wordWrap = 'break-word'; // Ensure words wrap in the cells
+        td.textContent = cells[index].textContent.trim();
+        newRow.appendChild(td);
+      });
+      tbody.appendChild(newRow);
+    });
+
+    printTable.appendChild(tbody);
+
+    // Open a new window and print the new table
+    const printWindow = window.open('', '', 'height=800,width=1000');
+    printWindow.document.open();
+    printWindow.document.write('<html><head><title>•••••••••</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write(`
             table { width: 100%; border-collapse: collapse; font-size: 10px; table-layout: fixed; direction: rtl; }
             th, td { border: 1px solid black; padding: 2px; text-align: right; white-space: normal; word-wrap: break-word; }
             th { background-color: #f2f2f2; }
@@ -533,13 +539,13 @@ const printTable = () => {
                 th, td { white-space: normal; word-wrap: break-word; }
             }
         `);
-        printWindow.document.write('</style></head><body>');
-        printWindow.document.write(printTable.outerHTML);
-        printWindow.document.write('</body></html>');
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-    }
+    printWindow.document.write('</style></head><body>');
+    printWindow.document.write(printTable.outerHTML);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+  }
 };
 
 
@@ -551,7 +557,7 @@ const exportToDoc = async () => {
   // Reverse the order of items from right to left including index+1
   const today = new Date();
   const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
-  const reversedRows = desserts.value.slice().reverse().map((item, index) => [
+  const reversedRows = customers.value.slice().reverse().map((item, index) => [
     item["notes"] ?? "",
     item["consultant_name"] ?? "",
     item["court_name"] ?? "",
@@ -565,8 +571,8 @@ const exportToDoc = async () => {
     item["case_price"] ?? "",
     item["case_grade"] ?? "",
     item["case_type"] ?? "",
-    item["defendant"] ?? "",
-    item["claimant"] ?? "",
+    item["defendents"] ?? "",
+    item["claimants"] ?? "",
     item["case_number"] ?? "",
     item["case_title"] ?? ""
   ]);
@@ -663,7 +669,7 @@ onMounted(() => {
   const jwt = localStorage.getItem('jwt')
   if (!jwt) {
     navigateTo('/login')
-  } 
+  }
 });
 
 </script>
@@ -678,7 +684,4 @@ onMounted(() => {
 .rtl .p-datatable .p-datatable-tbody>tr>td {
   text-align: right;
 }
-
-
-
 </style>

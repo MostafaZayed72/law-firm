@@ -40,7 +40,7 @@
           <InputNumber v-model="formData.case_price" id="case_price" />
         </div>
         <div class="field">
-          <label for="claimants">المدعون</label>
+          <label for="claimants">{{ route.path== '/executions'? 'المنفذ': 'المدعي' }}</label>
           <div v-for="(claimant, index) in formData.claimants" :key="index" class="flex items-center space-x-2">
             <InputText v-model="claimant.name" :id="'claimant-' + index" />
             <Button icon="pi pi-times" class="p-button-danger" @click="removeClaimant(index)" />
@@ -48,7 +48,7 @@
           <Button icon="pi pi-plus" @click="addClaimant" />
         </div>
         <div class="field">
-          <label for="defendents">المدعى عليهم</label>
+          <label for="defendents">{{ route.path== '/executions'? 'المنفذ ضده': 'المدعي عليه' }}</label>
           <div v-for="(defendant, index) in formData.defendents" :key="index" class="flex items-center space-x-2">
             <InputText v-model="defendant.name" :id="'defendant-' + index" />
             <Button icon="pi pi-times" class="p-button-danger" @click="removeDefendant(index)" />
@@ -102,17 +102,7 @@
             placeholder="اختر أهمية القضية"
           />
         </div>
-        <div class="field">
-          <label for="case_type_relation">صفحة القضية</label>
-          <Dropdown
-            v-model="formData.case_type_relation"
-            :options="caseTypeRelationOptions"
-            option-label="label"
-            option-value="value"
-            id="case_type_relation"
-            placeholder="اختر صفحة القضية"
-          />
-        </div>
+        
         <div class="field">
           <Button label="إرسال" type="submit" />
         </div>
@@ -120,6 +110,7 @@
     </Dialog>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
@@ -128,6 +119,7 @@ import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Dropdown from 'primevue/dropdown';
+import { useRoute } from 'vue-router'; // استخدام useRoute لاستخراج المسار
 import { EventBus } from '/EventBus';
 
 const importanceOptions = [
@@ -140,15 +132,16 @@ const activeStatusOptions = [
   { label: 'منتهي', value: false }
 ];
 
-const caseTypeRelationOptions = [
-  { label: 'قضية جديدة', value: 4 },
-  { label: 'التنفيذات', value: 1 },
-  { label: 'الخبراء', value: 3 },
-  { label: 'مراكز الشرطة', value: 5 },
-  { label: 'كشف الطعون', value: 2 }
-];
+const caseTypeRelations = {
+  '/police': 5,
+  '/active-cases': 4,
+  '/experts': 3,
+  '/appeals': 2,
+  '/executions': 1
+};
 
 const showDialog = ref(false);
+const route = useRoute();
 
 const formData = ref({
   case_number: '',
@@ -172,7 +165,7 @@ const formData = ref({
   is_active: true,
   is_important: false,
   decision: '',
-  case_type_relation: null
+  case_type_relation: caseTypeRelations[route.path] || null
 });
 
 const addClaimant = () => {
@@ -247,6 +240,7 @@ onMounted(() => {
 });
 
 </script>
+
 <style scoped>
 .field {
   margin-bottom: 1rem;
