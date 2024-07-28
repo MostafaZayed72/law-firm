@@ -2,7 +2,7 @@
     <div class="card rtl">
       <DataTable v-model:filters="filters"  @click:row="editCase" :value="customers" paginator :rows="10" dataKey="id" filterDisplay="row"
         :loading="loading"
-        :globalFilterFields="['id', 'client', 'cas_status','is_active','is_important','case_number', 'case_title', 'claimant', 'defendant', 'is_active', 'case_type', 'case_degree', 'case_price', 'registration_date', 'next_court_session', 'decision', 'announcement_type', 'case_url', 'case_roll', 'court', 'advisor_name', 'note']"
+        :globalFilterFields="['id', 'client', 'cas_status','is_active','is_important','case_number', 'case_title', 'claimants', 'defendents', 'is_active', 'case_type', 'case_degree', 'case_price', 'registration_date', 'next_court_session', 'decision', 'announcement_type', 'case_url', 'case_roll', 'court', 'advisor_name', 'note']"
         id="cases-table">
   
         <template #header>
@@ -115,26 +115,27 @@
           </template>
         </Column>
   
-        <Column field="claimant" header="المنفذ" :filter="true" :filterPlaceholder="'ابحث المنفذ'"
-          style="min-width: 8rem">
-          <template #body="{ data }">
-            {{ data.claimant }}
-          </template>
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="ابحث بالمنفذ" />
-          </template>
-        </Column>
-  
-        <Column field="defendant" header="المنفذ ضده" :filter="true" :filterPlaceholder="'ابحث بالمنفذ ضده'"
-          style="min-width: 8rem">
-          <template #body="{ data }">
-            {{ data.defendant }}
-          </template>
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText v-model="filterModel.value" type="text" @input="filterCallback()"
-              placeholder="ابحث بالمنفذ ضده" />
-          </template>
-        </Column>
+        <Column field="claimants" header="المنفذ" :filter="true" :filterPlaceholder="'ابحث بالمنفذ'"
+        style="min-width: 8rem">
+        <template #body="{ data }">
+          <div v-for="claimant in data.claimants" :key="claimant.id"> {{ claimant.name }}</div>
+
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="ابحث بالمنفذ" />
+        </template>
+      </Column>
+
+      <Column field="defendents" header="المنفذ ضده" :filter="true" :filterPlaceholder="'ابحث بالمنفذ ضده'"
+        style="min-width: 8rem">
+        <template #body="{ data }">
+          <div v-for="defendant in data.defendents" :key="defendant.id"> {{ defendant.name }}</div>
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText v-model="filterModel.value" type="text" @input="filterCallback()"
+            placeholder="ابحث بالمنفذ ضده" />
+        </template>
+      </Column>
         <Column field="client" header="موكلي" :filter="true" :filterPlaceholder="'ابحث بالموكل'" style="min-width: 8rem">
           <template #body="{ data }">
             {{ data.client }}
@@ -256,8 +257,8 @@
         <v-text-field  reverse v-model="dialog.case.case_title" label="عنوان القضية" />
         <v-text-field  reverse v-model="dialog.case.case_number" label="رقم القضية" />
         <v-text-field  reverse v-model="dialog.case.client" label="موكلي" />
-        <v-text-field reverse v-model="dialog.case.claimant" label="المدعي" />
-        <v-text-field reverse v-model="dialog.case.defendant" label="المدعى عليه" />
+        <v-text-field reverse v-model="dialog.case.claimants" label="المنفذ" />
+        <v-text-field reverse v-model="dialog.case.defendents" label="المنفذ ضده" />
         <v-select v-model="dialog.case.is_active" :items="statuses" label="حالة القضية" />
         <v-select v-model="dialog.case.is_important" :items="myStatuses" label="أهمية القضية" />
         <v-text-field reverse v-model="dialog.case.case_type" label="نوع القضية" />
@@ -325,8 +326,8 @@
             case_title: dialog.case.case_title,
             case_number: dialog.case.case_number,
             client: dialog.case.client,
-            claimant: dialog.case.claimant,
-            defendant: dialog.case.defendant,
+            claimants: dialog.case.claimants,
+            defendents: dialog.case.defendents,
             is_active: dialog.case.is_active,
             case_type: dialog.case.case_type,
             case_degree: dialog.case.case_degree,
@@ -364,8 +365,8 @@
     client: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     case_number: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     case_title: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    claimant: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    defendant: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    claimants: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    defendents: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     is_active: { value: null, matchMode: FilterMatchMode.EQUALS },
     case_type: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     case_degree: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -424,8 +425,8 @@
           case_number: item.attributes.case_number,
           id: item.id,
           client: item.attributes.client,
-          claimant: item.attributes.claimant,
-          defendant: item.attributes.defendant,
+          claimants: item.attributes.claimants,
+          defendents: item.attributes.defendents,
           case_type: item.attributes.case_type,
           case_degree: item.attributes.case_degree,
           case_price: item.attributes.case_price,
@@ -574,8 +575,8 @@ const exportToDoc = async () => {
     item["case_price"] ?? "",
     item["case_grade"] ?? "",
     item["case_type"] ?? "",
-    item["defendant"] ?? "",
-    item["claimant"] ?? "",
+    item["defendents"] ?? "",
+    item["claimants"] ?? "",
     item["case_number"] ?? "",
     item["case_title"] ?? ""
   ]);
