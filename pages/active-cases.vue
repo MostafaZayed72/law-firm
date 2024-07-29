@@ -13,6 +13,7 @@
             </InputIcon>
             <InputText v-model="filters['global'].value" placeholder="بحث عن كلمة" />
           </IconField>
+          <h1 class="mx-auto flex justify-center items-center bg-blue-400 px-6 rounded-lg cursor-default text-white " > القضايا المتداولة</h1>
         </div>
 
       </template>
