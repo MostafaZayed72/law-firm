@@ -135,46 +135,54 @@
     </Dialog>
 
     <!-- Dialog for editing claimants and defendants -->
-    <Dialog v-model:visible="showEditDialog" header="تعديل المدعي والمدعى عليه" modal style="direction: rtl;" class="w-[600px]">
-      <div class="p-4">
-        <table class="table-auto w-full border-collapse border border-gray-200">
-          <thead>
-            <tr>
-              <th class="border border-gray-300 p-2">المدعين</th>
-              <th class="border border-gray-300 p-2">المدعى عليهم</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="border border-gray-300 p-2">
-                <ul>
-                  <li v-for="(claimant, index) in caseData.claimants" :key="claimant.id" class="flex justify-between items-center">
-                    <input v-model="caseData.claimants[index].name" class="w-full border border-gray-300 rounded-md p-1 mr-2" />
-                    <div>
-                      <Button icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" @click="deleteClaimant(index)" v-if="roleId == 13 || roleId == 7 || roleId == 9 || roleId == 10 || roleId == 11"/>
-                    </div>
-                  </li>
-                </ul>
-              </td>
-              <td class="border border-gray-300 p-2">
-                <ul>
-                  <li v-for="(defendant, index) in caseData.defendents" :key="defendant.id" class="flex justify-between items-center">
-                    <input v-model="caseData.defendents[index].name" class="w-full border border-gray-300 rounded-md p-1 mr-2" />
-                    <div>
-                      <Button icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" @click="deleteDefendant(index)"/>
-                    </div>
-                  </li>
-                </ul>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="mt-4 flex justify-end">
-          <Button label="حفظ التعديلات" icon="pi pi-check" @click="submitEdits" class="p-button-primary" v-if="roleId == 13 || roleId == 7 || roleId == 6 || roleId == 10 || roleId == 5"/>
-          <Button label="إغلاق" icon="pi pi-times" @click="showEditDialog = false" class="p-button-secondary"/>
-        </div>
-      </div>
-    </Dialog>
+    <!-- Dialog for editing claimants and defendants -->
+<Dialog v-model:visible="showEditDialog" header="تعديل المدعي والمدعى عليه" modal style="direction: rtl;" class="w-[600px]">
+  <div class="p-4">
+    <table class="table-auto w-full border-collapse border border-gray-200">
+      <thead>
+        <tr>
+          <th class="border border-gray-300 p-2">المدعين</th>
+          <th class="border border-gray-300 p-2">المدعى عليهم</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="border border-gray-300 p-2">
+            <ul>
+              <li v-for="(claimant, index) in caseData.claimants" :key="claimant.id" class="flex justify-between items-center mb-2">
+                <input v-model="caseData.claimants[index].name" class="w-full border border-gray-300 rounded-md p-1 mr-2" />
+                <div>
+                  <Button icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" @click="deleteClaimant(index)" v-if="roleId == 13 || roleId == 7 || roleId == 9 || roleId == 10 || roleId == 11"/>
+                </div>
+              </li>
+              <li>
+                <Button label="إضافة مدعي" icon="pi pi-plus" @click="addClaimant" class="p-button-primary"/>
+              </li>
+            </ul>
+          </td>
+          <td class="border border-gray-300 p-2">
+            <ul>
+              <li v-for="(defendant, index) in caseData.defendents" :key="defendant.id" class="flex justify-between items-center mb-2">
+                <input v-model="caseData.defendents[index].name" class="w-full border border-gray-300 rounded-md p-1 mr-2" />
+                <div>
+                  <Button icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" @click="deleteDefendant(index)"/>
+                </div>
+              </li>
+              <li>
+                <Button label="إضافة مدعى عليه" icon="pi pi-plus" @click="addDefendant" class="p-button-primary"/>
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="mt-4 flex justify-end">
+      <Button label="حفظ التعديلات" icon="pi pi-check" @click="submitEdits" class="p-button-primary" v-if="roleId == 13 || roleId == 7 || roleId == 6 || roleId == 10 || roleId == 5"/>
+      <Button label="إغلاق" icon="pi pi-times" @click="showEditDialog = false" class="p-button-secondary"/>
+    </div>
+  </div>
+</Dialog>
+
   </div>
 </template>
 
@@ -227,6 +235,13 @@ const fetchCaseData = async () => {
 };
 
 onMounted(fetchCaseData);
+const addClaimant = () => {
+  caseData.value.claimants.push({ name: '' });
+};
+
+const addDefendant = () => {
+  caseData.value.defendents.push({ name: '' });
+};
 
 const fetchPreviousDecisions = async () => {
   try {
