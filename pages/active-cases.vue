@@ -13,7 +13,8 @@
             </InputIcon>
             <InputText v-model="filters['global'].value" placeholder="بحث عن كلمة" />
           </IconField>
-          <h1 class="mx-auto flex justify-center items-center bg-blue-400 px-6 rounded-lg cursor-default text-white " > القضايا المتداولة</h1>
+          <h1 class="mx-auto flex justify-center items-center bg-blue-400 px-6 rounded-lg cursor-default text-white ">
+            القضايا المتداولة</h1>
         </div>
 
       </template>
@@ -114,7 +115,7 @@
       <Column field="claimants" header="المدعي" :filter="true" :filterPlaceholder="'ابحث بالمدعي'"
         style="min-width: 8rem">
         <template #body="{ data }">
-          <div v-for="claimant in data.claimants" :key="claimant.id"> {{ claimant.name }}</div>
+          <div v-for="claimant in data.claimants" :key="claimant.id"> -{{ claimant.name }} </div>
 
         </template>
         <template #filter="{ filterModel, filterCallback }">
@@ -125,7 +126,7 @@
       <Column field="defendents" header="المدعى عليه" :filter="true" :filterPlaceholder="'ابحث بالمدعى عليه'"
         style="min-width: 8rem">
         <template #body="{ data }">
-          <div v-for="defendant in data.defendents" :key="defendant.id"> {{ defendant.name }}</div>
+          <div v-for="defendant in data.defendents" :key="defendant.id"> -{{ defendant.name }} </div>
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText v-model="filterModel.value" type="text" @input="filterCallback()"
@@ -505,22 +506,41 @@ const printTable = () => {
 
     const rows = table.querySelectorAll('tbody tr');
     rows.forEach(row => {
-      const newRow = document.createElement('tr');
       const cells = row.querySelectorAll('td');
 
-      // Only get the index of the columns you need (e.g., Title and Number)
-      const dataIndices = [1, 2, 3, 4, 5, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19]; // Adjust indices if necessary
+      // Only get the index of the columns you need
+      const dataIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; // Adjust indices if necessary
 
-      dataIndices.forEach(index => {
-        const td = document.createElement('td');
-        td.style.border = '1px solid black';
-        td.style.padding = '2px';
-        td.style.textAlign = 'right';
-        td.style.wordWrap = 'break-word'; // Ensure words wrap in the cells
-        td.textContent = cells[index].textContent.trim();
-        newRow.appendChild(td);
-      });
-      tbody.appendChild(newRow);
+      // Split the 'مدعي' and 'مدعي عليه' columns based on '-' and create a new row for each split value
+      const plaintiffNames = cells[9].textContent.trim().split(' - ');
+      const defendantNames = cells[10].textContent.trim().split(' - ');
+
+      // Determine the maximum number of rows to create
+      const rowCount = Math.max(plaintiffNames.length, defendantNames.length);
+
+      for (let i = 0; i < rowCount; i++) {
+        const newRow = document.createElement('tr');
+
+        dataIndices.forEach(index => {
+          const td = document.createElement('td');
+          td.style.border = '1px solid black';
+          td.style.padding = '2px';
+          td.style.textAlign = 'right';
+          td.style.wordWrap = 'break-word'; // Ensure words wrap in the cells
+
+          if (index === 5) {
+            td.textContent = i < plaintiffNames.length ? plaintiffNames[i] : '';
+          } else if (index === 6) {
+            td.textContent = i < defendantNames.length ? defendantNames[i] : '';
+          } else {
+            td.textContent = cells[index].textContent.trim();
+          }
+
+          newRow.appendChild(td);
+        });
+
+        tbody.appendChild(newRow);
+      }
     });
 
     printTable.appendChild(tbody);
@@ -550,37 +570,45 @@ const printTable = () => {
 };
 
 
-
 import { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType, HeadingLevel } from 'docx';
 import fileSaver from 'file-saver';
 const { saveAs } = fileSaver;
 const exportToDoc = async () => {
-  // Reverse the order of items from right to left including index+1
+  // Get today's date
   const today = new Date();
   const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
-  const reversedRows = customers.value.slice().reverse().map((item, index) => [
-    item["notes"] ?? "",
-    item["consultant_name"] ?? "",
-    item["court_name"] ?? "",
-    item["case_roll"] ?? "",
-    item["case_link"] ?? "",
-    item["announcement_type"] ?? "",
-    item["case_status"] ?? "",
-    item["decision"] ?? "",
-    item["next_session"] ?? "",
-    item["previous_session"] ?? "",
-    item["case_price"] ?? "",
-    item["case_grade"] ?? "",
-    item["case_type"] ?? "",
-    item["defendents"] ?? "",
-    item["claimants"] ?? "",
-    item["case_number"] ?? "",
-    item["case_title"] ?? ""
-  ]);
+
+  // Reverse the order of items from right to left including index+1
+  const reversedRows = customers.value.slice().reverse().map((item) => {
+    // Process `defendents` and `claimants` to extract names
+    const defendentsNames = item.defendents ? item.defendents.map(d => d.name).join(', ') : "";
+    const claimantsNames = item.claimants ? item.claimants.map(c => c.name).join(', ') : "";
+
+    return [
+      item["notes"] ?? "",
+      item["consultant_name"] ?? "",
+      item["court_name"] ?? "",
+      item["case_roll"] ?? "",
+      item["case_link"] ?? "",
+      item["announcement_type"] ?? "",
+      item["case_status"] ?? "",
+      item["decision"] ?? "",
+      item["next_session"] ?? "",
+      item["previous_session"] ?? "",
+      item["case_price"] ?? "",
+      item["case_grade"] ?? "",
+      item["case_type"] ?? "",
+      defendentsNames, // Use processed names
+      claimantsNames, // Use processed names
+      item["case_number"] ?? "",
+      item["case_title"] ?? ""
+    ];
+  });
 
   // Reverse the order of rows vertically
   reversedRows.reverse();
 
+  // Create the table with reversed rows
   const table = new Table({
     rows: [
       new TableRow({
@@ -619,21 +647,22 @@ const exportToDoc = async () => {
     ],
   });
 
-
-
+  // Create the document with title and table
   const reportTitle = new Paragraph({
     text: `تقرير أعمال اليوم - ${formattedDate}`,
     alignment: 'center',
-    heading: HeadingLevel.TITLE, // يمكن تغيير مستوى العنوان حسب الحاجة
+    heading: HeadingLevel.TITLE,
   });
 
   const doc = new Document({
     sections: [
       {
-        children: [reportTitle, table], // إضافة عنوان التقرير قبل الجدول
+        children: [reportTitle, table],
       },
     ],
   });
+
+  // Convert document to blob and save
   const blob = await Packer.toBlob(doc);
   saveAs(blob, "cases.docx");
 };
