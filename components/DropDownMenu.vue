@@ -8,6 +8,8 @@
         <NuxtLink class="dropdown-item" to="/ended-cases"> المنتهية</NuxtLink>
         <NuxtLink class="dropdown-item" to="/executions"> التنفيذات</NuxtLink>
         <NuxtLink class="dropdown-item" to="/experts"> الخبراء</NuxtLink>
+        <NuxtLink class="dropdown-item" to="/appeals"> الطعون</NuxtLink>
+        <NuxtLink class="dropdown-item" to="/police"> الشرطة</NuxtLink>
       </div>
     </div>
   </template>
