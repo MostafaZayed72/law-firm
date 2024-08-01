@@ -2,7 +2,7 @@
   <div class="card rtl">
     <DataTable v-model:filters="filters" @click:row="editCase" :value="customers" paginator :rows="10" dataKey="id"
       filterDisplay="row" :loading="loading"
-      :globalFilterFields="['id', 'client', 'case_number', 'case_title', 'claimants', 'defendents', 'is_active', 'case_type', 'case_degree', 'case_price', 'registration_date', 'next_court_session', 'decision', 'announcement_type', 'case_url', 'case_roll', 'court', 'advisor_name', 'note']"
+      :globalFilterFields="['id', 'client', 'case_number', 'case_title', 'claimants','updated_by_user','updatedAt', 'defendents', 'is_active', 'case_type', 'case_degree', 'case_price', 'registration_date', 'next_court_session', 'decision', 'announcement_type', 'case_url', 'case_roll', 'court', 'advisor_name', 'note']"
       id="cases-table">
 
       <template #header>
@@ -219,6 +219,25 @@
         </template>
       </Column>
 
+      <Column field="updated_by_user" header="صاحب آخر تعديل" :filter="true" :filterPlaceholder="'ابحث بصاحب آخر تعديل'"
+        style="min-width: 7rem">
+        <template #body="{ data }">
+          {{ data.updated_by_user }}
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder=" ابحث بصاحب آخر تعديل" />
+        </template>
+      </Column>
+      <Column field="updatedAt" header="تاريخ آخر تعديل" :filter="true" :filterPlaceholder="'ابحث بتاريخ آخر تعديل'"
+        style="min-width: 7rem">
+        <template #body="{ data }">
+          {{ data.updatedAt }}
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder=" ابحث بتاريخ آخر تعديل" />
+        </template>
+      </Column>
+
 
 
       <Column field="note" header="ملاحظات" :filter="true" :filterPlaceholder="'ابحث بالملاحظات'"
@@ -230,6 +249,8 @@
           <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="ابحث بالملاحظات" />
         </template>
       </Column>
+      
+     
       <Column header="التحكم" style="width: 10rem"
         v-if="roleId == 13 || roleId == 7 || roleId == 6 || roleId == 10 || roleId == 5 || roleId == 9 || roleId == 11">
         <template #body="{ data }">
@@ -380,7 +401,9 @@ const filters = ref({
   case_roll: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   court: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   advisor_name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-  note: { value: null, matchMode: FilterMatchMode.STARTS_WITH }
+  note: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  updatedAt: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  updated_by_user: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
 });
 const statuses = ref([
   { title: 'منتهي', value: false },
@@ -419,6 +442,9 @@ const fetchCases = async () => {
         const decisions = item.attributes.decisions.data;
         const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
 
+        // قم بتنسيق تاريخ `updatedAt`
+        const formattedUpdatedAt = item.attributes.updatedAt.split('T')[0];
+
         return {
           case_title: item.attributes.case_title,
           case_number: item.attributes.case_number,
@@ -441,7 +467,9 @@ const fetchCases = async () => {
           note: item.attributes.note,
           is_active: item.attributes.is_active,
           is_important: item.attributes.is_important,
-          case_type_relation: item.attributes.case_type_relation.data?.id
+          case_type_relation: item.attributes.case_type_relation.data?.id,
+          updatedAt: formattedUpdatedAt, 
+          updated_by_user: item.attributes.updated_by_user.data?.attributes.username
         };
       })
       .filter(item => item.is_active)

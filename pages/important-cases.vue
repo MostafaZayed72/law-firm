@@ -2,7 +2,7 @@
   <div class="card rtl">
     <DataTable v-model:filters="filters"  @click:row="editCase" :value="customers" paginator :rows="10" dataKey="id" filterDisplay="row"
       :loading="loading"
-      :globalFilterFields="['id', 'client', 'cas_status','is_active','is_important','case_number', 'case_title', 'claimants', 'defendents', 'is_active', 'case_type', 'case_degree', 'case_price', 'registration_date', 'next_court_session', 'decision', 'announcement_type', 'case_url', 'case_roll', 'court', 'advisor_name', 'note']"
+      :globalFilterFields="['id', 'client', 'case_number', 'case_title', 'claimants','updated_by_user','updatedAt', 'defendents', 'is_active', 'case_type', 'case_degree', 'case_price', 'registration_date', 'next_court_session', 'decision', 'announcement_type', 'case_url', 'case_roll', 'court', 'advisor_name', 'note']"
       id="cases-table">
 
       <template #header>
@@ -219,7 +219,24 @@
         </template>
       </Column>
 
-
+      <Column field="updated_by_user" header="صاحب آخر تعديل" :filter="true" :filterPlaceholder="'ابحث بصاحب آخر تعديل'"
+        style="min-width: 7rem">
+        <template #body="{ data }">
+          {{ data.updated_by_user }}
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder=" ابحث بصاحب آخر تعديل" />
+        </template>
+      </Column>
+      <Column field="updatedAt" header="تاريخ آخر تعديل" :filter="true" :filterPlaceholder="'ابحث بتاريخ آخر تعديل'"
+        style="min-width: 7rem">
+        <template #body="{ data }">
+          {{ data.updatedAt }}
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder=" ابحث بتاريخ آخر تعديل" />
+        </template>
+      </Column>
 
       <Column field="note" header="ملاحظات" :filter="true" :filterPlaceholder="'ابحث بالملاحظات'"
         style="min-width: 7rem">
@@ -377,6 +394,8 @@ const filters = ref({
   case_roll: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   court: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   advisor_name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  updatedAt: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  updated_by_user: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   note: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   is_important: { value: null, matchMode: FilterMatchMode.EQUALS },
 
@@ -395,62 +414,71 @@ onMounted(() => {
 });
 
 const fetchCases = async () => {
-try {
-  const jwt = localStorage.getItem("jwt");
-  loading.value = true;
+  try {
+    const jwt = localStorage.getItem("jwt");
+    loading.value = true;
 
-  const response = await axios.get(
-    "https://backend.eyhadvocates.com/api/cases?populate=*",
-    {
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
-    }
-  );
+    const response = await axios.get(
+      "https://backend.eyhadvocates.com/api/cases?populate=*",
+      {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    );
 
-  const importanceOptions = ref([
-    { label: 'هامة', value: true },
-    { label: 'عادية', value: false }
-  ]);
+    // دالة لتنسيق التاريخ
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toISOString().split('T')[0]; // استخراج التاريخ فقط من الـ ISO String
+    };
 
-  customers.value = response.data.data
-    .map((item) => {
-      const decisions = item.attributes.decisions.data;
-      const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
+    const importanceOptions = ref([
+      { label: 'هامة', value: true },
+      { label: 'عادية', value: false }
+    ]);
 
-      return {
-        case_title: item.attributes.case_title,
-        case_number: item.attributes.case_number,
-        id: item.id,
-        client: item.attributes.client,
-        claimants: item.attributes.claimants,
-        defendents: item.attributes.defendents,
-        case_type: item.attributes.case_type,
-        case_degree: item.attributes.case_degree,
-        case_price: item.attributes.case_price,
-        registration_date: item.attributes.registration_date,
-        next_court_session: item.attributes.next_court_session,
-        decision: lastDecision,
-        case_status: item.attributes.case_status,
-        announcement_type: item.attributes.announcement_type,
-        case_url: item.attributes.case_url,
-        case_roll: item.attributes.case_roll,
-        court: item.attributes.court,
-        advisor_name: item.attributes.advisor_name,
-        note: item.attributes.note,
-        is_active: item.attributes.is_active,
-        is_important: item.attributes.is_important,
+    customers.value = response.data.data
+      .map((item) => {
+        const decisions = item.attributes.decisions.data;
+        const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
         
-      };
-    })
-    .filter(item => item.is_important)
-    .filter(item => item.is_active) 
-    .sort((a, b) => a.id - b.id);
-  loading.value = false;
-} catch (error) {
-  console.error("Error fetching cases:", error);
-  loading.value = false;
-}
+        return {
+          case_title: item.attributes.case_title,
+          case_number: item.attributes.case_number,
+          id: item.id,
+          client: item.attributes.client,
+          claimants: item.attributes.claimants,
+          defendents: item.attributes.defendents,
+          case_type: item.attributes.case_type,
+          case_degree: item.attributes.case_degree,
+          case_price: item.attributes.case_price,
+          registration_date: item.attributes.registration_date,
+          next_court_session: item.attributes.next_court_session,
+          decision: lastDecision,
+          case_status: item.attributes.case_status,
+          announcement_type: item.attributes.announcement_type,
+          case_url: item.attributes.case_url,
+          case_roll: item.attributes.case_roll,
+          court: item.attributes.court,
+          advisor_name: item.attributes.advisor_name,
+          note: item.attributes.note,
+          is_active: item.attributes.is_active,
+          is_important: item.attributes.is_important,
+          updatedAt: formatDate(item.attributes.updatedAt) ,
+          updated_by_user: item.attributes.updated_by_user.data?.attributes.username
+
+        };
+      })
+      .filter(item => item.is_important)
+      .filter(item => item.is_active)
+      .sort((a, b) => a.id - b.id);
+
+    loading.value = false;
+  } catch (error) {
+    console.error("Error fetching cases:", error);
+    loading.value = false;
+  }
 };
 
 const getSeverity = (status) => {
@@ -477,74 +505,93 @@ const getMySeverity = (status) => {
 const printTable = () => {
   const table = document.getElementById('cases-table');
   if (table) {
-      // Create a new table element to hold only the required columns
-      const printTable = document.createElement('table');
-      printTable.style.width = '100%';
-      printTable.style.borderCollapse = 'collapse';
+    // Create a new table element to hold only the required columns
+    const printTable = document.createElement('table');
+    printTable.style.width = '100%';
+    printTable.style.borderCollapse = 'collapse';
 
-      // Create the header row with only the required columns
-      const thead = document.createElement('thead');
-      const headerRow = document.createElement('tr');
-      const headers = ['عنوان القضية', 'رقم القضية', 'نوع القضية', 'درجة القضية', 'المحكمة', 'المدعي', 'المدعي عليه','موكلي','نوع الإعلان','تارريخ الجلسة السابقة','تاريخ الجلسة القادمة','الرول','رابط الدعوة','القرار','ملاحظات'];
-      
-      headers.forEach(headerText => {
-          const th = document.createElement('th');
-          th.style.border = '1px solid black';
-          th.style.padding = '2px';
-          th.style.textAlign = 'right';
-          th.style.wordWrap = 'break-word'; // Ensure words wrap in the header
-          th.textContent = headerText;
-          headerRow.appendChild(th);
-      });
-      thead.appendChild(headerRow);
-      printTable.appendChild(thead);
+    // Create the header row with only the required columns
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    const headers = ['عنوان القضية', 'رقم القضية', 'نوع القضية', 'درجة القضية', 'المحكمة', 'المدعي', 'المدعي عليه', 'موكلي', 'نوع الإعلان', 'تارريخ الجلسة السابقة', 'تاريخ الجلسة القادمة', 'الرول', 'رابط الدعوة', 'القرار', 'ملاحظات'];
 
-      // Create the body rows with only the required columns
-      const tbody = document.createElement('tbody');
+    headers.forEach(headerText => {
+      const th = document.createElement('th');
+      th.style.border = '1px solid black';
+      th.style.padding = '2px';
+      th.style.textAlign = 'right';
+      th.style.wordWrap = 'break-word'; // Ensure words wrap in the header
+      th.textContent = headerText;
+      headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    printTable.appendChild(thead);
 
-      const rows = table.querySelectorAll('tbody tr');
-      rows.forEach(row => {
-          const newRow = document.createElement('tr');
-          const cells = row.querySelectorAll('td');
-          
-          // Only get the index of the columns you need (e.g., Title and Number)
-          const dataIndices = [1, 2, 3, 4, 5, 9, 10, 11,  13,14,15,16,17,18,19]; // Adjust indices if necessary
-          
-          dataIndices.forEach(index => {
-              const td = document.createElement('td');
-              td.style.border = '1px solid black';
-              td.style.padding = '2px';
-              td.style.textAlign = 'right';
-              td.style.wordWrap = 'break-word'; // Ensure words wrap in the cells
-              td.textContent = cells[index].textContent.trim();
-              newRow.appendChild(td);
-          });
-          tbody.appendChild(newRow);
-      });
+    // Create the body rows with only the required columns
+    const tbody = document.createElement('tbody');
 
-      printTable.appendChild(tbody);
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+      const cells = row.querySelectorAll('td');
 
-      // Open a new window and print the new table
-      const printWindow = window.open('', '', 'height=800,width=1000');
-      printWindow.document.open();
-      printWindow.document.write('<html><head><title>•••••••••</title>');
-      printWindow.document.write('<style>');
-      printWindow.document.write(`
-          table { width: 100%; border-collapse: collapse; font-size: 10px; table-layout: fixed; direction: rtl; }
-          th, td { border: 1px solid black; padding: 2px; text-align: right; white-space: normal; word-wrap: break-word; }
-          th { background-color: #f2f2f2; }
-          @media print {
-              body { font-size: 10px; }
-              table { width: 100%; direction: rtl; }
-              th, td { white-space: normal; word-wrap: break-word; }
+      // Only get the index of the columns you need
+      const dataIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; // Adjust indices if necessary
+
+      // Split the 'مدعي' and 'مدعي عليه' columns based on '-' and create a new row for each split value
+      const plaintiffNames = cells[9].textContent.trim().split(' - ');
+      const defendantNames = cells[10].textContent.trim().split(' - ');
+
+      // Determine the maximum number of rows to create
+      const rowCount = Math.max(plaintiffNames.length, defendantNames.length);
+
+      for (let i = 0; i < rowCount; i++) {
+        const newRow = document.createElement('tr');
+
+        dataIndices.forEach(index => {
+          const td = document.createElement('td');
+          td.style.border = '1px solid black';
+          td.style.padding = '2px';
+          td.style.textAlign = 'right';
+          td.style.wordWrap = 'break-word'; // Ensure words wrap in the cells
+
+          if (index === 5) {
+            td.textContent = i < plaintiffNames.length ? plaintiffNames[i] : '';
+          } else if (index === 6) {
+            td.textContent = i < defendantNames.length ? defendantNames[i] : '';
+          } else {
+            td.textContent = cells[index].textContent.trim();
           }
-      `);
-      printWindow.document.write('</style></head><body>');
-      printWindow.document.write(printTable.outerHTML);
-      printWindow.document.write('</body></html>');
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
+
+          newRow.appendChild(td);
+        });
+
+        tbody.appendChild(newRow);
+      }
+    });
+
+    printTable.appendChild(tbody);
+
+    // Open a new window and print the new table
+    const printWindow = window.open('', '', 'height=800,width=1000');
+    printWindow.document.open();
+    printWindow.document.write('<html><head><title>•••••••••</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write(`
+            table { width: 100%; border-collapse: collapse; font-size: 10px; table-layout: fixed; direction: rtl; }
+            th, td { border: 1px solid black; padding: 2px; text-align: right; white-space: normal; word-wrap: break-word; }
+            th { background-color: #f2f2f2; }
+            @media print {
+                body { font-size: 10px; }
+                table { width: 100%; direction: rtl; }
+                th, td { white-space: normal; word-wrap: break-word; }
+            }
+        `);
+    printWindow.document.write('</style></head><body>');
+    printWindow.document.write(printTable.outerHTML);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
   }
 };
 
