@@ -1,9 +1,10 @@
 <template>
-    <div class="card">
+    <div class="card" v-if="username">
       <Toolbar style="border-radius: 3rem; padding: 1rem 1rem 1rem 1.5rem">
         <template #start>
           <div class="flex items-center gap-2">
             <img class="w-8" src="/assets/images/logo.png" alt="">
+            <NuxtLink class="bg-blue-400 px-2 py-1 rounded-lg text-slate-50 hover:bg-blue-500 hover:text-black  delay" to="/tasks">المهام</NuxtLink>
             <NuxtLink class="bg-blue-400 px-2 py-1 rounded-lg text-slate-50 hover:bg-blue-500 hover:text-black  delay" to="/users_edit" v-if="roleId == 13">تعديل بيانات المستخدمين</NuxtLink>
             <NuxtLink class="bg-blue-400 px-2 py-1 rounded-lg text-slate-50 hover:bg-blue-500 hover:text-black  delay" to="/permissions" v-if="roleId == 13">الصلاحيات</NuxtLink>
             <DropDownMenu v-if="jwt"/>
@@ -44,7 +45,7 @@ onMounted(() => {
 
   onMounted(async () => {
     try {
-      const response = await axios.get('https://backend.eyhadvocates.com/api/users/me', {
+      const response = await axios.get('https://backend.eyhadvocates.com/api/users/me?populate=*', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('jwt')}`,
         },
