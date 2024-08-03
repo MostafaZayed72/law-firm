@@ -70,13 +70,13 @@
               placeholder="ابحث بدرجة القضية" />
           </template>
         </Column>
-        <Column field="court" header="المحكمة" :filter="true" :filterPlaceholder="'ابحث بالمحكمة'"
+        <Column field="court" header="الخبير المختص" :filter="true" :filterPlaceholder="'ابحث بالخبير المختص'"
           style="min-width: 7rem">
           <template #body="{ data }">
             {{ data.court }}
           </template>
           <template #filter="{ filterModel, filterCallback }">
-            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="ابحث بالمحكمة" />
+            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="ابحث بالخبير المختص" />
           </template>
         </Column>
         <Column field="is_active" header="حالة القضية" :filter="true" :filterPlaceholder="'اختر الحالة'"
@@ -292,7 +292,7 @@
         <v-text-field reverse v-model="dialog.case.announcement_type" label="نوع الإعلان" />
         <v-text-field reverse v-model="dialog.case.case_url" label="رابط الدعوة" />
         <v-text-field reverse v-model="dialog.case.case_roll" label="الرول" />
-        <v-text-field reverse v-model="dialog.case.court" label="المحكمة" />
+        <v-text-field reverse v-model="dialog.case.court" label="الخبير المختص" />
         <v-text-field reverse v-model="dialog.case.advisor_name" label="المستشار المعني" />
         <v-text-field reverse v-model="dialog.case.note" label="ملاحظات" />
       </v-card-subtitle>
@@ -513,6 +513,9 @@
   const printTable = () => {
   const table = document.getElementById('cases-table');
   if (table) {
+    const logo = new Image();
+    logo.src = 'https://www.eyhadvocates.com/_nuxt/logo.C97GQIbF.png';
+
     // Create a new table element to hold only the required columns
     const printTable = document.createElement('table');
     printTable.style.width = '100%';
@@ -521,7 +524,7 @@
     // Create the header row with only the required columns
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
-    const headers = ['عنوان القضية', 'رقم القضية', 'نوع القضية', 'درجة القضية', 'المحكمة', 'المدعي', 'المدعي عليه', 'موكلي', 'نوع الإعلان', 'تارريخ الجلسة السابقة', 'تاريخ الجلسة القادمة', 'الرول', 'رابط الدعوة', 'القرار', 'ملاحظات'];
+    const headers = ['عنوان القضية', 'رقم القضية', 'نوع القضية', 'درجة القضية', 'الخبير المختص', 'المدعي', 'المدعي عليه', 'موكلي', 'نوع الإعلان', 'تارريخ الجلسة السابقة', 'تاريخ الجلسة القادمة', 'الرول', 'رابط الدعوة', 'القرار', 'ملاحظات'];
 
     headers.forEach(headerText => {
       const th = document.createElement('th');
@@ -543,7 +546,7 @@
       const cells = row.querySelectorAll('td');
 
       // Only get the index of the columns you need
-      const dataIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; // Adjust indices if necessary
+      const dataIndices = [1,  2, 3, 4, 5,9, 10, 11, 13, 14, 15, 16, 17, 18, 21]; // Adjust indices if necessary
 
       // Split the 'مدعي' and 'مدعي عليه' columns based on '-' and create a new row for each split value
       const plaintiffNames = cells[9].textContent.trim().split(' - ');
@@ -562,9 +565,9 @@
           td.style.textAlign = 'right';
           td.style.wordWrap = 'break-word'; // Ensure words wrap in the cells
 
-          if (index === 5) {
+          if (index === 100) {
             td.textContent = i < plaintiffNames.length ? plaintiffNames[i] : '';
-          } else if (index === 6) {
+          } else if (index === 110) {
             td.textContent = i < defendantNames.length ? defendantNames[i] : '';
           } else {
             td.textContent = cells[index].textContent.trim();
@@ -579,12 +582,14 @@
 
     printTable.appendChild(tbody);
 
-    // Open a new window and print the new table
-    const printWindow = window.open('', '', 'height=800,width=1000');
-    printWindow.document.open();
-    printWindow.document.write('<html><head><title>•••••••••</title>');
-    printWindow.document.write('<style>');
-    printWindow.document.write(`
+    // Delay the opening of the print window to allow logo to load
+    setTimeout(() => {
+      const printWindow = window.open('', '', 'height=800,width=1000');
+      printWindow.document.open();
+      printWindow.document.write('<html><head><title>.</title>');
+
+      printWindow.document.write('<html><head><style>');
+      printWindow.document.write(`
             table { width: 100%; border-collapse: collapse; font-size: 10px; table-layout: fixed; direction: rtl; }
             th, td { border: 1px solid black; padding: 2px; text-align: right; white-space: normal; word-wrap: break-word; }
             th { background-color: #f2f2f2; }
@@ -594,12 +599,15 @@
                 th, td { white-space: normal; word-wrap: break-word; }
             }
         `);
-    printWindow.document.write('</style></head><body>');
-    printWindow.document.write(printTable.outerHTML);
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+      printWindow.document.write('</style></head><body>');
+      printWindow.document.write(`<div style="text-align: center;"><img src="${logo.src}" alt="Logo" style="width: 150px; margin: 0 auto 10px;"/>`);
+      printWindow.document.write('<h1>مكتب البلوشي للمحاماة</h1></div>'); // Title within centered div
+      printWindow.document.write(printTable.outerHTML);
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+    }); // 3 seconds delay
   }
 };
   
@@ -641,7 +649,7 @@ const exportToDoc = async () => {
         children: [
           new TableCell({ children: [new Paragraph("ملاحظات")], width: { size: 10, type: WidthType.PERCENTAGE } }),
           new TableCell({ children: [new Paragraph("اسم المستشار")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("المحكمة المختصة")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("الخبير المختص")], width: { size: 10, type: WidthType.PERCENTAGE } }),
           new TableCell({ children: [new Paragraph("رول القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
           new TableCell({ children: [new Paragraph("رابط الدعوى")], width: { size: 10, type: WidthType.PERCENTAGE } }),
           new TableCell({ children: [new Paragraph("نوع الاعلان")], width: { size: 10, type: WidthType.PERCENTAGE } }),
