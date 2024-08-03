@@ -282,8 +282,8 @@
         <v-text-field reverse v-model="dialog.case.case_type" label="نوع القضية" />
         <v-text-field reverse v-model="dialog.case.case_degree" label="درجة القضية" />
         <v-text-field reverse v-model="dialog.case.case_price" label="قيمة الدعوى" />
-        <v-text-field reverse v-model="dialog.case.registration_date" label="الجلسة السابقة" />
-        <v-text-field reverse v-model="dialog.case.next_court_session" label="الجلسة القادمة" />
+        <v-text-field reverse v-model="dialog.case.registration_date" label="الجلسة السابقة" type="date" />
+        <v-text-field reverse v-model="dialog.case.next_court_session" label="الجلسة القادمة" type="date" />
         <v-text-field reverse v-model="dialog.case.announcement_type" label="نوع الإعلان" />
         <v-text-field reverse v-model="dialog.case.case_url" label="رابط الدعوة" />
         <v-text-field reverse v-model="dialog.case.case_roll" label="الرول" />

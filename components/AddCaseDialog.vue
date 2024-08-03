@@ -68,11 +68,11 @@
           <InputText v-model="formData.announcement_type" id="announcement_type" />
         </div>
         <div class="field">
-          <label for="registration_date">تاريخ الجلسة السابقة</label>
+          <label for="registration_date">{{route.path == '/appeals' ? 'تاريخ الحكم' : 'تاريخ الجلسة السابقة' }}</label>
           <InputText v-model="formData.registration_date" id="registration_date" type="date" />
         </div>
         <div class="field">
-          <label for="next_court_session">الجلسة القادمة</label>
+          <label for="next_court_session">{{route.path == '/appeals' ? 'آخر موعد للطعن ' : 'الجلسة القادمة' }}</label>
           <InputText v-model="formData.next_court_session" id="next_court_session" type="date" />
         </div>
         <div class="field">
