@@ -605,9 +605,10 @@ const printTable = () => {
   }
 };
 
-import { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType, HeadingLevel } from 'docx';
 import fileSaver from 'file-saver';
 const { saveAs } = fileSaver;
+import { Document, Packer, Paragraph, Table, TableRow, TableCell, WidthType, HeadingLevel, ImageRun } from "docx";
+
 const exportToDoc = async () => {
   // Get today's date
   const today = new Date();
@@ -620,18 +621,16 @@ const exportToDoc = async () => {
     const claimantsNames = item.claimants ? item.claimants.map(c => c.name).join(', ') : "";
 
     return [
-      item["notes"] ?? "",
-      item["consultant_name"] ?? "",
-      item["court_name"] ?? "",
+      item["note"] ?? "",
+      item["court"] ?? "",
       item["case_roll"] ?? "",
-      item["case_link"] ?? "",
       item["announcement_type"] ?? "",
-      item["case_status"] ?? "",
       item["decision"] ?? "",
-      item["next_session"] ?? "",
-      item["previous_session"] ?? "",
+      item["client"] ?? "",
+      item["next_court_session"] ?? "",
+      item["registration_date"] ?? "",
       item["case_price"] ?? "",
-      item["case_grade"] ?? "",
+      item["case_degree"] ?? "",
       item["case_type"] ?? "",
       defendentsNames, // Use processed names
       claimantsNames, // Use processed names
@@ -649,13 +648,11 @@ const exportToDoc = async () => {
       new TableRow({
         children: [
           new TableCell({ children: [new Paragraph("ملاحظات")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("اسم المستشار")], width: { size: 10, type: WidthType.PERCENTAGE } }),
           new TableCell({ children: [new Paragraph("المحكمة المختصة")], width: { size: 10, type: WidthType.PERCENTAGE } }),
           new TableCell({ children: [new Paragraph("رول القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("رابط الدعوى")], width: { size: 10, type: WidthType.PERCENTAGE } }),
           new TableCell({ children: [new Paragraph("نوع الاعلان")], width: { size: 10, type: WidthType.PERCENTAGE } }),
-          new TableCell({ children: [new Paragraph("حالة القضية")], width: { size: 10, type: WidthType.PERCENTAGE } }),
           new TableCell({ children: [new Paragraph("القرار")], width: { size: 10, type: WidthType.PERCENTAGE } }),
+          new TableCell({ children: [new Paragraph("موكلي")], width: { size: 10, type: WidthType.PERCENTAGE } }),
           new TableCell({ children: [new Paragraph("تاريخ الجلسة القادمة")], width: { size: 10, type: WidthType.PERCENTAGE } }),
           new TableCell({ children: [new Paragraph("تاريخ الجلسة السابقة")], width: { size: 10, type: WidthType.PERCENTAGE } }),
           new TableCell({ children: [new Paragraph("قيمة الدعوى")], width: { size: 10, type: WidthType.PERCENTAGE } }),
@@ -689,10 +686,31 @@ const exportToDoc = async () => {
     heading: HeadingLevel.TITLE,
   });
 
+  // Add the logo image
+  const logoImageBuffer = await fetch('https://www.eyhadvocates.com/_nuxt/logo.C97GQIbF.png').then(res => res.arrayBuffer());
+  const logoImage = new ImageRun({
+    data: logoImageBuffer,
+    transformation: {
+      width: 100, // width in pixels
+      height: 100, // height in pixels
+    }
+  });
+  const logoParagraph = new Paragraph({
+    children: [logoImage],
+    alignment: 'center',
+  });
+
+  // Add office name below the logo
+  const officeNameParagraph = new Paragraph({
+    text: "مكتب البلوشي للمحاماة",
+    alignment: 'center',
+    heading: HeadingLevel.HEADING_1, // You can change the heading level or styling as needed
+  });
+
   const doc = new Document({
     sections: [
       {
-        children: [reportTitle, table],
+        children: [logoParagraph, officeNameParagraph, reportTitle, table],
       },
     ],
   });
@@ -701,6 +719,7 @@ const exportToDoc = async () => {
   const blob = await Packer.toBlob(doc);
   saveAs(blob, "cases.docx");
 };
+
 
 
 const confirmDelete = (item) => {
