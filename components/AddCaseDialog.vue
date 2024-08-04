@@ -21,7 +21,7 @@
           <InputText v-model="formData.case_degree" id="case_degree" />
         </div>
         <div class="field">
-          <label for="court">المحكمة</label>
+          <label for="court">{{ route.path== '/police'? 'المركز':  route.path== '/experts'? 'الخبير المختص' : 'المحكمة' }}</label>
           <InputText v-model="formData.court" id="court" />
         </div>
         <div class="field">

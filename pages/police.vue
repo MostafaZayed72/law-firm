@@ -759,7 +759,7 @@ const exportToDoc = async () => {
 
   // Add office name below the logo
   const officeNameParagraph = new Paragraph({
-    text: "مكتب البلوشي للمحاماة",
+    text: "مكتب البلوشي والمراشدة للمحاماة والإستشارات القانونية",
     alignment: 'center',
     heading: HeadingLevel.HEADING_1, // You can change the heading level or styling as needed
   });
