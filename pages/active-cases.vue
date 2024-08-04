@@ -653,8 +653,12 @@ const printTable = () => {
             }
         `);
       printWindow.document.write('</style></head><body>');
-      printWindow.document.write(`<div style="text-align: center;"><img src="${logo.src}" alt="Logo" style="width: 150px; margin: 0 auto 10px;"/>`);
-      printWindow.document.write('<h1>مكتب البلوشي للمحاماة</h1></div>'); // Title within centered div
+      printWindow.document.write(`
+        <div style="display: flex; justify-content: center; gap: 10px; align-items: center; margin-bottom: 10px;">
+          <p style="margin: 0;">مكتب البلوشي والمراشدة للمحاماة والإستشارات القانونية</p>
+          <img src="${logo.src}" alt="Logo" style="width: 30px;"/> <!-- Adjust size as needed -->
+        </div>
+      `);
       printWindow.document.write(printTable.outerHTML);
       printWindow.document.write('</body></html>');
       printWindow.document.close();

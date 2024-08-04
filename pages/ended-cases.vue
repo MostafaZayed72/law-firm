@@ -570,7 +570,7 @@ const clearFilters = () => {
     // Create the header row with only the required columns
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
-    const headers = ['عنوان القضية', 'رقم القضية', 'نوع القضية', 'درجة القضية', 'المحكمة', 'المدعي', 'المدعي عليه', 'موكلي', 'نوع الإعلان', 'تارريخ الجلسة السابقة', 'تاريخ الجلسة القادمة', 'الرول', 'رابط الدعوة', 'القرار', 'ملاحظات'];
+    const headers = ['عنوان القضية', 'رقم القضية', 'نوع القضية', 'درجة القضية', 'المحكمة', 'المدعي', 'المدعي عليه', 'موكلي', 'نوع الإعلان', 'تاريخ الحكم', 'آخر موعد للطعن', 'الرول', 'رابط الدعوة', 'القرار', 'ملاحظات'];
 
     headers.forEach(headerText => {
       const th = document.createElement('th');
@@ -592,7 +592,7 @@ const clearFilters = () => {
       const cells = row.querySelectorAll('td');
 
       // Only get the index of the columns you need
-      const dataIndices = [1,  2, 3, 4, 5,9, 10, 11, 13, 14, 15, 16, 17, 18, 21]; // Adjust indices if necessary
+      const dataIndices = [1, 2, 3, 4, 5, 9, 10, 11, 13, 14, 15, 16, 17, 18, 21]; // Adjust indices if necessary
 
       // Split the 'مدعي' and 'مدعي عليه' columns based on '-' and create a new row for each split value
       const plaintiffNames = cells[9].textContent.trim().split(' - ');
@@ -646,8 +646,12 @@ const clearFilters = () => {
             }
         `);
       printWindow.document.write('</style></head><body>');
-      printWindow.document.write(`<div style="text-align: center;"><img src="${logo.src}" alt="Logo" style="width: 150px; margin: 0 auto 10px;"/>`);
-      printWindow.document.write('<h1>مكتب البلوشي للمحاماة</h1></div>'); // Title within centered div
+      printWindow.document.write(`
+       <div style="display: flex; justify-content: center; gap: 10px; align-items: center; margin-bottom: 10px;">
+          <p style="margin: 0;">مكتب البلوشي والمراشدة للمحاماة والإستشارات القانونية</p>
+          <img src="${logo.src}" alt="Logo" style="width: 30px;"/> <!-- Adjust size as needed -->
+        </div>
+      `);
       printWindow.document.write(printTable.outerHTML);
       printWindow.document.write('</body></html>');
       printWindow.document.close();
