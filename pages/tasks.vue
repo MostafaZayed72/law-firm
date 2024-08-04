@@ -312,11 +312,13 @@ const printTable = () => {
   let printContent = `
     <html>
     <head>
-      <title>طباعة المهام</title>
+      <title>.</title>
       <style>
         body {
           direction: rtl;
           text-align: right;
+          margin: 0;
+          padding: 0;
         }
         table {
           width: 100%;
@@ -332,14 +334,17 @@ const printTable = () => {
           background-color: #f2f2f2;
         }
         .header {
-          text-align: center;
+          display: flex;
+          justify-content: center;
+          align-items: center;
           margin-bottom: 20px;
         }
         .header img {
-          width: 150px; /* يمكنك تعديل حجم الشعار هنا */
+          width: 30px; /* حجم الشعار */
+          margin-right: 10px; /* مسافة بين الشعار والعنوان */
         }
         .header h1 {
-          margin-top: 10px;
+          margin: 0;
           font-size: 24px;
         }
       </style>
@@ -347,7 +352,7 @@ const printTable = () => {
     <body>
       <div class="header">
         <img src="https://www.eyhadvocates.com/_nuxt/logo.C97GQIbF.png" alt="شعار مكتب البلوشي للمحاماة" />
-        <h1>مكتب البلوشي للمحاماة (المهام)</h1>
+        <p style="margin-right: 10px"> مكتب البلوشي والمراشدة للمحاماة والإستشارات القانونية (المهام)</p>
       </div>
       <table>
         <thead>
