@@ -564,7 +564,7 @@ const clearFilters = () => {
     }
   };
   
-  const printTable = () => {
+   const printTable= () => {
   const table = document.getElementById('cases-table');
   if (table) {
     const logo = new Image();

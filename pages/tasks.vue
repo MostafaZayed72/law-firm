@@ -5,14 +5,17 @@
     </div>
 
     <div v-else style="direction: rtl;" class="text-center">
-      <div class="flex justify-start mr-10 mb-4">
-        <Button label="إضافة مهمة جديدة" icon="pi pi-plus" class="p-button-success" @click="openAddDialog" />
-      </div>
+      <div class="flex justify-start mr-10  gap-4">
+        <Button label="طباعة" icon="pi pi-print" class="print" @click="printTable" />
+
+  <Button label="إضافة مهمة جديدة" icon="pi pi-plus" class="text-white" @click="openAddDialog" />
+</div>
+
       <DataTable :value="tasks" class="p-datatable-gridlines rtl-table rtl text-center" style="direction: rtl;">
         <Column class="text-start" field="attributes.title" header="العنوان" :body="data => data.attributes.title"></Column>
         <Column class="text-start" field="attributes.description" header="الوصف" :body="data => data.attributes.description"></Column>
         <Column class="text-start" field="attributes.days_required" header="الأيام المطلوبة" :body="data => data.attributes.days_required"></Column>
-        <Column class="text-start" field="attributes.due_date" header="تاريخ الاستحقاق" :body="data => formatDate(data.attributes.due_date)"></Column>
+        <Column class="text-start" field="attributes.due_date" header="تاريخ الإنشاء" :body="data => formatDate(data.attributes.due_date)"></Column>
         <Column class="text-start" header="المكلفون">
           <template #body="{ data }">
             <div v-for="assignee in data.attributes.assignees.data" :key="assignee.id">
@@ -66,7 +69,7 @@
             <InputNumber id="days_required" v-model="newTask.days_required" class="w-full" />
           </div>
           <div class="field mb-4">
-            <label for="due_date" class="block">تاريخ الاستحقاق</label>
+            <label for="due_date" class="block">تاريخ الإنشاء</label>
             <Calendar id="due_date" v-model="newTask.due_date" class="w-full" />
           </div>
           <div class="field mb-4">
@@ -301,6 +304,85 @@ const formatDate = (dateString) => {
   const day = String(date.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
 }
+const printTable = () => {
+  // إنشاء نافذة جديدة للطباعة
+  const printWindow = window.open('', '', 'height=600,width=800');
+
+  // إنشاء محتوى HTML للنافذة
+  let printContent = `
+    <html>
+    <head>
+      <title>طباعة المهام</title>
+      <style>
+        body {
+          direction: rtl;
+          text-align: right;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          direction: rtl;
+        }
+        th, td {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: right;
+        }
+        th {
+          background-color: #f2f2f2;
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        .header img {
+          width: 150px; /* يمكنك تعديل حجم الشعار هنا */
+        }
+        .header h1 {
+          margin-top: 10px;
+          font-size: 24px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <img src="https://www.eyhadvocates.com/_nuxt/logo.C97GQIbF.png" alt="شعار مكتب البلوشي للمحاماة" />
+        <h1>مكتب البلوشي للمحاماة (المهام)</h1>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>العنوان</th>
+            <th>الوصف</th>
+            <th>الأيام المطلوبة</th>
+            <th>تاريخ الإنشاء</th>
+            <th>المكلفون</th>
+            <th>حالة المهمة</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tasks.value.map(task => `
+            <tr>
+              <td>${task.attributes.title}</td>
+              <td>${task.attributes.description}</td>
+              <td>${task.attributes.days_required}</td>
+              <td>${formatDate(task.attributes.due_date)}</td>
+              <td>${task.attributes.assignees.data.map(assignee => assignee.attributes.username).join(', ')}</td>
+              <td>${task.attributes.is_done ? 'منجز' : 'غير منجز'}</td>
+            </tr>
+          `).reverse().join('')} <!-- عكس ترتيب الصفوف -->
+        </tbody>
+      </table>
+    </body>
+    </html>
+  `;
+
+  // كتابة المحتوى في نافذة الطباعة
+  printWindow.document.write(printContent);
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+};
 
 </script>
 
