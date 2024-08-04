@@ -1,6 +1,6 @@
 <template>
     <div class="card rtl">
-      <DataTable v-model:filters="filters"  @click:row="editCase" :value="customers" paginator :rows="10" dataKey="id" filterDisplay="row"
+      <DataTable v-model:filters="filters"  @click:row="editCase" :value="filteredCustomers" paginator :rows="10" dataKey="id" filterDisplay="row"
         :loading="loading"
         :globalFilterFields="['id', 'client', 'case_number', 'case_title', 'claimants','updated_by_user','updatedAt', 'defendents', 'is_active', 'case_type', 'case_degree', 'case_price', 'registration_date', 'next_court_session', 'decision', 'announcement_type', 'case_url', 'case_roll', 'court', 'advisor_name', 'note']"
         id="cases-table">
@@ -20,9 +20,27 @@
         </template>
         <div class="flex"><Button label="طباعة" icon="pi pi-print" @click="printTable" class="mr-4 print "  />
           <Button label="تحميل كملف DOC" icon="pi pi-download" @click="exportToDoc" class="mx-4 doc " />
+          <Button label="فلترة حسب التاريخ" icon="pi pi-calendar" @click="showDateFilterDialog" class="mx-4 bg-white" />
+
           <AddCaseDialog />
         </div>
-  
+        <v-dialog v-model="dateFilterDialogVisible" max-width="400px" style="direction:rtl">
+        <v-card>
+          <v-card-title>
+            <span class="headline">فلترة حسب التاريخ</span>
+          </v-card-title>
+          <v-card-subtitle>
+            <v-text-field v-model="startDate" label="تاريخ الجلسة السابقة" type="date" />
+            <v-text-field v-model="endDate" label="تاريخ الجلسة القادمة" type="date" />
+          </v-card-subtitle>
+          <v-card-actions>
+            <v-btn @click="clearFilters">إلغاء الفلترة</v-btn>
+            <v-btn @click="applyDateFilter">تطبيق</v-btn>
+            <v-btn @click="dateFilterDialogVisible = false">إغلاق</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
         <Column field="id" header="id" :filter="true" :filterPlaceholder="'ابحث بالـid'"
           style="width: fit-content; max-width: 14rem">
           <template #body="{ data }">
@@ -311,7 +329,43 @@
   import axios from 'axios';
   import { FilterMatchMode } from '@primevue/core/api';
   import { EventBus } from '/EventBus';
-  
+  const dateFilterDialogVisible = ref(false);
+const startDate = ref('');
+const endDate = ref('');
+const filteredCustomers = computed(() => {
+  if (!startDate.value && !endDate.value) {
+    return customers.value;
+  }
+
+  return customers.value.filter(customer => {
+    const registrationDate = new Date(customer.registration_date);
+    const nextCourtSession = new Date(customer.next_court_session);
+
+    let matches = true;
+    
+    if (startDate.value) {
+      matches = matches && (registrationDate >= new Date(startDate.value) || nextCourtSession >= new Date(startDate.value));
+    }
+    
+    if (endDate.value) {
+      matches = matches && (registrationDate <= new Date(endDate.value) || nextCourtSession <= new Date(endDate.value));
+    }
+    
+    return matches;
+  });
+});
+const showDateFilterDialog = () => {
+  dateFilterDialogVisible.value = true;
+};
+
+const applyDateFilter = () => {
+  dateFilterDialogVisible.value = false;
+};
+const clearFilters = () => {
+  startDate.value = '';
+  endDate.value = '';
+  // Optionally, reset the data to the original state if needed.
+};
   onMounted(() => {
     fetchCases();
     
