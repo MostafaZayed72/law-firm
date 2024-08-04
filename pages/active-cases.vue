@@ -754,8 +754,8 @@ const exportToDoc = async () => {
   const logoImage = new ImageRun({
     data: logoImageBuffer,
     transformation: {
-      width: 100, // width in pixels
-      height: 100, // height in pixels
+      width: 30, // width in pixels
+      height: 30, // height in pixels
     }
   });
   const logoParagraph = new Paragraph({
