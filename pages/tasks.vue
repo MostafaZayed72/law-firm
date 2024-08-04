@@ -5,17 +5,17 @@
     </div>
 
     <div v-else style="direction: rtl;" class="text-center">
-      <div class="flex justify-start mr-10  gap-4">
+      <div class="flex justify-start mr-10 gap-4">
         <Button label="طباعة" icon="pi pi-print" class="print" @click="printTable" />
-
-  <Button label="إضافة مهمة جديدة" icon="pi pi-plus" class="text-white" @click="openAddDialog" />
-</div>
+        <Button label="إضافة مهمة جديدة" icon="pi pi-plus" class="text-white" @click="openAddDialog" />
+      </div>
 
       <DataTable :value="tasks" class="p-datatable-gridlines rtl-table rtl text-center" style="direction: rtl;">
         <Column class="text-start" field="attributes.title" header="العنوان" :body="data => data.attributes.title"></Column>
         <Column class="text-start" field="attributes.description" header="الوصف" :body="data => data.attributes.description"></Column>
         <Column class="text-start" field="attributes.days_required" header="الأيام المطلوبة" :body="data => data.attributes.days_required"></Column>
         <Column class="text-start" field="attributes.due_date" header="تاريخ الإنشاء" :body="data => formatDate(data.attributes.due_date)"></Column>
+        <Column class="text-start" field="attributes.end_date" header="تاريخ الانتهاء"></Column>
         <Column class="text-start" header="المكلفون">
           <template #body="{ data }">
             <div v-for="assignee in data.attributes.assignees.data" :key="assignee.id">
@@ -116,6 +116,7 @@ import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import Calendar from 'primevue/calendar'
 
+// State variables
 const tasks = ref([])
 const users = ref([])
 const loading = ref(true)
@@ -133,6 +134,8 @@ const newTask = ref({
 const jwt = ref()
 const roleId = ref()
 const userId = ref()
+
+// On component mount
 onMounted(() => {
   jwt.value = localStorage.getItem('jwt')
   roleId.value = localStorage.getItem('roleId')
@@ -140,11 +143,11 @@ onMounted(() => {
   fetchTasks()
 })
 
+// Fetch tasks from API
 const fetchTasks = async () => {
   try {
     let url = 'https://backend.eyhadvocates.com/api/tasks?populate=*';
     
-    // تعديل عنوان URL بناءً على roleId
     if (roleId.value !== '13') {
       url += `&filters[assignees][id][$eq]=${userId.value}`;
     }
@@ -153,24 +156,35 @@ const fetchTasks = async () => {
       headers: {
         Authorization: `Bearer ${jwt.value}`
       }
-    })
+    });
 
-    // Map through the tasks and format the due_date
-    tasks.value = response.data.data.map(task => ({
-      ...task,
-      attributes: {
-        ...task.attributes,
-        due_date: formatDate(task.attributes.due_date), // Format date here
-      }
-    }))
+    // Map through the tasks and calculate the end date
+    tasks.value = response.data.data.map(task => {
+      const dueDate = task.attributes.due_date;
+      const daysRequired = task.attributes.days_required;
+
+      // Calculate end date
+      const endDate = calculateEndDate(dueDate, daysRequired);
+
+      return {
+        ...task,
+        attributes: {
+          ...task.attributes,
+          due_date: formatDate(task.attributes.due_date), // Format date here
+          end_date: endDate // Add the calculated end_date
+        }
+      };
+    });
   } catch (error) {
-    console.error('Error fetching tasks:', error)
+    console.error('Error fetching tasks:', error);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 
+
+// Fetch users from API
 const fetchUsers = async () => {
   try {
     const response = await axios.get('https://backend.eyhadvocates.com/api/users?populate=*', {
@@ -217,61 +231,49 @@ const openEditDialog = (task) => {
     description: task.attributes.description || '',
     days_required: task.attributes.days_required || 0,
     due_date: new Date(task.attributes.due_date) || null,
-    assignees: (task.attributes.assignees.data && task.attributes.assignees.data.map(assignee => assignee.id)) || []
+    assignees: (task.attributes.assignees.data && task.attributes.assignees.data.map(a => a.id)) || []
   }
   showDialog.value = true
 }
 
 const submitTask = async () => {
   try {
-    const taskData = {
-      title: newTask.value.title,
-      description: newTask.value.description,
-      days_required: newTask.value.days_required,
-      due_date: newTask.value.due_date.toISOString(), // Convert to ISO string
-      assignees: newTask.value.assignees
-    }
-
     if (editingTask.value) {
-      // Update existing task
-      await axios.put(`https://backend.eyhadvocates.com/api/tasks/${editingTask.value.id}`, { data: taskData }, {
+      // Update task
+      await axios.put(`https://backend.eyhadvocates.com/api/tasks/${editingTask.value.id}`, {
+        data: {
+          title: newTask.value.title,
+          description: newTask.value.description,
+          days_required: newTask.value.days_required,
+          due_date: newTask.value.due_date.toISOString(),
+          assignees: newTask.value.assignees
+        }
+      }, {
         headers: {
           Authorization: `Bearer ${jwt.value}`
         }
       })
-alert('تم تعديل المهمة بنجاح')    } else {
+    } else {
       // Create new task
-      await axios.post('https://backend.eyhadvocates.com/api/tasks', { data: taskData }, {
+      await axios.post('https://backend.eyhadvocates.com/api/tasks', {
+        data: {
+          title: newTask.value.title,
+          description: newTask.value.description,
+          days_required: newTask.value.days_required,
+          due_date: newTask.value.due_date.toISOString(),
+          assignees: newTask.value.assignees
+        }
+      }, {
         headers: {
           Authorization: `Bearer ${jwt.value}`
         }
       })
-      alert('تم إضافة المهمة بنجاح')
     }
 
-    fetchTasks() // Refresh the data to update the table
-    showDialog.value = false // Close the dialog
+    showDialog.value = false
+    fetchTasks()
   } catch (error) {
     console.error('Error submitting task:', error)
-alert('حدث خطأ أثناء حفظ المهمة')  }
-}
-
-const updateTaskStatus = async (taskId, isDone) => {
-  try {
-    // Ensure isDone is a boolean
-    const isDoneBoolean = isDone === 'true' || isDone === true
-
-    await axios.put(`https://backend.eyhadvocates.com/api/tasks/${taskId}`, { 
-      data: { is_done: isDoneBoolean }
-    }, {
-      headers: {
-        Authorization: `Bearer ${jwt.value}`
-      }
-    })
-    alert('تم تحديث حالة المهمة بنجاح')
-  } catch (error) {
-    console.error('Error updating task status:', error)
-   alert('هناك خطأ')
   }
 }
 
@@ -287,23 +289,30 @@ const deleteTask = async (taskId) => {
         Authorization: `Bearer ${jwt.value}`
       }
     })
-    tasks.value = tasks.value.filter(task => task.id !== taskId)
     confirmDeleteDialog.value = false
-    alert('تم حذف المهمة بنجاح')
+    fetchTasks()
   } catch (error) {
     console.error('Error deleting task:', error)
-alert('حدث خطأ أثناء الحذف')
   }
 }
 
-const formatDate = (dateString) => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
+const updateTaskStatus = async (taskId, status) => {
+  try {
+    await axios.put(`https://backend.eyhadvocates.com/api/tasks/${taskId}`, {
+      data: {
+        is_done: status
+      }
+    }, {
+      headers: {
+        Authorization: `Bearer ${jwt.value}`
+      }
+    })
+    fetchTasks()
+  } catch (error) {
+    console.error('Error updating task status:', error)
+  }
 }
+
 const printTable = () => {
   // إنشاء نافذة جديدة للطباعة
   const printWindow = window.open('', '', 'height=600,width=800');
@@ -361,6 +370,7 @@ const printTable = () => {
             <th>الوصف</th>
             <th>الأيام المطلوبة</th>
             <th>تاريخ الإنشاء</th>
+            <th>تاريخ الانتهاء</th> <!-- عمود جديد -->
             <th>المكلفون</th>
             <th>حالة المهمة</th>
           </tr>
@@ -371,11 +381,12 @@ const printTable = () => {
               <td>${task.attributes.title}</td>
               <td>${task.attributes.description}</td>
               <td>${task.attributes.days_required}</td>
-              <td>${formatDate(task.attributes.due_date)}</td>
+              <td>${task.attributes.due_date}</td>
+              <td>${task.attributes.end_date}</td> <!-- تاريخ الانتهاء -->
               <td>${task.attributes.assignees.data.map(assignee => assignee.attributes.username).join(', ')}</td>
               <td>${task.attributes.is_done ? 'منجز' : 'غير منجز'}</td>
             </tr>
-          `).reverse().join('')} <!-- عكس ترتيب الصفوف -->
+          `).reverse().join('')}
         </tbody>
       </table>
     </body>
@@ -389,6 +400,21 @@ const printTable = () => {
   printWindow.print();
 };
 
+// Helper function to format date
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
+  return new Date(dateString).toLocaleDateString('en-GB', options)
+}
+
+// Helper function to calculate end date
+// Helper function to calculate end date
+const calculateEndDate = (dueDate, daysRequired) => {
+  if (!dueDate || daysRequired === undefined || daysRequired === null) return ''; // Verify inputs
+
+  const startDate = new Date(dueDate);
+  startDate.setDate(startDate.getDate() + parseInt(daysRequired, 10)); // Calculate end date
+  return formatDate(startDate.toISOString()); // Return the formatted date
+};
 </script>
 
 <style scoped>
