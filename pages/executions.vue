@@ -30,8 +30,8 @@
             <span class="headline">فلترة حسب التاريخ</span>
           </v-card-title>
           <v-card-subtitle>
-            <v-text-field v-model="startDate" label="تاريخ الجلسة السابقة" type="date" />
-            <v-text-field v-model="endDate" label="تاريخ الجلسة القادمة" type="date" />
+            <v-text-field v-model="startDate" label="  من تاريخ" type="date" />
+            <v-text-field v-model="endDate" label="إلى تاريخ" type="date" />
           </v-card-subtitle>
           <v-card-actions>
             <v-btn @click="clearFilters">إلغاء الفلترة</v-btn>
@@ -334,17 +334,16 @@ const filteredCustomers = computed(() => {
   }
 
   return customers.value.filter(customer => {
-    const registrationDate = new Date(customer.registration_date);
     const nextCourtSession = new Date(customer.next_court_session);
 
     let matches = true;
     
     if (startDate.value) {
-      matches = matches && (registrationDate >= new Date(startDate.value) || nextCourtSession >= new Date(startDate.value));
+      matches = matches && nextCourtSession >= new Date(startDate.value);
     }
     
     if (endDate.value) {
-      matches = matches && (registrationDate <= new Date(endDate.value) || nextCourtSession <= new Date(endDate.value));
+      matches = matches && nextCourtSession <= new Date(endDate.value);
     }
     
     return matches;
