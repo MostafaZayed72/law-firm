@@ -142,7 +142,7 @@
         <Column field="claimants" header="المدعي" :filter="true" :filterPlaceholder="'ابحث بالمدعي'"
         style="min-width: 8rem">
         <template #body="{ data }">
-          <div v-for="claimant in data.claimants" :key="claimant.id"> -{{ claimant.name }}</div>
+          {{ data.claimants }}
 
         </template>
         <template #filter="{ filterModel, filterCallback }">
@@ -153,7 +153,7 @@
       <Column field="defendents" header="المدعى عليه" :filter="true" :filterPlaceholder="'ابحث بالمدعى عليه'"
         style="min-width: 8rem">
         <template #body="{ data }">
-          <div v-for="defendant in data.defendents" :key="defendant.id"> -{{ defendant.name }}</div>
+          {{ data.defendents }}
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText v-model="filterModel.value" type="text" @input="filterCallback()"
@@ -498,6 +498,10 @@ const clearFilters = () => {
         const decisions = item.attributes.decisions.data;
         const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
 
+        // تحويل المنفذ والمنفذ ضده إلى نصوص مفصولة بفواصل
+        const defendentsNames = item.attributes.defendents.map(d => d.name).join('/ ');
+        const claimantsNames = item.attributes.claimants.map(c => c.name).join('/ ');
+
         // تنسيق تاريخ `updatedAt` ليظهر اليوم فقط
         const formattedUpdatedAt = item.attributes.updatedAt
           ? new Date(item.attributes.updatedAt).toISOString().split('T')[0]
@@ -508,8 +512,8 @@ const clearFilters = () => {
           case_number: item.attributes.case_number,
           id: item.id,
           client: item.attributes.client,
-          claimants: item.attributes.claimants,
-          defendents: item.attributes.defendents,
+          claimants: claimantsNames, // استخدم النص المفصول بفواصل
+          defendents: defendentsNames, // استخدم النص المفصول بفواصل
           case_type: item.attributes.case_type,
           case_degree: item.attributes.case_degree,
           case_price: item.attributes.case_price,
@@ -528,7 +532,6 @@ const clearFilters = () => {
           case_type_relation: item.attributes.case_type_relation.data?.id,
           updatedAt: formattedUpdatedAt,
           updated_by_user: item.attributes.updated_by_user.data?.attributes.username
-
         };
       })
       .filter(item => item.is_active) // فلترة الحالات النشطة فقط

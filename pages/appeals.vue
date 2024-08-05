@@ -133,7 +133,7 @@
         <Column field="claimants" header="المدعي" :filter="true" :filterPlaceholder="'ابحث بالمدعي'"
           style="min-width: 8rem">
           <template #body="{ data }">
-            <div v-for="claimant in data.claimants" :key="claimant.id"> -{{ claimant.name }} </div>
+            {{ data.claimants }}
   
           </template>
           <template #filter="{ filterModel, filterCallback }">
@@ -144,7 +144,7 @@
         <Column field="defendents" header="المدعى عليه" :filter="true" :filterPlaceholder="'ابحث بالمدعى عليه'"
           style="min-width: 8rem">
           <template #body="{ data }">
-            <div v-for="defendant in data.defendents" :key="defendant.id"> -{{ defendant.name }} </div>
+            {{ data.defendents }}
           </template>
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()"
@@ -506,7 +506,8 @@ const clearFilters = () => {
       .map((item) => {
         const decisions = item.attributes.decisions.data;
         const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
-
+        const defendentsNames = item.attributes.defendents.map(d => d.name).join('/ ');
+        const claimantsNames = item.attributes.claimants.map(c => c.name).join('/ ');
         // قم بتنسيق تاريخ `updatedAt`
         const formattedUpdatedAt = item.attributes.updatedAt.split('T')[0];
 
@@ -521,8 +522,8 @@ const clearFilters = () => {
           case_number: item.attributes.case_number,
           id: item.id,
           client: item.attributes.client,
-          claimants: item.attributes.claimants,
-          defendents: item.attributes.defendents,
+          claimants: claimantsNames, // استخدم النص المفصول بفواصل
+          defendents: defendentsNames, // استخدم النص المفصول بفواصل
           case_type: item.attributes.case_type,
           case_degree: item.attributes.case_degree,
           case_price: item.attributes.case_price,
