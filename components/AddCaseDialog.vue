@@ -184,13 +184,39 @@ const removeDefendant = (index) => {
   formData.value.defendents.splice(index, 1);
 };
 
+const resetForm = () => {
+  formData.value = {
+    case_number: '',
+    case_title: '',
+    defendents: [{ id: 0, name: '' }],
+    claimants: [{ id: 0, name: '' }],
+    case_degree: '',
+    case_type: '',
+    registration_date: '',
+    next_court_session: '',
+    case_price: 0,
+    announcement_type: '',
+    case_roll: '',
+    case_url: '',
+    advisor_name: '',
+    court: '',
+    note: '',
+    decisions: [],
+    case_status: '',
+    client: '',
+    is_active: true,
+    is_important: false,
+    decision: '',
+    case_type_relation: caseTypeRelations[route.path] || null
+  };
+};
+
 const submitForm = async () => {
   if (!formData.value.registration_date || !formData.value.next_court_session) {
     alert('يجب إدخال تواريخ الجلسة السابقة والقادمة');
     return;
   }
 
-  // إعداد البيانات للإرسال
   const requestData = {
     case_number: formData.value.case_number,
     case_title: formData.value.case_title,
@@ -229,6 +255,7 @@ const submitForm = async () => {
     showDialog.value = false;
     EventBus.value.updateCases = true;
     alert('تمت إضافة القضية بنجاح');
+    resetForm(); // إعادة تعيين النموذج هنا
   } catch (error) {
     console.error('حدث خطأ:', error);
   }
