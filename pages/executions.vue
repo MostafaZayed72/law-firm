@@ -138,7 +138,7 @@
         <Column field="claimants" header="المنفذ" :filter="true" :filterPlaceholder="'ابحث بالمنفذ'"
         style="min-width: 8rem">
         <template #body="{ data }">
-          <div v-for="claimant in data.claimants" :key="claimant.id"> {{ claimant.name }}</div>
+          <div v-for="claimant in data.claimants" :key="claimant.id"> -{{ claimant.name }}</div>
 
         </template>
         <template #filter="{ filterModel, filterCallback }">
@@ -149,7 +149,7 @@
       <Column field="defendents" header="المنفذ ضده" :filter="true" :filterPlaceholder="'ابحث بالمنفذ ضده'"
         style="min-width: 8rem">
         <template #body="{ data }">
-          <div v-for="defendant in data.defendents" :key="defendant.id"> {{ defendant.name }}</div>
+          <div v-for="defendant in data.defendents" :key="defendant.id"> -{{ defendant.name }}</div>
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText v-model="filterModel.value" type="text" @input="filterCallback()"
