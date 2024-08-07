@@ -406,8 +406,7 @@ const saveChanges = async () => {
           case_title: dialog.case.case_title,
           case_number: dialog.case.case_number,
           client: dialog.case.client,
-          claimants: dialog.case.claimants,
-          defendents: dialog.case.defendents,
+          
           is_active: dialog.case.is_active,
           case_type: dialog.case.case_type,
           case_degree: dialog.case.case_degree,
