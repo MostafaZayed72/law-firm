@@ -293,8 +293,8 @@
         <v-text-field  reverse v-model="dialog.case.case_title" label="عنوان القضية" />
         <v-text-field  reverse v-model="dialog.case.case_number" label="رقم القضية" />
         <v-text-field  reverse v-model="dialog.case.client" label="موكلي" />
-        <v-text-field reverse v-model="dialog.case.claimants" label="المنفذ" />
-        <v-text-field reverse v-model="dialog.case.defendents" label="المنفذ ضده" />
+        <!-- <v-text-field reverse v-model="dialog.case.claimants" label="المنفذ" />
+        <v-text-field reverse v-model="dialog.case.defendents" label="المنفذ ضده" /> -->
         <v-select v-model="dialog.case.is_active" :items="statuses" label="حالة القضية" />
         <v-select v-model="dialog.case.is_important" :items="myStatuses" label="أهمية القضية" />
         <v-text-field reverse v-model="dialog.case.case_type" label="نوع القضية" />
