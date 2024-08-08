@@ -1,7 +1,11 @@
 <template>
   <div class="card rtl">
-    <DataTable v-model:filters="filters" @click:row="editCase" :value="filteredCustomers"  paginator :rows="10" dataKey="id"
-      filterDisplay="row" :loading="loading"
+    <DataTable v-model:filters="filters" @click:row="editCase"    :totalRecords="totalRecords" :value="filteredCustomers"  :paginator="true"
+      :currentPageReportTemplate="`Showing {first} to {last} of {totalRecords} entries`"
+      :lazy="true"
+      :loading="loading"
+      @page="onPageChange" :rows="10" dataKey="id"
+      filterDisplay="row" 
       :globalFilterFields="['id', 'client', 'case_number', 'case_title', 'claimants','updated_by_user','updatedAt', 'defendents', 'is_active', 'case_type', 'case_degree', 'case_price', 'registration_date', 'next_court_session', 'decision', 'announcement_type', 'case_url', 'case_roll', 'court', 'advisor_name', 'note']"
       id="cases-table">
 

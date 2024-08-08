@@ -1,6 +1,10 @@
 <template>
   <div class="card rtl">
-    <DataTable v-model:filters="filters"  @click:row="editCase" :value="filteredCustomers" paginator :rows="10" dataKey="id" filterDisplay="row"
+    <DataTable v-model:filters="filters"  @click:row="editCase"  :totalRecords="totalRecords" :value="filteredCustomers"  :paginator="true"
+      :currentPageReportTemplate="`Showing {first} to {last} of {totalRecords} entries`"
+      :lazy="true"
+      :loading="loading"
+      @page="onPageChange" :rows="10" dataKey="id" filterDisplay="row"
       :loading="loading"
       :globalFilterFields="['id', 'client', 'case_number', 'case_title', 'claimants','updated_by_user','updatedAt', 'defendents', 'is_active', 'case_type', 'case_degree', 'case_price', 'registration_date', 'next_court_session', 'decision', 'announcement_type', 'case_url', 'case_roll', 'court', 'advisor_name', 'note']"
       id="cases-table">
@@ -460,23 +464,35 @@ const myStatuses = ref([
   { title: 'هامة', value: true }
 ]);const loading = ref(true);
 
+const totalRecords = ref(0);
+const pageSize = ref(25); // عدد السجلات في الصفحة
+const currentPage = ref(1); // الصفحة الحالية
+const onPageChange = (event) => {
+  currentPage.value = event.page + 1; // تحديث الصفحة الحالية بناءً على التفاعل
+  pageSize.value = event.rows; // تحديث عدد السجلات في الصفحة بناءً على التفاعل
+  fetchCases(currentPage.value, pageSize.value); // جلب البيانات للصفحة الجديدة
+};
+
 onMounted(() => {
-  fetchCases();
+  fetchCases(currentPage.value, pageSize.value); // جلب البيانات عند تحميل الصفحة لأول مرة
 });
 
-const fetchCases = async () => {
+const fetchCases = async (page = 1, size = 25) => {
   try {
     const jwt = localStorage.getItem("jwt");
     loading.value = true;
 
     const response = await axios.get(
-      "https://backend.eyhadvocates.com/api/cases?populate=*",
+      `https://backend.eyhadvocates.com/api/cases?populate=*&pagination[page]=${page}&pagination[pageSize]=${size}`,
       {
         headers: {
           Authorization: `Bearer ${jwt}`,
         },
       }
     );
+
+    // تحديث إجمالي السجلات
+    totalRecords.value = response.data.meta.pagination.total;
 
     // دالة لتنسيق التاريخ
     const formatDate = (dateString) => {
