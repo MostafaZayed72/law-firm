@@ -1,7 +1,11 @@
 <template>
     <div class="card rtl">
-      <DataTable v-model:filters="filters"  @click:row="editCase" :value="filteredCustomers" paginator :rows="10" dataKey="id" filterDisplay="row"
-        :loading="loading"
+      <DataTable v-model:filters="filters"  @click:row="editCase"  :totalRecords="totalRecords" :value="filteredCustomers"  :paginator="true"
+      :currentPageReportTemplate="`Showing {first} to {last} of {totalRecords} entries`"
+      :lazy="true"
+      :loading="loading"
+      @page="onPageChange" :rows="10" dataKey="id" filterDisplay="row"
+       
         :globalFilterFields="['id', 'client', 'case_number', 'case_title', 'claimants','updated_by_user','updatedAt', 'defendents', 'is_active', 'case_type', 'case_degree', 'case_price', 'registration_date', 'next_court_session', 'decision', 'announcement_type', 'case_url', 'case_roll', 'court', 'advisor_name', 'note']"
         id="cases-table">
   
@@ -324,6 +328,86 @@
   import axios from 'axios';
   import { FilterMatchMode } from '@primevue/core/api';
   import { EventBus } from '/EventBus';
+const totalRecords = ref(0);
+const pageSize = ref(25); // عدد السجلات في الصفحة
+const currentPage = ref(1); // الصفحة الحالية
+const fetchCases = async (page = 1, size = 25) => {
+  try {
+    const jwt = localStorage.getItem("jwt");
+    loading.value = true;
+
+    const response = await axios.get(
+      `https://backend.eyhadvocates.com/api/cases?populate=*&pagination[page]=${page}&pagination[pageSize]=${size}`,
+      {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    );
+
+    // تحديث إجمالي السجلات
+    totalRecords.value = response.data.meta.pagination.total;
+
+    customers.value = response.data.data
+      .map((item) => {
+        const decisions = item.attributes.decisions.data;
+        const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
+
+        const defendentsNames = item.attributes.defendents.map(d => d.name).join('/ ');
+        const claimantsNames = item.attributes.claimants.map(c => c.name).join('/ ');
+
+        const formattedUpdatedAt = item.attributes.updatedAt
+          ? new Date(item.attributes.updatedAt).toISOString().split('T')[0]
+          : '';
+
+        return {
+          case_title: item.attributes.case_title,
+          case_number: item.attributes.case_number,
+          id: item.id,
+          client: item.attributes.client,
+          claimants: claimantsNames,
+          defendents: defendentsNames,
+          case_type: item.attributes.case_type,
+          case_degree: item.attributes.case_degree,
+          case_price: item.attributes.case_price,
+          registration_date: item.attributes.registration_date,
+          next_court_session: item.attributes.next_court_session,
+          decision: lastDecision,
+          case_status: item.attributes.case_status,
+          announcement_type: item.attributes.announcement_type,
+          case_url: item.attributes.case_url,
+          case_roll: item.attributes.case_roll,
+          court: item.attributes.court,
+          advisor_name: item.attributes.advisor_name,
+          note: item.attributes.note,
+          is_active: item.attributes.is_active,
+          is_important: item.attributes.is_important,
+          case_type_relation: item.attributes.case_type_relation.data?.id,
+          updatedAt: formattedUpdatedAt,
+          updated_by_user: item.attributes.updated_by_user.data?.attributes.username
+        };
+      })
+      .filter(item => item.is_active)
+      .filter(item => item.case_type_relation == 1)
+      .sort((a, b) => a.id - b.id);
+
+    loading.value = false;
+  } catch (error) {
+    console.error("Error fetching cases:", error);
+    loading.value = false;
+  }
+};
+
+const onPageChange = (event) => {
+  currentPage.value = event.page + 1; // تحديث الصفحة الحالية بناءً على التفاعل
+  pageSize.value = event.rows; // تحديث عدد السجلات في الصفحة بناءً على التفاعل
+  fetchCases(currentPage.value, pageSize.value); // جلب البيانات للصفحة الجديدة
+};
+
+onMounted(() => {
+  fetchCases(currentPage.value, pageSize.value); // جلب البيانات عند تحميل الصفحة لأول مرة
+});
+
   const dateFilterDialogVisible = ref(false);
 const startDate = ref('');
 const endDate = ref('');
@@ -464,80 +548,6 @@ const clearFilters = () => {
     { title: 'هامة', value: true }
   ]);const loading = ref(true);
   
-  onMounted(() => {
-    fetchCases();
-  });
-  
-  const fetchCases = async () => {
-  try {
-    const jwt = localStorage.getItem("jwt");
-    loading.value = true;
-
-    const response = await axios.get(
-      "https://backend.eyhadvocates.com/api/cases?populate=*",
-      {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      }
-    );
-
-    const importanceOptions = ref([
-      { label: 'هامة', value: true },
-      { label: 'عادية', value: false }
-    ]);
-
-    customers.value = response.data.data
-      .map((item) => {
-        const decisions = item.attributes.decisions.data;
-        const lastDecision = decisions.slice(-1)[0]?.attributes.decision;
-
-        // تحويل المنفذ والمنفذ ضده إلى نصوص مفصولة بفواصل
-        const defendentsNames = item.attributes.defendents.map(d => d.name).join('/ ');
-        const claimantsNames = item.attributes.claimants.map(c => c.name).join('/ ');
-
-        // تنسيق تاريخ `updatedAt` ليظهر اليوم فقط
-        const formattedUpdatedAt = item.attributes.updatedAt
-          ? new Date(item.attributes.updatedAt).toISOString().split('T')[0]
-          : '';
-
-        return {
-          case_title: item.attributes.case_title,
-          case_number: item.attributes.case_number,
-          id: item.id,
-          client: item.attributes.client,
-          claimants: claimantsNames, // استخدم النص المفصول بفواصل
-          defendents: defendentsNames, // استخدم النص المفصول بفواصل
-          case_type: item.attributes.case_type,
-          case_degree: item.attributes.case_degree,
-          case_price: item.attributes.case_price,
-          registration_date: item.attributes.registration_date,
-          next_court_session: item.attributes.next_court_session,
-          decision: lastDecision,
-          case_status: item.attributes.case_status,
-          announcement_type: item.attributes.announcement_type,
-          case_url: item.attributes.case_url,
-          case_roll: item.attributes.case_roll,
-          court: item.attributes.court,
-          advisor_name: item.attributes.advisor_name,
-          note: item.attributes.note,
-          is_active: item.attributes.is_active,
-          is_important: item.attributes.is_important,
-          case_type_relation: item.attributes.case_type_relation.data?.id,
-          updatedAt: formattedUpdatedAt,
-          updated_by_user: item.attributes.updated_by_user.data?.attributes.username
-        };
-      })
-      .filter(item => item.is_active) // فلترة الحالات النشطة فقط
-      .filter(item => item.case_type_relation == 1) // فلترة بناءً على نوع العلاقة
-      .sort((a, b) => a.id - b.id); // الترتيب حسب المعرف
-
-    loading.value = false;
-  } catch (error) {
-    console.error("Error fetching cases:", error);
-    loading.value = false;
-  }
-};
   
   const getSeverity = (status) => {
     switch (status) {
